@@ -19,7 +19,7 @@
       padding: 32px 24px;
       border-radius: 14px;
       box-shadow: 0 4px 14px rgba(0, 0, 0, 0.08);
-      max-width: 640px;
+      max-width: 680px;
       width: 100%;
     }
     h2 {
@@ -78,7 +78,7 @@
       background-color: transparent;
       color: #d93025;
       font-size: 12px;
-      padding: 4px 8px;
+      padding: 3px 8px;
       border: 1px solid #f5c2c7;
       border-radius: 4px;
       cursor: pointer;
@@ -90,10 +90,19 @@
       background-color: #e8f0fe;
       color: #1a73e8;
       font-size: 13px;
-      padding: 6px 12px;
+      padding: 7px 12px;
     }
     .btn-secondary:hover {
       background-color: #d2e3fc;
+    }
+    .btn-dev-trigger {
+      background-color: #f1f3f4;
+      color: #3c4043;
+      font-size: 12px;
+      padding: 7px 10px;
+    }
+    .btn-dev-trigger:hover {
+      background-color: #e8eaed;
     }
     .feed-title {
       font-size: 18px;
@@ -104,9 +113,9 @@
     }
     .question-card {
       border: 1px solid #e1e4e8;
-      border-radius: 10px;
-      padding: 18px;
-      margin-bottom: 16px;
+      border-radius: 12px;
+      padding: 20px;
+      margin-bottom: 20px;
       background: #fff;
     }
     .question-header {
@@ -129,7 +138,7 @@
       font-size: 15px;
       color: #222;
       line-height: 1.5;
-      margin: 8px 0 14px;
+      margin: 8px 0 16px;
     }
     .actions-bar {
       display: flex;
@@ -137,44 +146,90 @@
       align-items: center;
       padding-top: 10px;
       border-top: 1px solid #f1f3f4;
+      flex-wrap: wrap;
+      gap: 8px;
     }
-    .replies-list {
-      margin-top: 14px;
-      padding-left: 16px;
-      border-left: 3px solid #1a73e8;
+
+    /* Response Sections */
+    .section-label {
+      font-size: 12px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin: 16px 0 8px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
     }
-    .reply-item {
-      background: #f8f9fa;
-      padding: 10px 14px;
+    .section-label.dev {
+      color: #1a73e8;
+    }
+    .section-label.community {
+      color: #5f6368;
+    }
+
+    /* Official Developer Card */
+    .dev-response-card {
+      background: #f8fbff;
+      border: 1.5px solid #c2e7ff;
       border-radius: 8px;
-      margin-bottom: 8px;
-      font-size: 13.5px;
+      padding: 14px;
+      margin-bottom: 10px;
     }
+    .dev-badge {
+      background-color: #1a73e8;
+      color: #ffffff;
+      font-size: 11px;
+      font-weight: 700;
+      padding: 2px 7px;
+      border-radius: 4px;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    /* Community User Card */
+    .community-response-card {
+      background: #fafbfc;
+      border: 1px solid #e1e4e8;
+      border-radius: 8px;
+      padding: 12px;
+      margin-bottom: 8px;
+    }
+
     .reply-meta {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      font-size: 12px;
+      font-size: 13px;
       font-weight: 600;
-      color: #444;
-      margin-bottom: 4px;
+      color: #333;
+      margin-bottom: 6px;
     }
-    .developer-tag {
-      background: #1a73e8;
-      color: #fff;
-      font-size: 10px;
-      font-weight: bold;
-      padding: 2px 6px;
-      border-radius: 4px;
-      margin-left: 4px;
-    }
+
+    /* Forms */
     .answer-form {
       display: none;
-      margin-top: 12px;
+      margin-top: 14px;
       padding: 14px;
-      background: #f8f9fa;
       border-radius: 8px;
     }
+    .form-user {
+      background: #f8f9fa;
+      border: 1px solid #dadce0;
+    }
+    .form-developer {
+      background: #f0f7ff;
+      border: 1.5px solid #1a73e8;
+    }
+    .dev-auth-row {
+      display: flex;
+      gap: 8px;
+    }
+    .dev-auth-row input {
+      flex: 1;
+    }
+
     .nav-links {
       text-align: center;
       margin-top: 24px;
@@ -191,18 +246,18 @@
 
   <div class="container">
     <h2>Community Q&A</h2>
-    <p class="subtitle">Ask your questions here and our community or developer will help you!</p>
+    <p class="subtitle">Ask your questions here and get answers from Incrible Studio or other community members!</p>
 
     <!-- Post Question Form -->
     <div class="question-box">
-      <h3>Add your question here</h3>
+      <h3>Ask a Question</h3>
       <input type="text" id="qAuthor" placeholder="Your Name or Nickname" required>
-      <textarea id="qText" placeholder="Write your question or query here..." required></textarea>
+      <textarea id="qText" placeholder="Describe your question or issue in detail..." required></textarea>
       <button class="btn btn-primary" onclick="submitQuestion()">Post Question</button>
     </div>
 
     <!-- Questions Feed -->
-    <div class="feed-title">Questions & Discussion</div>
+    <div class="feed-title">Questions & Discussions</div>
     <div id="questionsContainer"></div>
 
     <div class="nav-links">
@@ -214,7 +269,10 @@
   <script>
     const STORAGE_KEY = 'animaclip_community_questions';
     const USER_ID_KEY = 'animaclip_device_user_id';
+    
+    // Developer Secret Credentials
     const DEV_SECRET_PIN = '@Mohd834875';
+    const DEV_OFFICIAL_EMAIL = 'incriblestudiodeveloper@gmail.com';
 
     function getCurrentUserId() {
       let uid = localStorage.getItem(USER_ID_KEY);
@@ -233,12 +291,19 @@
         const defaults = [
           {
             id: 1,
-            authorId: "system_mod",
+            authorId: "system_welcome",
             author: "Community Mod",
-            date: "Recent",
-            text: "Welcome to the Anima Clip Q&A board! Feel free to ask anything about features, updates, or troubleshooting.",
+            date: "Official",
+            text: "Welcome to the Anima Clip Q&A board! Have a question about tools, updates, or ad readiness? Post your query here.",
             replies: [
-              { id: 101, authorId: "system_dev", author: "Hossain Sarowar", isDev: true, date: "Recent", text: "We check here frequently to help answer any questions!" }
+              { 
+                id: 101, 
+                authorId: "system_dev", 
+                author: "Incrible Studio", 
+                isDev: true, 
+                date: "Official", 
+                text: "Welcome! Our team monitors this board to answer developer, app, and support questions directly." 
+              }
             ]
           }
         ];
@@ -264,8 +329,8 @@
         return;
       }
 
-      if (author.toLowerCase().includes("developer") || author.toLowerCase().includes("mod")) {
-        alert("Names containing 'Developer' or 'Mod' are restricted.");
+      if (author.toLowerCase().includes("developer") || author.toLowerCase().includes("mod") || author.toLowerCase().includes("incrible")) {
+        alert("Names containing 'Developer', 'Mod', or 'Incrible' are reserved.");
         return;
       }
 
@@ -295,10 +360,8 @@
         return;
       }
 
-      const confirmDelete = confirm("⚠️ Warning: Are you sure you want to delete this question? This action cannot be undone.");
-      if (confirmDelete) {
-        const updated = questions.filter(item => item.id !== id);
-        saveQuestions(updated);
+      if (confirm("⚠️ Warning: Are you sure you want to delete this question?")) {
+        saveQuestions(questions.filter(item => item.id !== id));
       }
     }
 
@@ -313,49 +376,78 @@
           return;
         }
 
-        const confirmDelete = confirm("⚠️ Warning: Are you sure you want to delete this reply?");
-        if (confirmDelete) {
+        if (confirm("⚠️ Warning: Are you sure you want to delete this reply?")) {
           question.replies = question.replies.filter(r => r.id !== rId);
           saveQuestions(questions);
         }
       }
     }
 
-    function toggleAnswerBox(id) {
-      const box = document.getElementById(`answer-form-${id}`);
-      box.style.display = (box.style.display === 'block') ? 'none' : 'block';
+    function toggleForm(id, type) {
+      const userForm = document.getElementById(`user-form-${id}`);
+      const devForm = document.getElementById(`dev-form-${id}`);
+
+      if (type === 'user') {
+        devForm.style.display = 'none';
+        userForm.style.display = (userForm.style.display === 'block') ? 'none' : 'block';
+      } else {
+        userForm.style.display = 'none';
+        devForm.style.display = (devForm.style.display === 'block') ? 'none' : 'block';
+      }
     }
 
-    function submitAnswer(qId) {
-      const authorInput = document.getElementById(`replyAuthor-${qId}`);
-      const passInput = document.getElementById(`devPass-${qId}`);
-      const textInput = document.getElementById(`replyText-${qId}`);
-
-      const author = authorInput.value.trim();
-      const passcode = passInput.value.trim();
-      const text = textInput.value.trim();
+    function submitUserReply(qId) {
+      const author = document.getElementById(`replyAuthor-${qId}`).value.trim();
+      const text = document.getElementById(`replyText-${qId}`).value.trim();
 
       if (!author || !text) {
-        alert("Please provide your name and an answer.");
+        alert("Please enter both your name and reply.");
         return;
       }
 
-      const isDev = (passcode === DEV_SECRET_PIN);
-
-      if (!isDev && (author.toLowerCase().includes("developer") || author.toLowerCase().includes("sarowar"))) {
-        alert("The developer identity is protected. Enter the correct Developer Passcode or choose another name.");
+      if (author.toLowerCase().includes("developer") || author.toLowerCase().includes("incrible")) {
+        alert("Names containing 'Developer' or 'Incrible' are reserved. Use the Developer Portal to post as official staff.");
         return;
       }
 
       const questions = getQuestions();
       const question = questions.find(q => q.id === qId);
-
       if (question) {
         question.replies.push({
           id: Date.now(),
           authorId: currentUserId,
           author: author,
-          isDev: isDev,
+          isDev: false,
+          date: new Date().toLocaleDateString(),
+          text: text
+        });
+        saveQuestions(questions);
+      }
+    }
+
+    function submitDevReply(qId) {
+      const email = document.getElementById(`devEmail-${qId}`).value.trim().toLowerCase();
+      const pin = document.getElementById(`devPass-${qId}`).value.trim();
+      const text = document.getElementById(`devText-${qId}`).value.trim();
+
+      if (!email || !pin || !text) {
+        alert("Please fill in Developer Email, Secret PIN, and your response message.");
+        return;
+      }
+
+      if (email !== DEV_OFFICIAL_EMAIL || pin !== DEV_SECRET_PIN) {
+        alert("❌ Authentication Failed: Developer email or secret PIN does not match.");
+        return;
+      }
+
+      const questions = getQuestions();
+      const question = questions.find(q => q.id === qId);
+      if (question) {
+        question.replies.push({
+          id: Date.now(),
+          authorId: currentUserId,
+          author: "Incrible Studio",
+          isDev: true,
           date: new Date().toLocaleDateString(),
           text: text
         });
@@ -375,8 +467,13 @@
       container.innerHTML = questions.map(q => {
         const isQuestionOwner = q.authorId === currentUserId;
 
+        // Segregate replies
+        const devReplies = q.replies.filter(r => r.isDev);
+        const userReplies = q.replies.filter(r => !r.isDev);
+
         return `
           <div class="question-card">
+            <!-- Question Content -->
             <div class="question-header">
               <div>
                 <span class="author-name">${q.author}</span>
@@ -386,39 +483,73 @@
             </div>
             <div class="question-text">${q.text}</div>
 
+            <!-- Action Buttons -->
             <div class="actions-bar">
-              <button class="btn btn-secondary" onclick="toggleAnswerBox(${q.id})">💬 Answer / Reply</button>
-              <span style="font-size: 12px; color: #777;">${q.replies.length} ${q.replies.length === 1 ? 'Answer' : 'Answers'}</span>
-            </div>
-
-            <!-- Answer Input Form -->
-            <div id="answer-form-${q.id}" class="answer-form">
-              <input type="text" id="replyAuthor-${q.id}" placeholder="Your Name">
-              <input type="password" id="devPass-${q.id}" placeholder="Developer PIN (Optional - leave blank if community user)">
-              <textarea id="replyText-${q.id}" placeholder="Write your reply or answer here..."></textarea>
-              <button class="btn btn-primary" style="padding: 6px 14px; font-size: 13px;" onclick="submitAnswer(${q.id})">Post Answer</button>
-            </div>
-
-            <!-- Replies List -->
-            ${q.replies.length > 0 ? `
-              <div class="replies-list">
-                ${q.replies.map(r => {
-                  const isReplyOwner = r.authorId === currentUserId;
-                  return `
-                    <div class="reply-item">
-                      <div class="reply-meta">
-                        <div>
-                          ${r.author} ${r.isDev ? '<span class="developer-tag">Developer</span>' : ''}
-                          <span class="date-tag">${r.date}</span>
-                        </div>
-                        ${isReplyOwner ? `<button class="btn btn-danger" onclick="deleteReply(${q.id},${r.id})">Delete</button>` : ''}
-                      </div>
-                      <div>${r.text}</div>
-                    </div>
-                  `;
-                }).join('')}
+              <div style="display: flex; gap: 8px;">
+                <button class="btn btn-secondary" onclick="toggleForm(${q.id}, 'user')">💬 Reply as User</button>
+                <button class="btn btn-dev-trigger" onclick="toggleForm(${q.id}, 'dev')">🛡️ Developer Portal</button>
               </div>
+              <span style="font-size: 12px; color: #777;">${q.replies.length} Total Replies</span>
+            </div>
+
+            <!-- Normal User Form -->
+            <div id="user-form-${q.id}" class="answer-form form-user">
+              <div style="font-weight: 600; font-size: 13px; margin-bottom: 8px; color: #333;">Post Community Reply</div>
+              <input type="text" id="replyAuthor-${q.id}" placeholder="Your Name or Nickname">
+              <textarea id="replyText-${q.id}" placeholder="Write your reply or advice..."></textarea>
+              <button class="btn btn-primary" style="padding: 6px 14px; font-size: 13px;" onclick="submitUserReply(${q.id})">Post User Reply</button>
+            </div>
+
+            <!-- Dedicated Developer Authentication Form -->
+            <div id="dev-form-${q.id}" class="answer-form form-developer">
+              <div style="font-weight: 700; font-size: 13px; margin-bottom: 8px; color: #1a73e8;">🛡️ Official Incrible Studio Response</div>
+              <div class="dev-auth-row">
+                <input type="email" id="devEmail-${q.id}" placeholder="incriblestudiodeveloper@gmail.com">
+                <input type="password" id="devPass-${q.id}" placeholder="Developer Secret PIN">
+              </div>
+              <textarea id="devText-${q.id}" placeholder="Write official developer response..."></textarea>
+              <button class="btn btn-primary" style="padding: 6px 14px; font-size: 13px; background-color: #1a73e8;" onclick="submitDevReply(${q.id})">Publish Official Answer</button>
+            </div>
+
+            <!-- SECTION 1: Developer Answers -->
+            ${devReplies.length > 0 ? `
+              <div class="section-label dev">🛡️ Official Developer Response (${devReplies.length})</div>${devReplies.map(r => {
+                const isReplyOwner = r.authorId === currentUserId;
+                return `
+                  <div class="dev-response-card">
+                    <div class="reply-meta">
+                      <div>
+                        <span style="color: #1a73e8;">${r.author}</span>
+                        <span class="dev-badge">✓ Official Developer</span>
+                        <span class="date-tag">${r.date}</span>
+                      </div>
+                      ${isReplyOwner ? `<button class="btn btn-danger" onclick="deleteReply(${q.id},${r.id})">Delete</button>` : ''}
+                    </div>
+                    <div style="font-size: 14px; color: #1f1f1f; line-height: 1.45;">${r.text}</div>
+                  </div>
+                `;
+              }).join('')}
             ` : ''}
+
+            <!-- SECTION 2: Community Replies -->
+            ${userReplies.length > 0 ? `
+              <div class="section-label community">👥 Community Discussion (${userReplies.length})</div>${userReplies.map(r => {
+                const isReplyOwner = r.authorId === currentUserId;
+                return `
+                  <div class="community-response-card">
+                    <div class="reply-meta">
+                      <div>
+                        <span>${r.author}</span>
+                        <span class="date-tag">${r.date}</span>
+                      </div>
+                      ${isReplyOwner ? `<button class="btn btn-danger" onclick="deleteReply(${q.id},${r.id})">Delete</button>` : ''}
+                    </div>
+                    <div style="font-size: 13.5px; color: #444; line-height: 1.4;">${r.text}</div>
+                  </div>
+                `;
+              }).join('')}
+            ` : ''}
+
           </div>
         `;
       }).join('');
