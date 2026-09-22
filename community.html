@@ -182,6 +182,12 @@
     .dev-auth-row input {
       flex: 1;
     }
+    .loading-banner {
+      text-align: center;
+      color: #666;
+      font-size: 14px;
+      padding: 20px;
+    }
     .nav-links {
       text-align: center;
       margin-top: 24px;
@@ -200,17 +206,17 @@
     <h2>Community Q&A</h2>
     <p class="subtitle">Ask your questions here and our community or developer will help you!</p>
 
-    <!-- Post Question Form -->
     <div class="question-box">
       <h3>Add your question here</h3>
       <input type="text" id="qAuthor" placeholder="Your Name or Nickname" required>
       <textarea id="qText" placeholder="Write your question or query here..." required></textarea>
-      <button class="btn btn-primary" onclick="submitQuestion()">Post Question</button>
+      <button class="btn btn-primary" id="btnPostQuestion" onclick="submitQuestion()">Post Question</button>
     </div>
 
-    <!-- Questions Feed -->
     <div class="feed-title">Questions & Discussion</div>
-    <div id="questionsContainer"></div>
+    <div id="questionsContainer">
+      <div class="loading-banner">Loading discussions from server...</div>
+    </div>
 
     <div class="nav-links">
       <a href="contact.html">← Back to Contact Support</a>
@@ -219,12 +225,14 @@
   </div>
 
   <script>
-    const STORAGE_KEY = 'animaclip_community_questions';
+    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycby9cL6BGDQbwXaVRT0txv5JDZU-SjFyBT8m_fMVneNqBmldG-N3gEyn5Gc-J-ovPbzggw/exec';
     const USER_ID_KEY = 'animaclip_device_user_id';
     
     // Developer Credentials
     const DEV_SECRET_PIN = '@Mohd834875';
     const DEV_OFFICIAL_EMAIL = 'incriblestudiodeveloper@gmail.com';
+
+    let questionsData = [];
 
     function getCurrentUserId() {
       let uid = localStorage.getItem(USER_ID_KEY);
@@ -237,35 +245,53 @@
 
     const currentUserId = getCurrentUserId();
 
-    function getQuestions() {
-      const stored = localStorage.getItem(STORAGE_KEY);
-      if (!stored) {
-        const defaults = [
-          {
-            id: 1,
-            authorId: "system_mod",
-            author: "Community Mod",
-            date: "Recent",
-            text: "Welcome to the Anima Clip Q&A board! Feel free to ask anything about features, updates, or troubleshooting.",
-            replies: [
-              { id: 101, authorId: "system_dev", author: "Incrible Studio", isDev: true, date: "Recent", text: "We check here frequently to help answer any questions!" }
-            ]
-          }
-        ];
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(defaults));
-        return defaults;
+    async function loadOnlineQuestions() {
+      try {
+        const res = await fetch(SCRIPT_URL);
+        const data = await res.json();
+        if (Array.isArray(data) && data.length > 0) {
+          questionsData = data;
+        } else {
+          questionsData = [
+            {
+              id: 1,
+              authorId: "system_mod",
+              author: "Community Mod",
+              date: "Recent",
+              text: "Welcome to the Anima Clip Q&A board! Feel free to ask anything about features, updates, or troubleshooting.",
+              replies: [
+                { id: 101, authorId: "system_dev", author: "Incrible Studio", isDev: true, date: "Recent", text: "We check here frequently to help answer any questions!" }
+              ]
+            }
+          ];
+        }
+      } catch (e) {
+        console.error("Could not fetch remote questions:", e);
       }
-      return JSON.parse(stored);
-    }
-
-    function saveQuestions(data) {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
       renderQuestions();
     }
 
-    function submitQuestion() {
+    async function syncToDatabase() {
+      const params = new URLSearchParams();
+      params.append('action', 'sync_community');
+      params.append('data', JSON.stringify(questionsData));
+
+      try {
+        await fetch(SCRIPT_URL, {
+          method: 'POST',
+          mode: 'no-cors',
+          headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+          body: params.toString()
+        });
+      } catch (err) {
+        console.error("Sync failed:", err);
+      }
+    }
+
+    async function submitQuestion() {
       const authorInput = document.getElementById('qAuthor');
       const textInput = document.getElementById('qText');
+      const btn = document.getElementById('btnPostQuestion');
       const author = authorInput.value.trim();
       const text = textInput.value.trim();
 
@@ -279,7 +305,9 @@
         return;
       }
 
-      const questions = getQuestions();
+      btn.disabled = true;
+      btn.innerText = 'Posting...';
+
       const newQuestion = {
         id: Date.now(),
         authorId: currentUserId,
@@ -289,16 +317,18 @@
         replies: []
       };
 
-      questions.unshift(newQuestion);
-      saveQuestions(questions);
+      questionsData.unshift(newQuestion);
+      renderQuestions();
+      await syncToDatabase();
 
       authorInput.value = '';
       textInput.value = '';
+      btn.disabled = false;
+      btn.innerText = 'Post Question';
     }
 
-    function deleteQuestion(id) {
-      const questions = getQuestions();
-      const q = questions.find(item => item.id === id);
+    async function deleteQuestion(id) {
+      const q = questionsData.find(item => item.id === id);
 
       if (!q || q.authorId !== currentUserId) {
         alert("Action not permitted: You can only delete your own questions.");
@@ -307,14 +337,14 @@
 
       const confirmDelete = confirm("⚠️ Warning: Are you sure you want to delete this question? This action cannot be undone.");
       if (confirmDelete) {
-        const updated = questions.filter(item => item.id !== id);
-        saveQuestions(updated);
+        questionsData = questionsData.filter(item => item.id !== id);
+        renderQuestions();
+        await syncToDatabase();
       }
     }
 
-    function deleteReply(qId, rId) {
-      const questions = getQuestions();
-      const question = questions.find(item => item.id === qId);
+    async function deleteReply(qId, rId) {
+      const question = questionsData.find(item => item.id === qId);
 
       if (question) {
         const reply = question.replies.find(r => r.id === rId);
@@ -326,7 +356,8 @@
         const confirmDelete = confirm("⚠️ Warning: Are you sure you want to delete this reply?");
         if (confirmDelete) {
           question.replies = question.replies.filter(r => r.id !== rId);
-          saveQuestions(questions);
+          renderQuestions();
+          await syncToDatabase();
         }
       }
     }
@@ -336,7 +367,7 @@
       box.style.display = (box.style.display === 'block') ? 'none' : 'block';
     }
 
-    function submitAnswer(qId) {
+    async function submitAnswer(qId) {
       const authorInput = document.getElementById(`replyAuthor-${qId}`);
       const emailInput = document.getElementById(`devEmail-${qId}`);
       const passInput = document.getElementById(`devPass-${qId}`);
@@ -352,7 +383,6 @@
         return;
       }
 
-      // 2-Factor verification for Developer: must provide matching Email + PIN
       const isTryingDev = (passcode.length > 0 || email.length > 0);
       let isDev = false;
 
@@ -370,8 +400,7 @@
         return;
       }
 
-      const questions = getQuestions();
-      const question = questions.find(q => q.id === qId);
+      const question = questionsData.find(q => q.id === qId);
 
       if (question) {
         question.replies.push({
@@ -382,20 +411,21 @@
           date: new Date().toLocaleDateString(),
           text: text
         });
-        saveQuestions(questions);
+
+        renderQuestions();
+        await syncToDatabase();
       }
     }
 
     function renderQuestions() {
       const container = document.getElementById('questionsContainer');
-      const questions = getQuestions();
 
-      if (questions.length === 0) {
+      if (questionsData.length === 0) {
         container.innerHTML = '<p style="text-align: center; color: #777;">No questions yet. Be the first to ask!</p>';
         return;
       }
 
-      container.innerHTML = questions.map(q => {
+      container.innerHTML = questionsData.map(q => {
         const isQuestionOwner = q.authorId === currentUserId;
 
         return `
@@ -452,7 +482,7 @@
       }).join('');
     }
 
-    renderQuestions();
+    loadOnlineQuestions();
   </script>
 
 </body>
