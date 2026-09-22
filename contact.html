@@ -143,7 +143,6 @@
     <h2>Help & Support</h2>
     <p class="subtitle">Choose how you would like to reach out to us.</p>
 
-    <!-- Option 1: Direct In-Page Form -->
     <div class="section">
       <h3>✉️ Option 1: Send Direct Message</h3>
       <p style="font-size: 13px; color: #666; margin-top: 4px;">
@@ -165,7 +164,6 @@
       </form>
     </div>
 
-    <!-- Option 2: Community Q&A -->
     <div class="section">
       <h3>💬 Option 2: Community Q&A</h3>
       <p style="font-size: 13px; color: #666; margin-top: 4px;">
@@ -196,6 +194,7 @@
       statusBox.style.display = 'none';
 
       const params = new URLSearchParams();
+      params.append('action', 'contact');
       params.append('name', name);
       params.append('email', email);
       params.append('message', message);
