@@ -1,543 +1,380 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Community Q&A - Anima Clip</title>
-  <style>
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-      background-color: #f4f6f8;
-      margin: 0;
-      padding: 24px 16px;
-      color: #333;
-      display: flex;
-      justify-content: center;
-    }
-    .container {
-      background: #ffffff;
-      padding: 32px 24px;
-      border-radius: 14px;
-      box-shadow: 0 4px 14px rgba(0, 0, 0, 0.08);
-      max-width: 640px;
-      width: 100%;
-    }
-    h2 {
-      margin-top: 0;
-      color: #1a73e8;
-      text-align: center;
-    }
-    .subtitle {
-      text-align: center;
-      color: #666;
-      font-size: 14px;
-      margin-bottom: 24px;
-    }
-    .question-box {
-      border: 1px solid #dcdfe6;
-      border-radius: 10px;
-      padding: 20px;
-      background: #fafbfc;
-      margin-bottom: 28px;
-    }
-    .question-box h3 {
-      margin-top: 0;
-      font-size: 16px;
-      color: #202124;
-    }
-    input, textarea {
-      width: 100%;
-      padding: 10px;
-      box-sizing: border-box;
-      border: 1px solid #ccc;
-      border-radius: 6px;
-      font-size: 14px;
-      font-family: inherit;
-      margin-bottom: 10px;
-    }
-    textarea {
-      resize: vertical;
-      min-height: 80px;
-    }
-    .btn {
-      padding: 10px 18px;
-      font-size: 14px;
-      font-weight: 600;
-      border: none;
-      border-radius: 6px;
-      cursor: pointer;
-    }
-    .btn-primary {
-      background-color: #1a73e8;
-      color: #ffffff;
-    }
-    .btn-primary:hover {
-      background-color: #1557b0;
-    }
-    .btn-danger {
-      background-color: transparent;
-      color: #d93025;
-      font-size: 12px;
-      padding: 3px 8px;
-      border: 1px solid #f5c2c7;
-      border-radius: 4px;
-      cursor: pointer;
-      flex-shrink: 0;
-      margin-left: auto;
-    }
-    .btn-danger:hover {
-      background-color: #fde8e8;
-    }
-    .btn-secondary {
-      background-color: #e8f0fe;
-      color: #1a73e8;
-      font-size: 13px;
-      padding: 6px 12px;
-    }
-    .btn-secondary:hover {
-      background-color: #d2e3fc;
-    }
-    .feed-title {
-      font-size: 18px;
-      margin-bottom: 16px;
-      color: #202124;
-      border-bottom: 2px solid #eee;
-      padding-bottom: 8px;
-    }
-    .question-card {
-      border: 1px solid #e1e4e8;
-      border-radius: 10px;
-      padding: 18px;
-      margin-bottom: 16px;
-      background: #fff;
-    }
-    .pinned-card {
-      border: 1.5px solid #1a73e8;
-      background: #f8fbff;
-      border-radius: 10px;
-      padding: 18px;
-      margin-bottom: 16px;
-    }
-    .pinned-tag {
-      background: #1a73e8;
-      color: #ffffff;
-      font-size: 11px;
-      font-weight: 700;
-      padding: 2px 7px;
-      border-radius: 4px;
-      display: inline-flex;
-      align-items: center;
-      gap: 3px;
-    }
-    .question-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 8px;
-      margin-bottom: 8px;
-    }
-    .author-name {
-      font-weight: 600;
-      font-size: 14px;
-      color: #1a73e8;
-    }
-    .date-tag {
-      font-size: 12px;
-      color: #888;
-    }
-    .question-text {
-      font-size: 15px;
-      color: #222;
-      line-height: 1.5;
-      margin: 8px 0 14px;
-    }
-    .actions-bar {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding-top: 10px;
-      border-top: 1px solid #f1f3f4;
-    }
-    .replies-list {
-      margin-top: 14px;
-      padding-left: 14px;
-      border-left: 3px solid #1a73e8;
-    }
-    .reply-item {
-      background: #f8f9fa;
-      padding: 12px 14px;
-      border-radius: 8px;
-      margin-bottom: 10px;
-      font-size: 13.5px;
-    }
-    .reply-meta {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 10px;
-      margin-bottom: 8px;
-    }
-    .meta-user {
-      display: flex;
-      align-items: center;
-      flex-wrap: wrap;
-      gap: 6px;
-    }
-    .developer-tag {
-      background: #1a73e8;
-      color: #fff;
-      font-size: 10px;
-      font-weight: bold;
-      padding: 2px 6px;
-      border-radius: 4px;
-    }
-    .mod-tag {
-      background: #5f6368;
-      color: #fff;
-      font-size: 10px;
-      font-weight: bold;
-      padding: 2px 6px;
-      border-radius: 4px;
-    }
-    .answer-form {
-      display: none;
-      margin-top: 12px;
-      padding: 14px;
-      background: #f8f9fa;
-      border-radius: 8px;
-    }
-    .dev-auth-row {
-      display: flex;
-      gap: 8px;
-    }
-    .dev-auth-row input {
-      flex: 1;
-    }
-    .loading-banner {
-      text-align: center;
-      color: #666;
-      font-size: 14px;
-      padding: 20px;
-    }
-    .nav-links {
-      text-align: center;
-      margin-top: 24px;
-    }
-    .nav-links a {
-      color: #1a73e8;
-      text-decoration: none;
-      font-size: 14px;
-      margin: 0 10px;
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Community Q&A | Anima Clip</title>
+    <style>
+        :root {
+            --bg-color: #0f172a;
+            --container-bg: #1e293b;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --accent: #3b82f6;
+            --accent-hover: #2563eb;
+            --danger: #ef4444;
+            --border: #334155;
+        }
+        body {
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            margin: 0;
+            padding: 20px;
+            line-height: 1.6;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .header h1 {
+            margin: 0 0 10px 0;
+            font-size: 2rem;
+        }
+        .header p {
+            color: var(--text-muted);
+            margin: 0;
+        }
+        .nav-links {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .nav-links a {
+            color: var(--accent);
+            text-decoration: none;
+            font-weight: bold;
+        }
+        .input-group {
+            background-color: var(--container-bg);
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 30px;
+            border: 1px solid var(--border);
+        }
+        input[type="text"], textarea {
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 15px;
+            background-color: var(--bg-color);
+            border: 1px solid var(--border);
+            color: var(--text-main);
+            border-radius: 8px;
+            box-sizing: border-box;
+            font-family: inherit;
+        }
+        textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+        button {
+            background-color: var(--accent);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background-color 0.2s;
+        }
+        button:hover {
+            background-color: var(--accent-hover);
+        }
+        .btn-danger {
+            background-color: var(--danger);
+            padding: 6px 12px;
+            font-size: 0.85rem;
+            margin-top: 10px;
+        }
+        .btn-reply {
+            background-color: transparent;
+            border: 1px solid var(--accent);
+            color: var(--accent);
+            padding: 6px 12px;
+            font-size: 0.85rem;
+            margin-top: 10px;
+            margin-right: 10px;
+        }
+        .question-card {
+            background-color: var(--container-bg);
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            border: 1px solid var(--border);
+        }
+        .meta {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+        }
+        .author {
+            font-weight: bold;
+            color: var(--accent);
+        }
+        .reply-card {
+            background-color: rgba(255, 255, 255, 0.05);
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 15px;
+            margin-left: 20px;
+            border-left: 3px solid var(--accent);
+        }
+        .loading-banner {
+            text-align: center;
+            padding: 20px;
+            color: var(--text-muted);
+            font-style: italic;
+        }
+    </style>
 </head>
 <body>
 
-  <div class="container">
-    <h2>Community Q&A</h2>
-    <p class="subtitle">Ask your questions here and our community will help you!</p>
-
-    <div class="question-box">
-      <h3>Add your question here</h3>
-      <input type="text" id="qAuthor" placeholder="Your Name or Nickname" required>
-      <textarea id="qText" placeholder="Write your question or query here..." required></textarea>
-      <button class="btn btn-primary" id="btnPostQuestion" onclick="submitQuestion()">Post Question</button>
-    </div>
-
-    <div class="feed-title">Questions & Discussion</div>
-
-    <!-- Permanent Pinned Card -->
-    <div class="pinned-card">
-      <div class="question-header">
-        <div class="meta-user">
-          <span class="pinned-tag">📌 PINNED</span>
-          <span class="author-name">Community Mod</span>
-          <span class="mod-tag">Official</span>
-        </div>
-      </div>
-      <div class="question-text">
-        Welcome to the Anima Clip Q&A board! Feel free to ask anything about features, updates, or troubleshooting.
-      </div>
-
-      <div class="replies-list" style="margin-top: 10px;">
-        <div class="reply-item" style="background: #ffffff; border: 1px solid #d2e3fc;">
-          <div class="reply-meta">
-            <div class="meta-user">
-              <strong>Incrible Studio</strong>
-              <span class="developer-tag">Developer</span>
-              <span class="mod-tag">Official</span>
-            </div>
-          </div>
-          <div>We check here frequently to help answer any questions!</div>
-        </div>
-      </div>
-    </div>
-
-    <div id="questionsContainer">
-      <div class="loading-banner">Loading discussions...</div>
+<div class="container">
+    <div class="header">
+        <h1>AnimaClip Community</h1>
+        <p>Ask questions, share tips, and help fellow developers!</p>
     </div>
 
     <div class="nav-links">
-      <a href="contact.html">← Back to Contact Support</a>
-      <a href="index.html">Home</a>
+        <a href="contact.html">← Back to Contact Support</a>
     </div>
-  </div>
 
-  <script>
-    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyqRdpolmAqdX64ezHXPD9MPTdYBBnSu8NtxZiU8mFc0Oq4bNCN3MxwzpMXhq80yuQoww/exec';
+    <div class="input-group">
+        <input type="text" id="qAuthor" placeholder="Your Name (e.g., John Doe)">
+        <textarea id="qText" placeholder="What's your question?"></textarea>
+        <button onclick="submitQuestion()">Post Question</button>
+    </div>
+
+    <div id="questionsContainer">
+        <div class="loading-banner">Syncing with live database...</div>
+    </div>
+</div>
+
+<script>
+    // FULLY AUTHORIZED BACKEND URL
+    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbz9wElcmo2rtZp1IclXXmOdkl56t5DQQ4uMq3DlLboxQ7nWtwI70NZt_MZXZC0Yzluz1A/exec';
+    
     const STORAGE_KEY = 'animaclip_cache_questions';
     const USER_ID_KEY = 'animaclip_device_user_id';
     
-    const DEV_SECRET_PIN = '@Mohd834875';
-    const DEV_OFFICIAL_EMAIL = 'incriblestudiodeveloper@gmail.com';
+    // Developer Credentials
+    const SECRET_PIN = '@Mohd834875';
+    const OFFICIAL_EMAIL = 'incriblestudiodeveloper@gmail.com';
 
     let questionsData = [];
 
+    // Anonymous Device Identity
     function getCurrentUserId() {
-      let uid = localStorage.getItem(USER_ID_KEY);
-      if (!uid) {
-        uid = 'user_' + Math.random().toString(36).substring(2, 11) + '_' + Date.now();
-        localStorage.setItem(USER_ID_KEY, uid);
-      }
-      return uid;
+        let uid = localStorage.getItem(USER_ID_KEY);
+        if (!uid) {
+            uid = 'user_' + Math.random().toString(36).substring(2, 11) + '_' + Date.now();
+            localStorage.setItem(USER_ID_KEY, uid);
+        }
+        return uid;
     }
 
     const currentUserId = getCurrentUserId();
 
+    // Cross-Origin Script Injection Callback (Reads DB)
     window.onQuestionsLoaded = function(data) {
-      if (Array.isArray(data)) {
-        questionsData = data.filter(q => q.authorId !== 'system_mod' && q.id !== 1);
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(questionsData));
-      }
-      renderQuestions();
+        if (Array.isArray(data)) {
+            questionsData = data.filter(q => q.authorId !== "system_mod" && q.id !== "");
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(questionsData));
+            renderQuestions();
+        }
     };
 
+    // Fetch live data directly from Google Sheets
     function loadOnlineQuestions() {
-      const cached = localStorage.getItem(STORAGE_KEY);
-      if (cached) {
-        try {
-          questionsData = JSON.parse(cached).filter(q => q.authorId !== 'system_mod' && q.id !== 1);
-          renderQuestions();
-        } catch (e) {}
-      }
+        const cached = localStorage.getItem(STORAGE_KEY);
+        if (cached) {
+            try {
+                questionsData = JSON.parse(cached).filter(q => q.authorId !== "system_mod" && q.id !== "") || [];
+                renderQuestions();
+            } catch (e) {
+                questionsData = [];
+            }
+        }
 
-      const script = document.createElement('script');
-      script.src = SCRIPT_URL + '?callback=onQuestionsLoaded&t=' + Date.now();
-      script.onerror = function() {
-        renderQuestions();
-      };
-      document.body.appendChild(script);
+        const script = document.createElement('script');
+        script.src = SCRIPT_URL + '?callback=onQuestionsLoaded&t=' + Date.now();
+        
+        script.onload = function() {
+            document.body.removeChild(script);
+        };
+        
+        document.body.appendChild(script);
     }
 
-    // New GET-based sync function to completely bypass CORS & Mobile POST Drops
+    // Push data to Google Sheets
     function syncToDatabase() {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(questionsData));
-
-      const encodedData = encodeURIComponent(JSON.stringify(questionsData));
-      const script = document.createElement('script');
-      script.src = SCRIPT_URL + '?action=save_community&data=' + encodedData + '&t=' + Date.now();
-      document.body.appendChild(script);
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(questionsData));
+        const encodedData = encodeURIComponent(JSON.stringify(questionsData));
+        
+        const script = document.createElement('script');
+        script.src = SCRIPT_URL + '?action=save_community&data=' + encodedData + '&t=' + Date.now();
+        
+        script.onload = function() {
+            document.body.removeChild(script);
+        };
+        
+        document.body.appendChild(script);
     }
 
+    // Submit a new question
     function submitQuestion() {
-      const authorInput = document.getElementById('qAuthor');
-      const textInput = document.getElementById('qText');
-      const btn = document.getElementById('btnPostQuestion');
-      const author = authorInput.value.trim();
-      const text = textInput.value.trim();
+        const authorInput = document.getElementById('qAuthor');
+        const textInput = document.getElementById('qText');
+        
+        let author = authorInput.value.trim();
+        const text = textInput.value.trim();
 
-      if (!author || !text) {
-        alert("Please enter both your name and your question.");
-        return;
-      }
-
-      if (author.toLowerCase().includes("developer") || author.toLowerCase().includes("mod") || author.toLowerCase().includes("incrible")) {
-        alert("Names containing 'Developer', 'Mod', or 'Incrible' are restricted.");
-        return;
-      }
-
-      btn.disabled = true;
-      btn.innerText = 'Posting...';
-
-      const newQuestion = {
-        id: Date.now(),
-        authorId: currentUserId,
-        author: author,
-        date: new Date().toLocaleDateString(),
-        text: text,
-        replies: []
-      };
-
-      questionsData.unshift(newQuestion);
-      renderQuestions();
-      syncToDatabase();
-
-      authorInput.value = '';
-      textInput.value = '';
-      btn.disabled = false;
-      btn.innerText = 'Post Question';
-    }
-
-    function deleteQuestion(id) {
-      const q = questionsData.find(item => item.id === id);
-
-      if (!q || q.authorId !== currentUserId) {
-        alert("Action not permitted: You can only delete your own questions.");
-        return;
-      }
-
-      if (confirm("⚠️ Warning: Are you sure you want to delete this question? This action cannot be undone.")) {
-        questionsData = questionsData.filter(item => item.id !== id);
-        renderQuestions();
-        syncToDatabase();
-      }
-    }
-
-    function deleteReply(qId, rId) {
-      const question = questionsData.find(item => item.id === qId);
-
-      if (question) {
-        const reply = question.replies.find(r => r.id === rId);
-        if (!reply || reply.authorId !== currentUserId) {
-          alert("Action not permitted: You can only delete your own replies.");
-          return;
+        if (!text) {
+            alert("Please enter a question.");
+            return;
         }
 
-        if (confirm("⚠️ Warning: Are you sure you want to delete this reply?")) {
-          question.replies = question.replies.filter(r => r.id !== rId);
-          renderQuestions();
-          syncToDatabase();
+        let isDeveloper = false;
+        if (author === SECRET_PIN) {
+            author = "Incrible Studio Developer";
+            isDeveloper = true;
+        } else if (!author) {
+            author = "Anonymous Developer";
         }
-      }
-    }
 
-    function toggleAnswerBox(id) {
-      const box = document.getElementById(`answer-form-${id}`);
-      box.style.display = (box.style.display === 'block') ? 'none' : 'block';
-    }
+        const newQuestion = {
+            id: 'q_' + Date.now(),
+            author: author,
+            text: text,
+            date: new Date().toLocaleDateString(),
+            authorId: isDeveloper ? OFFICIAL_EMAIL : currentUserId,
+            replies: []
+        };
 
-    function submitAnswer(qId) {
-      const authorInput = document.getElementById(`replyAuthor-${qId}`);
-      const emailInput = document.getElementById(`devEmail-${qId}`);
-      const passInput = document.getElementById(`devPass-${qId}`);
-      const textInput = document.getElementById(`replyText-${qId}`);
-
-      const author = authorInput.value.trim();
-      const email = emailInput.value.trim().toLowerCase();
-      const passcode = passInput.value.trim();
-      const text = textInput.value.trim();
-
-      if (!author || !text) {
-        alert("Please provide your name and an answer.");
-        return;
-      }
-
-      const isTryingDev = (passcode.length > 0 || email.length > 0);
-      let isDev = false;
-
-      if (isTryingDev) {
-        if (passcode === DEV_SECRET_PIN && email === DEV_OFFICIAL_EMAIL) {
-          isDev = true;
-        } else {
-          alert("Developer verification failed: Both the PIN and developer Gmail address must match.");
-          return;
-        }
-      }
-
-      if (!isDev && (author.toLowerCase().includes("developer") || author.toLowerCase().includes("incrible"))) {
-        alert("The Incrible Studio developer identity is protected. Enter the correct Developer Email & PIN or choose another name.");
-        return;
-      }
-
-      const question = questionsData.find(q => q.id === qId);
-
-      if (question) {
-        question.replies.push({
-          id: Date.now(),
-          authorId: currentUserId,
-          author: isDev ? "Incrible Studio" : author,
-          isDev: isDev,
-          date: new Date().toLocaleDateString(),
-          text: text
-        });
-
-        renderQuestions();
-        syncToDatabase();
-
-        authorInput.value = '';
-        emailInput.value = '';
-        passInput.value = '';
+        questionsData.unshift(newQuestion);
         textInput.value = '';
-        toggleAnswerBox(qId);
-      }
+        if (!isDeveloper) authorInput.value = '';
+        
+        renderQuestions();
+        syncToDatabase();
     }
 
+    // Submit a reply
+    function submitReply(questionId) {
+        const replyText = prompt("Type your reply:");
+        if (!replyText) return;
+
+        let authorName = prompt("Your Name (Leave blank for Anonymous):") || "Anonymous Developer";
+        let isDeveloper = false;
+        
+        if (authorName === SECRET_PIN) {
+            authorName = "Incrible Studio Developer";
+            isDeveloper = true;
+        }
+
+        const question = questionsData.find(q => q.id === questionId);
+        if (question) {
+            if (!question.replies) question.replies = [];
+            question.replies.push({
+                id: 'r_' + Date.now(),
+                author: authorName,
+                text: replyText,
+                date: new Date().toLocaleDateString(),
+                authorId: isDeveloper ? OFFICIAL_EMAIL : currentUserId
+            });
+            
+            renderQuestions();
+            syncToDatabase();
+        }
+    }
+
+    // Delete a post or reply (Requires Ownership or Developer PIN)
+    function deleteItem(questionId, replyId = null) {
+        let authAttempt = prompt("To delete this post, confirm you are the owner. \nIf you are the developer, enter your PIN. \nOtherwise, leave blank and press OK to verify device ownership:");
+        
+        const isDev = (authAttempt === SECRET_PIN);
+
+        if (replyId) {
+            const q = questionsData.find(q => q.id === questionId);
+            const rIndex = q.replies.findIndex(r => r.id === replyId);
+            
+            if (isDev || q.replies[rIndex].authorId === currentUserId) {
+                if (confirm("Permanently delete this reply?")) {
+                    q.replies.splice(rIndex, 1);
+                    renderQuestions();
+                    syncToDatabase();
+                }
+            } else {
+                alert("Permission denied. You did not create this reply.");
+            }
+        } else {
+            const qIndex = questionsData.findIndex(q => q.id === questionId);
+            
+            if (isDev || questionsData[qIndex].authorId === currentUserId) {
+                if (confirm("Permanently delete this question and all its replies?")) {
+                    questionsData.splice(qIndex, 1);
+                    renderQuestions();
+                    syncToDatabase();
+                }
+            } else {
+                alert("Permission denied. You did not create this question.");
+            }
+        }
+    }
+
+    // Render HTML
     function renderQuestions() {
-      const container = document.getElementById('questionsContainer');
+        const container = document.getElementById('questionsContainer');
+        container.innerHTML = '';
 
-      if (!questionsData || questionsData.length === 0) {
-        container.innerHTML = '<p style="text-align: center; color: #777;">No community questions yet. Be the first to ask!</p>';
-        return;
-      }
+        if (questionsData.length === 0) {
+            container.innerHTML = '<div class="loading-banner">No questions yet. Be the first to ask!</div>';
+            return;
+        }
 
-      container.innerHTML = questionsData.map(q => {
-        const isQuestionOwner = q.authorId === currentUserId;
-
-        return `
-          <div class="question-card">
-            <div class="question-header">
-              <div class="meta-user">
-                <span class="author-name">${q.author}</span>
-                <span class="date-tag">${q.date}</span>
-              </div>
-              ${isQuestionOwner ? `<button class="btn btn-danger" onclick="deleteQuestion(${q.id})">Delete</button>` : ''}
-            </div>
-            <div class="question-text">${q.text}</div>
-
-            <div class="actions-bar">
-              <button class="btn btn-secondary" onclick="toggleAnswerBox(${q.id})">💬 Answer / Reply</button>
-              <span style="font-size: 12px; color: #777;">${q.replies.length} ${q.replies.length === 1 ? 'Answer' : 'Answers'}</span>
-            </div>
-
-            <div id="answer-form-${q.id}" class="answer-form">
-              <input type="text" id="replyAuthor-${q.id}" placeholder="Your Name or Nickname">
-              
-              <div class="dev-auth-row">
-                <input type="email" id="devEmail-${q.id}" placeholder="Dev Email (Optional)">
-                <input type="password" id="devPass-${q.id}" placeholder="Dev PIN (Optional)">
-              </div>
-
-              <textarea id="replyText-${q.id}" placeholder="Write your reply or answer here..."></textarea>
-              <button class="btn btn-primary" style="padding: 6px 14px; font-size: 13px;" onclick="submitAnswer(${q.id})">Post Answer</button>
-            </div>
-
-            ${q.replies.length > 0 ? `
-              <div class="replies-list">
-                ${q.replies.map(r => {
-                  const isReplyOwner = r.authorId === currentUserId;
-                  return `
-                    <div class="reply-item">
-                      <div class="reply-meta">
-                        <div class="meta-user">
-                          <strong style="color: #202124;">${r.author}</strong>
-                          ${r.isDev ? '<span class="developer-tag">Developer</span><span class="mod-tag">Official</span>' : ''}
-                          <span class="date-tag">${r.date}</span>
-                        </div>
-                        ${isReplyOwner ? `<button class="btn btn-danger" onclick="deleteReply(${q.id},${r.id})">Delete</button>` : ''}
-                      </div>
-                      <div style="line-height: 1.45; color: #333;">${r.text}</div>
+        questionsData.forEach(q => {
+            const devBadgeQ = q.authorId === OFFICIAL_EMAIL ? ' <span style="background:var(--accent);color:white;padding:2px 6px;border-radius:4px;font-size:0.7rem;margin-left:5px;">DEV</span>' : '';
+            
+            let html = `
+                <div class="question-card" id="${q.id}">
+                    <div class="meta">
+                        <span><span class="author">${q.author}</span>${devBadgeQ}</span>
+                        <span>${q.date}</span>
                     </div>
-                  `;
-                }).join('')}
-              </div>
-            ` : ''}
-          </div>
-        `;
-      }).join('');
+                    <div class="text">${q.text}</div>
+                    <button class="btn-reply" onclick="submitReply('${q.id}')">Reply</button>
+                    <button class="btn-danger" onclick="deleteItem('${q.id}')">Delete</button>
+            `;
+
+            if (q.replies && q.replies.length > 0) {
+                q.replies.forEach(r => {
+                    const devBadgeR = r.authorId === OFFICIAL_EMAIL ? ' <span style="background:var(--accent);color:white;padding:2px 6px;border-radius:4px;font-size:0.7rem;margin-left:5px;">DEV</span>' : '';
+                    html += `
+                        <div class="reply-card" id="${r.id}">
+                            <div class="meta">
+                                <span><span class="author">↳ ${r.author}</span>${devBadgeR}</span>
+                                <span>${r.date}</span>
+                            </div>
+                            <div class="text">${r.text}</div>
+                            <button class="btn-danger" style="margin-top:10px;" onclick="deleteItem('${q.id}', '${r.id}')">Delete Reply</button>
+                        </div>
+                    `;
+                });
+            }
+
+            html += `</div>`;
+            container.innerHTML += html;
+        });
     }
 
+    // Initialize on load
     loadOnlineQuestions();
-  </script>
+</script>
 
 </body>
 </html>
