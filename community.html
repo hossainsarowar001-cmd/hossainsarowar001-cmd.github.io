@@ -109,6 +109,24 @@
       margin-bottom: 16px;
       background: #fff;
     }
+    .pinned-card {
+      border: 1.5px solid #1a73e8;
+      background: #f8fbff;
+      border-radius: 10px;
+      padding: 18px;
+      margin-bottom: 16px;
+    }
+    .pinned-tag {
+      background: #1a73e8;
+      color: #ffffff;
+      font-size: 11px;
+      font-weight: 700;
+      padding: 2px 7px;
+      border-radius: 4px;
+      display: inline-flex;
+      align-items: center;
+      gap: 3px;
+    }
     .question-header {
       display: flex;
       justify-content: space-between;
@@ -168,6 +186,15 @@
       border-radius: 4px;
       margin-left: 4px;
     }
+    .mod-tag {
+      background: #5f6368;
+      color: #fff;
+      font-size: 10px;
+      font-weight: bold;
+      padding: 2px 6px;
+      border-radius: 4px;
+      margin-left: 4px;
+    }
     .answer-form {
       display: none;
       margin-top: 12px;
@@ -204,8 +231,9 @@
 
   <div class="container">
     <h2>Community Q&A</h2>
-    <p class="subtitle">Ask your questions here and our community or developer will help you!</p>
+    <p class="subtitle">Ask your questions here and our community will help you!</p>
 
+    <!-- Post Question Form -->
     <div class="question-box">
       <h3>Add your question here</h3>
       <input type="text" id="qAuthor" placeholder="Your Name or Nickname" required>
@@ -213,7 +241,36 @@
       <button class="btn btn-primary" id="btnPostQuestion" onclick="submitQuestion()">Post Question</button>
     </div>
 
+    <!-- Questions Feed -->
     <div class="feed-title">Questions & Discussion</div>
+
+    <!-- Permanent Pinned Card -->
+    <div class="pinned-card">
+      <div class="question-header">
+        <div>
+          <span class="pinned-tag">📌 PINNED</span>
+          <span class="author-name" style="margin-left: 6px;">Community Mod</span>
+          <span class="mod-tag">Official</span>
+        </div>
+      </div>
+      <div class="question-text">
+        Welcome to the Anima Clip Q&A board! Feel free to ask anything about features, updates, or troubleshooting.
+      </div>
+
+      <div class="replies-list" style="margin-top: 10px;">
+        <div class="reply-item" style="background: #ffffff; border: 1px solid #d2e3fc;">
+          <div class="reply-meta">
+            <div>
+              <strong>Incrible Studio</strong>
+              <span class="developer-tag">Developer</span>
+              <span class="date-tag">Official</span>
+            </div>
+          </div>
+          <div>We check here frequently to help answer any questions!</div>
+        </div>
+      </div>
+    </div>
+
     <div id="questionsContainer">
       <div class="loading-banner">Loading discussions...</div>
     </div>
@@ -245,49 +302,28 @@
 
     const currentUserId = getCurrentUserId();
 
-    // Default fallback starter item
-    const defaultData = [
-      {
-        id: 1,
-        authorId: "system_mod",
-        author: "Community Mod",
-        date: "Recent",
-        text: "Welcome to the Anima Clip Q&A board! Feel free to ask anything about features, updates, or troubleshooting.",
-        replies: [
-          { id: 101, authorId: "system_dev", author: "Incrible Studio", isDev: true, date: "Recent", text: "We check here frequently to help answer any questions!" }
-        ]
-      }
-    ];
-
-    // Global callback for JSONP fetch
     window.onQuestionsLoaded = function(data) {
-      if (Array.isArray(data) && data.length > 0) {
-        questionsData = data;
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
-      } else if (!questionsData || questionsData.length === 0) {
-        questionsData = defaultData;
+      if (Array.isArray(data)) {
+        // Strip out old mock system items so they do not duplicate the pinned banner
+        questionsData = data.filter(q => q.authorId !== 'system_mod' && q.id !== 1);
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(questionsData));
       }
       renderQuestions();
     };
 
     function loadOnlineQuestions() {
-      // 1. Load instant cached version if available
       const cached = localStorage.getItem(STORAGE_KEY);
       if (cached) {
         try {
-          questionsData = JSON.parse(cached);
+          questionsData = JSON.parse(cached).filter(q => q.authorId !== 'system_mod' && q.id !== 1);
           renderQuestions();
         } catch (e) {}
       }
 
-      // 2. Fetch live data from Google Sheets via JSONP
       const script = document.createElement('script');
       script.src = SCRIPT_URL + '?callback=onQuestionsLoaded&t=' + Date.now();
       script.onerror = function() {
-        if (!questionsData || questionsData.length === 0) {
-          questionsData = defaultData;
-          renderQuestions();
-        }
+        renderQuestions();
       };
       document.body.appendChild(script);
     }
@@ -358,8 +394,7 @@
         return;
       }
 
-      const confirmDelete = confirm("⚠️ Warning: Are you sure you want to delete this question? This action cannot be undone.");
-      if (confirmDelete) {
+      if (confirm("⚠️ Warning: Are you sure you want to delete this question? This action cannot be undone.")) {
         questionsData = questionsData.filter(item => item.id !== id);
         renderQuestions();
         await syncToDatabase();
@@ -376,8 +411,7 @@
           return;
         }
 
-        const confirmDelete = confirm("⚠️ Warning: Are you sure you want to delete this reply?");
-        if (confirmDelete) {
+        if (confirm("⚠️ Warning: Are you sure you want to delete this reply?")) {
           question.replies = question.replies.filter(r => r.id !== rId);
           renderQuestions();
           await syncToDatabase();
@@ -450,7 +484,7 @@
       const container = document.getElementById('questionsContainer');
 
       if (!questionsData || questionsData.length === 0) {
-        container.innerHTML = '<p style="text-align: center; color: #777;">No questions yet. Be the first to ask!</p>';
+        container.innerHTML = '<p style="text-align: center; color: #777;">No community questions yet. Be the first to ask!</p>';
         return;
       }
 
@@ -473,7 +507,6 @@
               <span style="font-size: 12px; color: #777;">${q.replies.length} ${q.replies.length === 1 ? 'Answer' : 'Answers'}</span>
             </div>
 
-            <!-- Answer Input Form -->
             <div id="answer-form-${q.id}" class="answer-form">
               <input type="text" id="replyAuthor-${q.id}" placeholder="Your Name or Nickname">
               
@@ -486,7 +519,6 @@
               <button class="btn btn-primary" style="padding: 6px 14px; font-size: 13px;" onclick="submitAnswer(${q.id})">Post Answer</button>
             </div>
 
-            <!-- Replies List -->
             ${q.replies.length > 0 ? `
               <div class="replies-list">
                 ${q.replies.map(r => {
