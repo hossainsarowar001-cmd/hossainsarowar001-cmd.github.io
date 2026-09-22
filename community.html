@@ -215,7 +215,7 @@
 
     <div class="feed-title">Questions & Discussion</div>
     <div id="questionsContainer">
-      <div class="loading-banner">Loading discussions from server...</div>
+      <div class="loading-banner">Loading discussions...</div>
     </div>
 
     <div class="nav-links">
@@ -226,9 +226,9 @@
 
   <script>
     const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycby9cL6BGDQbwXaVRT0txv5JDZU-SjFyBT8m_fMVneNqBmldG-N3gEyn5Gc-J-ovPbzggw/exec';
+    const STORAGE_KEY = 'animaclip_cache_questions';
     const USER_ID_KEY = 'animaclip_device_user_id';
     
-    // Developer Credentials
     const DEV_SECRET_PIN = '@Mohd834875';
     const DEV_OFFICIAL_EMAIL = 'incriblestudiodeveloper@gmail.com';
 
@@ -245,33 +245,56 @@
 
     const currentUserId = getCurrentUserId();
 
-    async function loadOnlineQuestions() {
-      try {
-        const res = await fetch(SCRIPT_URL);
-        const data = await res.json();
-        if (Array.isArray(data) && data.length > 0) {
-          questionsData = data;
-        } else {
-          questionsData = [
-            {
-              id: 1,
-              authorId: "system_mod",
-              author: "Community Mod",
-              date: "Recent",
-              text: "Welcome to the Anima Clip Q&A board! Feel free to ask anything about features, updates, or troubleshooting.",
-              replies: [
-                { id: 101, authorId: "system_dev", author: "Incrible Studio", isDev: true, date: "Recent", text: "We check here frequently to help answer any questions!" }
-              ]
-            }
-          ];
-        }
-      } catch (e) {
-        console.error("Could not fetch remote questions:", e);
+    // Default fallback starter item
+    const defaultData = [
+      {
+        id: 1,
+        authorId: "system_mod",
+        author: "Community Mod",
+        date: "Recent",
+        text: "Welcome to the Anima Clip Q&A board! Feel free to ask anything about features, updates, or troubleshooting.",
+        replies: [
+          { id: 101, authorId: "system_dev", author: "Incrible Studio", isDev: true, date: "Recent", text: "We check here frequently to help answer any questions!" }
+        ]
+      }
+    ];
+
+    // Global callback for JSONP fetch
+    window.onQuestionsLoaded = function(data) {
+      if (Array.isArray(data) && data.length > 0) {
+        questionsData = data;
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+      } else if (!questionsData || questionsData.length === 0) {
+        questionsData = defaultData;
       }
       renderQuestions();
+    };
+
+    function loadOnlineQuestions() {
+      // 1. Load instant cached version if available
+      const cached = localStorage.getItem(STORAGE_KEY);
+      if (cached) {
+        try {
+          questionsData = JSON.parse(cached);
+          renderQuestions();
+        } catch (e) {}
+      }
+
+      // 2. Fetch live data from Google Sheets via JSONP
+      const script = document.createElement('script');
+      script.src = SCRIPT_URL + '?callback=onQuestionsLoaded&t=' + Date.now();
+      script.onerror = function() {
+        if (!questionsData || questionsData.length === 0) {
+          questionsData = defaultData;
+          renderQuestions();
+        }
+      };
+      document.body.appendChild(script);
     }
 
     async function syncToDatabase() {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(questionsData));
+
       const params = new URLSearchParams();
       params.append('action', 'sync_community');
       params.append('data', JSON.stringify(questionsData));
@@ -284,7 +307,7 @@
           body: params.toString()
         });
       } catch (err) {
-        console.error("Sync failed:", err);
+        console.error("Sync error:", err);
       }
     }
 
@@ -414,13 +437,19 @@
 
         renderQuestions();
         await syncToDatabase();
+
+        authorInput.value = '';
+        emailInput.value = '';
+        passInput.value = '';
+        textInput.value = '';
+        toggleAnswerBox(qId);
       }
     }
 
     function renderQuestions() {
       const container = document.getElementById('questionsContainer');
 
-      if (questionsData.length === 0) {
+      if (!questionsData || questionsData.length === 0) {
         container.innerHTML = '<p style="text-align: center; color: #777;">No questions yet. Be the first to ask!</p>';
         return;
       }
