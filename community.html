@@ -237,7 +237,6 @@
     <h2>Community Q&A</h2>
     <p class="subtitle">Ask your questions here and our community will help you!</p>
 
-    <!-- Post Question Form -->
     <div class="question-box">
       <h3>Add your question here</h3>
       <input type="text" id="qAuthor" placeholder="Your Name or Nickname" required>
@@ -245,7 +244,6 @@
       <button class="btn btn-primary" id="btnPostQuestion" onclick="submitQuestion()">Post Question</button>
     </div>
 
-    <!-- Questions Feed -->
     <div class="feed-title">Questions & Discussion</div>
 
     <!-- Permanent Pinned Card -->
@@ -284,13 +282,6 @@
       <a href="index.html">Home</a>
     </div>
   </div>
-
-  <!-- Hidden Form & iFrame for guaranteed Cross-Origin sync -->
-  <iframe name="hidden_sync_frame" id="hidden_sync_frame" style="display:none;"></iframe>
-  <form id="hidden_sync_form" action="https://script.google.com/macros/s/AKfycby9cL6BGDQbwXaVRT0txv5JDZU-SjFyBT8m_fMVneNqBmldG-N3gEyn5Gc-J-ovPbzggw/exec" method="POST" target="hidden_sync_frame" style="display:none;">
-    <input type="hidden" name="action" value="sync_community">
-    <input type="hidden" name="data" id="hidden_sync_data">
-  </form>
 
   <script>
     const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycby9cL6BGDQbwXaVRT0txv5JDZU-SjFyBT8m_fMVneNqBmldG-N3gEyn5Gc-J-ovPbzggw/exec';
@@ -338,12 +329,14 @@
       document.body.appendChild(script);
     }
 
+    // New GET-based sync function to completely bypass CORS & Mobile POST Drops
     function syncToDatabase() {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(questionsData));
 
-      // Submit via hidden HTML Form targeting hidden iframe to eliminate CORS/redirect drops
-      document.getElementById('hidden_sync_data').value = JSON.stringify(questionsData);
-      document.getElementById('hidden_sync_form').submit();
+      const encodedData = encodeURIComponent(JSON.stringify(questionsData));
+      const script = document.createElement('script');
+      script.src = SCRIPT_URL + '?action=save_community&data=' + encodedData + '&t=' + Date.now();
+      document.body.appendChild(script);
     }
 
     function submitQuestion() {
