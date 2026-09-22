@@ -284,7 +284,6 @@
   </div>
 
   <script>
-    // AUTHORIZED ENDPOINT
     const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbz9wElcmo2rtZp1IclXXmOdkl56t5DQQ4uMq3DlLboxQ7nWtwI70NZt_MZXZC0Yzluz1A/exec';
     const STORAGE_KEY = 'animaclip_cache_questions';
     const USER_ID_KEY = 'animaclip_device_user_id';
@@ -386,10 +385,16 @@
 
     function deleteQuestion(id) {
       const q = questionsData.find(item => item.id === id);
+      if (!q) return;
 
-      if (!q || q.authorId !== currentUserId) {
-        alert("Action not permitted: You can only delete your own questions.");
-        return;
+      const isOwner = (q.authorId === currentUserId);
+
+      if (!isOwner) {
+        const pinAttempt = prompt("This post belongs to another session.\nTo delete it as the Developer, enter your PIN:");
+        if (pinAttempt !== DEV_SECRET_PIN) {
+          alert("Action not permitted: Incorrect PIN or not the post author.");
+          return;
+        }
       }
 
       if (confirm("⚠️ Warning: Are you sure you want to delete this question? This action cannot be undone.")) {
@@ -404,9 +409,16 @@
 
       if (question) {
         const reply = question.replies.find(r => r.id === rId);
-        if (!reply || reply.authorId !== currentUserId) {
-          alert("Action not permitted: You can only delete your own replies.");
-          return;
+        if (!reply) return;
+
+        const isOwner = (reply.authorId === currentUserId);
+
+        if (!isOwner) {
+          const pinAttempt = prompt("This reply belongs to another session.\nTo delete it as the Developer, enter your PIN:");
+          if (pinAttempt !== DEV_SECRET_PIN) {
+            alert("Action not permitted: Incorrect PIN or not the reply author.");
+            return;
+          }
         }
 
         if (confirm("⚠️ Warning: Are you sure you want to delete this reply?")) {
@@ -487,8 +499,6 @@
       }
 
       container.innerHTML = questionsData.map(q => {
-        const isQuestionOwner = q.authorId === currentUserId;
-
         return `
           <div class="question-card">
             <div class="question-header">
@@ -496,13 +506,13 @@
                 <span class="author-name">${q.author}</span>
                 <span class="date-tag">${q.date}</span>
               </div>
-              ${isQuestionOwner ? `<button class="btn btn-danger" onclick="deleteQuestion(${q.id})">Delete</button>` : ''}
+              <button class="btn btn-danger" onclick="deleteQuestion(${q.id})">Delete</button>
             </div>
             <div class="question-text">${q.text}</div>
 
             <div class="actions-bar">
               <button class="btn btn-secondary" onclick="toggleAnswerBox(${q.id})">💬 Answer / Reply</button>
-              <span style="font-size: 12px; color: #777;">${q.replies.length} ${q.replies.length === 1 ? 'Answer' : 'Answers'}</span>
+              <span style="font-size: 12px; color: #777;">${q.replies ? q.replies.length : 0} ${q.replies && q.replies.length === 1 ? 'Answer' : 'Answers'}</span>
             </div>
 
             <div id="answer-form-${q.id}" class="answer-form">
@@ -517,10 +527,9 @@
               <button class="btn btn-primary" style="padding: 6px 14px; font-size: 13px;" onclick="submitAnswer(${q.id})">Post Answer</button>
             </div>
 
-            ${q.replies.length > 0 ? `
+            ${q.replies && q.replies.length > 0 ? `
               <div class="replies-list">
                 ${q.replies.map(r => {
-                  const isReplyOwner = r.authorId === currentUserId;
                   return `
                     <div class="reply-item">
                       <div class="reply-meta">
@@ -529,7 +538,7 @@
                           ${r.isDev ? '<span class="developer-tag">Developer</span><span class="mod-tag">Official</span>' : ''}
                           <span class="date-tag">${r.date}</span>
                         </div>
-                        ${isReplyOwner ? `<button class="btn btn-danger" onclick="deleteReply(${q.id},${r.id})">Delete</button>` : ''}
+                        <button class="btn btn-danger" onclick="deleteReply(${q.id},${r.id})">Delete</button>
                       </div>
                       <div style="line-height: 1.45; color: #333;">${r.text}</div>
                     </div>
