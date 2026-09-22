@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Contact & Community Support</title>
+  <title>Contact & Support - Anima Clip</title>
   <style>
     body {
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
@@ -79,6 +79,7 @@
       border: none;
       border-radius: 6px;
       cursor: pointer;
+      transition: background 0.2s;
     }
     .btn-submit:hover {
       background-color: #1557b0;
@@ -88,15 +89,16 @@
       text-align: center;
       margin-top: 12px;
       padding: 12px;
-      background-color: #24292f;
+      background-color: #1a73e8;
       color: #ffffff;
       text-decoration: none;
-      font-size: 14px;
+      font-size: 15px;
       font-weight: 600;
       border-radius: 6px;
+      transition: background 0.2s;
     }
     .btn-community:hover {
-      background-color: #000000;
+      background-color: #1557b0;
     }
     .back-link {
       display: block;
@@ -106,41 +108,46 @@
       color: #1a73e8;
       text-decoration: none;
     }
+    .back-link:hover {
+      text-decoration: underline;
+    }
   </style>
 </head>
 <body>
 
   <div class="card">
     <h2>Help & Support</h2>
-    <p class="subtitle">Choose how you'd like to get in touch with us.</p>
+    <p class="subtitle">Choose how you would like to reach out to us.</p>
 
     <!-- Option 1: Direct Email Form -->
     <div class="section">
       <h3>✉️ Option 1: Send Direct Email</h3>
-      <p style="font-size: 13px; color: #666; margin-top: 4px;">Fill out your details to send a message directly to our support inbox.</p>
+      <p style="font-size: 13px; color: #666; margin-top: 4px;">
+        Fill out your name, email, and message to contact support directly at incriblestudiodeveloper@gmail.com.
+      </p>
       
       <form onsubmit="handleSendEmail(event)">
         <label for="userName">Your Name *</label>
-        <input type="text" id="userName" placeholder="e.g., Alex Kumar" required>
+        <input type="text" id="userName" placeholder="Enter your full name" required>
 
         <label for="userEmail">Your Email Address *</label>
-        <input type="email" id="userEmail" placeholder="e.g., alex@example.com" required>
+        <input type="email" id="userEmail" placeholder="Enter your email address" required>
 
         <label for="userMessage">Message / Issue Details *</label>
-        <textarea id="userMessage" placeholder="Describe your question or issue..." required></textarea>
+        <textarea id="userMessage" placeholder="Describe your question or issue in detail..." required></textarea>
 
         <button type="submit" class="btn-submit">Send Message via Email</button>
       </form>
     </div>
 
-    <!-- Option 2: Community Forum -->
+    <!-- Option 2: Community Q&A -->
     <div class="section">
       <h3>💬 Option 2: Community Q&A</h3>
       <p style="font-size: 13px; color: #666; margin-top: 4px;">
-        Ask questions in our public community forum where fellow users or the developer will respond.
+        Join our interactive Q&A page to ask questions, read existing solutions, or get answers from other users and the developer.
       </p>
-      <a href="https://github.com/hossainsarowar001-cmd/hossainsarowar001-cmd.github.io/discussions" target="_blank" rel="noopener noreferrer" class="btn-community">
-        Visit Community Forum
+      <a href="community.html" class="btn-community">
+        Visit Community Q&A
       </a>
     </div>
 
@@ -155,14 +162,13 @@
       const msg = document.getElementById('userMessage').value.trim();
       const targetEmail = 'incriblestudiodeveloper@gmail.com';
 
-      const subject = encodeURIComponent('Support Request from ' + name);
+      const subject = encodeURIComponent('Support Request: ' + name);
       const body = encodeURIComponent(
         'Name: ' + name + '\n' +
         'Contact Email: ' + email + '\n\n' +
-        'Message:\n' + msg
+        'Message Details:\n' + msg
       );
 
-      // Opens user's default email client pre-filled
       window.location.href = `mailto:${targetEmail}?subject=${subject}&body=${body}`;
     }
   </script>
