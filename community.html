@@ -78,10 +78,12 @@
       background-color: transparent;
       color: #d93025;
       font-size: 12px;
-      padding: 4px 8px;
+      padding: 3px 8px;
       border: 1px solid #f5c2c7;
       border-radius: 4px;
       cursor: pointer;
+      flex-shrink: 0;
+      margin-left: auto;
     }
     .btn-danger:hover {
       background-color: #fde8e8;
@@ -130,7 +132,8 @@
     .question-header {
       display: flex;
       justify-content: space-between;
-      align-items: flex-start;
+      align-items: center;
+      gap: 8px;
       margin-bottom: 8px;
     }
     .author-name {
@@ -141,7 +144,6 @@
     .date-tag {
       font-size: 12px;
       color: #888;
-      margin-left: 8px;
     }
     .question-text {
       font-size: 15px;
@@ -158,24 +160,28 @@
     }
     .replies-list {
       margin-top: 14px;
-      padding-left: 16px;
+      padding-left: 14px;
       border-left: 3px solid #1a73e8;
     }
     .reply-item {
       background: #f8f9fa;
-      padding: 10px 14px;
+      padding: 12px 14px;
       border-radius: 8px;
-      margin-bottom: 8px;
+      margin-bottom: 10px;
       font-size: 13.5px;
     }
     .reply-meta {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      font-size: 12px;
-      font-weight: 600;
-      color: #444;
-      margin-bottom: 4px;
+      gap: 10px;
+      margin-bottom: 8px;
+    }
+    .meta-user {
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 6px;
     }
     .developer-tag {
       background: #1a73e8;
@@ -184,7 +190,6 @@
       font-weight: bold;
       padding: 2px 6px;
       border-radius: 4px;
-      margin-left: 4px;
     }
     .mod-tag {
       background: #5f6368;
@@ -193,7 +198,6 @@
       font-weight: bold;
       padding: 2px 6px;
       border-radius: 4px;
-      margin-left: 4px;
     }
     .answer-form {
       display: none;
@@ -247,9 +251,9 @@
     <!-- Permanent Pinned Card -->
     <div class="pinned-card">
       <div class="question-header">
-        <div>
+        <div class="meta-user">
           <span class="pinned-tag">📌 PINNED</span>
-          <span class="author-name" style="margin-left: 6px;">Community Mod</span>
+          <span class="author-name">Community Mod</span>
           <span class="mod-tag">Official</span>
         </div>
       </div>
@@ -260,9 +264,10 @@
       <div class="replies-list" style="margin-top: 10px;">
         <div class="reply-item" style="background: #ffffff; border: 1px solid #d2e3fc;">
           <div class="reply-meta">
-            <div>
+            <div class="meta-user">
               <strong>Incrible Studio</strong>
               <span class="developer-tag">Developer</span>
+              <span class="mod-tag">Official</span>
               <span class="date-tag">Official</span>
             </div>
           </div>
@@ -304,7 +309,6 @@
 
     window.onQuestionsLoaded = function(data) {
       if (Array.isArray(data)) {
-        // Strip out old mock system items so they do not duplicate the pinned banner
         questionsData = data.filter(q => q.authorId !== 'system_mod' && q.id !== 1);
         localStorage.setItem(STORAGE_KEY, JSON.stringify(questionsData));
       }
@@ -494,7 +498,7 @@
         return `
           <div class="question-card">
             <div class="question-header">
-              <div>
+              <div class="meta-user">
                 <span class="author-name">${q.author}</span>
                 <span class="date-tag">${q.date}</span>
               </div>
@@ -526,13 +530,14 @@
                   return `
                     <div class="reply-item">
                       <div class="reply-meta">
-                        <div>
-                          ${r.author} ${r.isDev ? '<span class="developer-tag">Developer</span>' : ''}
+                        <div class="meta-user">
+                          <strong style="color: #202124;">${r.author}</strong>
+                          ${r.isDev ? '<span class="developer-tag">Developer</span><span class="mod-tag">Official</span>' : ''}
                           <span class="date-tag">${r.date}</span>
                         </div>
                         ${isReplyOwner ? `<button class="btn btn-danger" onclick="deleteReply(${q.id},${r.id})">Delete</button>` : ''}
                       </div>
-                      <div>${r.text}</div>
+                      <div style="line-height: 1.45; color: #333;">${r.text}</div>
                     </div>
                   `;
                 }).join('')}
