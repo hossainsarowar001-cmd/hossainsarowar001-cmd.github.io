@@ -285,6 +285,13 @@
     </div>
   </div>
 
+  <!-- Hidden Form & iFrame for guaranteed Cross-Origin sync -->
+  <iframe name="hidden_sync_frame" id="hidden_sync_frame" style="display:none;"></iframe>
+  <form id="hidden_sync_form" action="https://script.google.com/macros/s/AKfycby9cL6BGDQbwXaVRT0txv5JDZU-SjFyBT8m_fMVneNqBmldG-N3gEyn5Gc-J-ovPbzggw/exec" method="POST" target="hidden_sync_frame" style="display:none;">
+    <input type="hidden" name="action" value="sync_community">
+    <input type="hidden" name="data" id="hidden_sync_data">
+  </form>
+
   <script>
     const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycby9cL6BGDQbwXaVRT0txv5JDZU-SjFyBT8m_fMVneNqBmldG-N3gEyn5Gc-J-ovPbzggw/exec';
     const STORAGE_KEY = 'animaclip_cache_questions';
@@ -331,28 +338,15 @@
       document.body.appendChild(script);
     }
 
-    async function syncToDatabase() {
+    function syncToDatabase() {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(questionsData));
 
-      const payload = JSON.stringify({
-        action: 'sync_community',
-        data: questionsData
-      });
-
-      try {
-        // Direct body POST with text/plain to bypass CORS preflight and URL length limits
-        await fetch(SCRIPT_URL, {
-          method: 'POST',
-          mode: 'no-cors',
-          headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-          body: payload
-        });
-      } catch (err) {
-        console.error("Database sync error:", err);
-      }
+      // Submit via hidden HTML Form targeting hidden iframe to eliminate CORS/redirect drops
+      document.getElementById('hidden_sync_data').value = JSON.stringify(questionsData);
+      document.getElementById('hidden_sync_form').submit();
     }
 
-    async function submitQuestion() {
+    function submitQuestion() {
       const authorInput = document.getElementById('qAuthor');
       const textInput = document.getElementById('qText');
       const btn = document.getElementById('btnPostQuestion');
@@ -383,7 +377,7 @@
 
       questionsData.unshift(newQuestion);
       renderQuestions();
-      await syncToDatabase();
+      syncToDatabase();
 
       authorInput.value = '';
       textInput.value = '';
@@ -391,7 +385,7 @@
       btn.innerText = 'Post Question';
     }
 
-    async function deleteQuestion(id) {
+    function deleteQuestion(id) {
       const q = questionsData.find(item => item.id === id);
 
       if (!q || q.authorId !== currentUserId) {
@@ -402,11 +396,11 @@
       if (confirm("⚠️ Warning: Are you sure you want to delete this question? This action cannot be undone.")) {
         questionsData = questionsData.filter(item => item.id !== id);
         renderQuestions();
-        await syncToDatabase();
+        syncToDatabase();
       }
     }
 
-    async function deleteReply(qId, rId) {
+    function deleteReply(qId, rId) {
       const question = questionsData.find(item => item.id === qId);
 
       if (question) {
@@ -419,7 +413,7 @@
         if (confirm("⚠️ Warning: Are you sure you want to delete this reply?")) {
           question.replies = question.replies.filter(r => r.id !== rId);
           renderQuestions();
-          await syncToDatabase();
+          syncToDatabase();
         }
       }
     }
@@ -429,7 +423,7 @@
       box.style.display = (box.style.display === 'block') ? 'none' : 'block';
     }
 
-    async function submitAnswer(qId) {
+    function submitAnswer(qId) {
       const authorInput = document.getElementById(`replyAuthor-${qId}`);
       const emailInput = document.getElementById(`devEmail-${qId}`);
       const passInput = document.getElementById(`devPass-${qId}`);
@@ -475,7 +469,7 @@
         });
 
         renderQuestions();
-        await syncToDatabase();
+        syncToDatabase();
 
         authorInput.value = '';
         emailInput.value = '';
