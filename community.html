@@ -163,6 +163,7 @@
       background: #1a73e8;
       color: #fff;
       font-size: 10px;
+      font-weight: bold;
       padding: 2px 6px;
       border-radius: 4px;
       margin-left: 4px;
@@ -170,7 +171,7 @@
     .answer-form {
       display: none;
       margin-top: 12px;
-      padding: 12px;
+      padding: 14px;
       background: #f8f9fa;
       border-radius: 8px;
     }
@@ -213,8 +214,8 @@
   <script>
     const STORAGE_KEY = 'animaclip_community_questions';
     const USER_ID_KEY = 'animaclip_device_user_id';
+    const DEV_SECRET_PIN = '@Mohd834875';
 
-    // Retrieve or generate an anonymous persistent ID for this specific browser
     function getCurrentUserId() {
       let uid = localStorage.getItem(USER_ID_KEY);
       if (!uid) {
@@ -237,7 +238,7 @@
             date: "Recent",
             text: "Welcome to the Anima Clip Q&A board! Feel free to ask anything about features, updates, or troubleshooting.",
             replies: [
-              { id: 101, authorId: "system_dev", author: "Developer", isDev: true, date: "Recent", text: "We check here frequently to help answer any questions!" }
+              { id: 101, authorId: "system_dev", author: "Hossain Sarowar", isDev: true, date: "Recent", text: "We check here frequently to help answer any questions!" }
             ]
           }
         ];
@@ -260,6 +261,11 @@
 
       if (!author || !text) {
         alert("Please enter both your name and your question.");
+        return;
+      }
+
+      if (author.toLowerCase().includes("developer") || author.toLowerCase().includes("mod")) {
+        alert("Names containing 'Developer' or 'Mod' are restricted.");
         return;
       }
 
@@ -322,8 +328,11 @@
 
     function submitAnswer(qId) {
       const authorInput = document.getElementById(`replyAuthor-${qId}`);
+      const passInput = document.getElementById(`devPass-${qId}`);
       const textInput = document.getElementById(`replyText-${qId}`);
+
       const author = authorInput.value.trim();
+      const passcode = passInput.value.trim();
       const text = textInput.value.trim();
 
       if (!author || !text) {
@@ -331,11 +340,17 @@
         return;
       }
 
+      const isDev = (passcode === DEV_SECRET_PIN);
+
+      if (!isDev && (author.toLowerCase().includes("developer") || author.toLowerCase().includes("sarowar"))) {
+        alert("The developer identity is protected. Enter the correct Developer Passcode or choose another name.");
+        return;
+      }
+
       const questions = getQuestions();
       const question = questions.find(q => q.id === qId);
 
       if (question) {
-        const isDev = author.toLowerCase().includes("developer") || author.toLowerCase().includes("sarowar");
         question.replies.push({
           id: Date.now(),
           authorId: currentUserId,
@@ -358,7 +373,6 @@
       }
 
       container.innerHTML = questions.map(q => {
-        // Only show delete button if current user created this question
         const isQuestionOwner = q.authorId === currentUserId;
 
         return `
@@ -380,6 +394,7 @@
             <!-- Answer Input Form -->
             <div id="answer-form-${q.id}" class="answer-form">
               <input type="text" id="replyAuthor-${q.id}" placeholder="Your Name">
+              <input type="password" id="devPass-${q.id}" placeholder="Developer PIN (Optional - leave blank if community user)">
               <textarea id="replyText-${q.id}" placeholder="Write your reply or answer here..."></textarea>
               <button class="btn btn-primary" style="padding: 6px 14px; font-size: 13px;" onclick="submitAnswer(${q.id})">Post Answer</button>
             </div>
