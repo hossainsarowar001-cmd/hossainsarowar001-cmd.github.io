@@ -153,3 +153,8 @@ smartadserver.com, 4625, RESELLER, 060d053dcf45cbf3
 smartadserver.com, 5294, RESELLER, 060d053dcf45cbf3
 smartadserver.com, 4456, RESELLER
 smartadserver.com, 3964, RESELLER
+appnexus.com, 17973, RESELLER, f5ab79cb980f11d1
+my-cast.tv, 987033, RESELLER, 8c33fe1bd714ffd7
+triplelift.com, 8614, RESELLER, 6c33edb13117fd86
+adwmg.com, 159512, RESELLER, c9688a22012618e7
+bold-win.com, 1013, RESELLER, 71746737d0bab951
