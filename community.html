@@ -314,10 +314,6 @@
       renderQuestions();
     };
 
-    window.onSyncCompleted = function(res) {
-      console.log("Cloud sync response:", res);
-    };
-
     function loadOnlineQuestions() {
       const cached = localStorage.getItem(STORAGE_KEY);
       if (cached) {
@@ -335,20 +331,28 @@
       document.body.appendChild(script);
     }
 
-    function syncToDatabase() {
+    async function syncToDatabase() {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(questionsData));
 
-      // Reliable JSONP sync via GET request to avoid CORS drops
-      const jsonPayload = encodeURIComponent(JSON.stringify(questionsData));
-      const syncScript = document.createElement('script');
-      syncScript.src = SCRIPT_URL + '?action=sync_community&callback=onSyncCompleted&data=' + jsonPayload + '&t=' + Date.now();
-      syncScript.onload = function() {
-        syncScript.remove();
-      };
-      document.body.appendChild(syncScript);
+      const payload = JSON.stringify({
+        action: 'sync_community',
+        data: questionsData
+      });
+
+      try {
+        // Direct body POST with text/plain to bypass CORS preflight and URL length limits
+        await fetch(SCRIPT_URL, {
+          method: 'POST',
+          mode: 'no-cors',
+          headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+          body: payload
+        });
+      } catch (err) {
+        console.error("Database sync error:", err);
+      }
     }
 
-    function submitQuestion() {
+    async function submitQuestion() {
       const authorInput = document.getElementById('qAuthor');
       const textInput = document.getElementById('qText');
       const btn = document.getElementById('btnPostQuestion');
@@ -379,7 +383,7 @@
 
       questionsData.unshift(newQuestion);
       renderQuestions();
-      syncToDatabase();
+      await syncToDatabase();
 
       authorInput.value = '';
       textInput.value = '';
@@ -387,7 +391,7 @@
       btn.innerText = 'Post Question';
     }
 
-    function deleteQuestion(id) {
+    async function deleteQuestion(id) {
       const q = questionsData.find(item => item.id === id);
 
       if (!q || q.authorId !== currentUserId) {
@@ -398,11 +402,11 @@
       if (confirm("⚠️ Warning: Are you sure you want to delete this question? This action cannot be undone.")) {
         questionsData = questionsData.filter(item => item.id !== id);
         renderQuestions();
-        syncToDatabase();
+        await syncToDatabase();
       }
     }
 
-    function deleteReply(qId, rId) {
+    async function deleteReply(qId, rId) {
       const question = questionsData.find(item => item.id === qId);
 
       if (question) {
@@ -415,7 +419,7 @@
         if (confirm("⚠️ Warning: Are you sure you want to delete this reply?")) {
           question.replies = question.replies.filter(r => r.id !== rId);
           renderQuestions();
-          syncToDatabase();
+          await syncToDatabase();
         }
       }
     }
@@ -425,7 +429,7 @@
       box.style.display = (box.style.display === 'block') ? 'none' : 'block';
     }
 
-    function submitAnswer(qId) {
+    async function submitAnswer(qId) {
       const authorInput = document.getElementById(`replyAuthor-${qId}`);
       const emailInput = document.getElementById(`devEmail-${qId}`);
       const passInput = document.getElementById(`devPass-${qId}`);
@@ -471,7 +475,7 @@
         });
 
         renderQuestions();
-        syncToDatabase();
+        await syncToDatabase();
 
         authorInput.value = '';
         emailInput.value = '';
