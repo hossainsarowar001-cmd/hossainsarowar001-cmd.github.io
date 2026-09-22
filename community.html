@@ -33,6 +33,26 @@
       font-size: 14px;
       margin-bottom: 24px;
     }
+    .top-bar {
+      display: flex;
+      justify-content: flex-end;
+      margin-bottom: 12px;
+    }
+    .dev-mode-btn {
+      background: none;
+      border: 1px solid #dadce0;
+      color: #5f6368;
+      font-size: 11px;
+      padding: 4px 8px;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    .dev-mode-btn.active {
+      background-color: #e8f0fe;
+      color: #1a73e8;
+      border-color: #1a73e8;
+      font-weight: bold;
+    }
     .question-box {
       border: 1px solid #dcdfe6;
       border-radius: 10px;
@@ -86,22 +106,6 @@
       margin-left: auto;
     }
     .btn-danger:hover {
-      background-color: #fde8e8;
-    }
-    .btn-dev-del {
-      background-color: transparent;
-      color: #70757a;
-      font-size: 11px;
-      padding: 2px 6px;
-      border: 1px dashed #dadce0;
-      border-radius: 4px;
-      cursor: pointer;
-      flex-shrink: 0;
-      margin-left: auto;
-    }
-    .btn-dev-del:hover {
-      color: #d93025;
-      border-color: #f5c2c7;
       background-color: #fde8e8;
     }
     .btn-secondary {
@@ -250,6 +254,10 @@
 <body>
 
   <div class="container">
+    <div class="top-bar">
+      <button class="dev-mode-btn" id="devToggleBtn" onclick="toggleDevSession()">Developer Mode</button>
+    </div>
+
     <h2>Community Q&A</h2>
     <p class="subtitle">Ask your questions here and our community will help you!</p>
 
@@ -262,7 +270,6 @@
 
     <div class="feed-title">Questions & Discussion</div>
 
-    <!-- Permanent Pinned Card -->
     <div class="pinned-card">
       <div class="question-header">
         <div class="meta-user">
@@ -308,6 +315,7 @@
     const DEV_OFFICIAL_EMAIL = 'incriblestudiodeveloper@gmail.com';
 
     let questionsData = [];
+    let isDevAuthenticated = false;
 
     function getCurrentUserId() {
       let uid = localStorage.getItem(USER_ID_KEY);
@@ -319,6 +327,27 @@
     }
 
     const currentUserId = getCurrentUserId();
+
+    function toggleDevSession() {
+      const btn = document.getElementById('devToggleBtn');
+      if (isDevAuthenticated) {
+        isDevAuthenticated = false;
+        btn.classList.remove('active');
+        btn.innerText = 'Developer Mode';
+        renderQuestions();
+        return;
+      }
+
+      const inputPin = prompt("Enter Developer PIN to enable admin controls:");
+      if (inputPin === DEV_SECRET_PIN) {
+        isDevAuthenticated = true;
+        btn.classList.add('active');
+        btn.innerText = 'Developer Mode (Active)';
+        renderQuestions();
+      } else if (inputPin !== null) {
+        alert("Incorrect PIN.");
+      }
+    }
 
     window.onQuestionsLoaded = function(data) {
       if (Array.isArray(data)) {
@@ -339,9 +368,6 @@
 
       const script = document.createElement('script');
       script.src = SCRIPT_URL + '?callback=onQuestionsLoaded&t=' + Date.now();
-      script.onload = function() {
-        document.body.removeChild(script);
-      };
       script.onerror = function() {
         renderQuestions();
       };
@@ -354,9 +380,6 @@
       const encodedData = encodeURIComponent(JSON.stringify(questionsData));
       const script = document.createElement('script');
       script.src = SCRIPT_URL + '?action=save_community&data=' + encodedData + '&t=' + Date.now();
-      script.onload = function() {
-        document.body.removeChild(script);
-      };
       document.body.appendChild(script);
     }
 
@@ -401,17 +424,14 @@
 
     function deleteQuestion(id) {
       const q = questionsData.find(item => String(item.id) === String(id));
-      if (!q) {
-        alert("Error: Question not found.");
-        return;
-      }
+      if (!q) return;
 
       const isOwner = (String(q.authorId) === String(currentUserId));
 
-      if (!isOwner) {
-        const pinAttempt = prompt("Protected Action: This post was submitted by another user.\nEnter Developer PIN to force removal:");
+      if (!isOwner && !isDevAuthenticated) {
+        const pinAttempt = prompt("Protected Action: Enter Developer PIN to remove this question:");
         if (pinAttempt !== DEV_SECRET_PIN) {
-          alert("Action denied: Only the original author or verified Developer can delete this post.");
+          alert("Action denied: You can only delete your own questions.");
           return;
         }
       }
@@ -432,10 +452,10 @@
 
         const isOwner = (String(reply.authorId) === String(currentUserId));
 
-        if (!isOwner) {
-          const pinAttempt = prompt("Protected Action: This reply was submitted by another user.\nEnter Developer PIN to force removal:");
+        if (!isOwner && !isDevAuthenticated) {
+          const pinAttempt = prompt("Protected Action: Enter Developer PIN to remove this reply:");
           if (pinAttempt !== DEV_SECRET_PIN) {
-            alert("Action denied: Only the original author or verified Developer can delete this reply.");
+            alert("Action denied: You can only delete your own replies.");
             return;
           }
         }
@@ -520,6 +540,7 @@
 
       container.innerHTML = questionsData.map(q => {
         const isOwner = (String(q.authorId) === String(currentUserId));
+        const canDelete = isOwner || isDevAuthenticated;
 
         return `
           <div class="question-card">
@@ -528,10 +549,7 @@
                 <span class="author-name">${q.author}</span>
                 <span class="date-tag">${q.date}</span>
               </div>
-              ${isOwner 
-                ? `<button class="btn btn-danger" onclick="deleteQuestion('${q.id}')">Delete</button>`
-                : `<button class="btn btn-dev-del" title="Admin Delete" onclick="deleteQuestion('${q.id}')">Dev Mod</button>`
-              }
+              ${canDelete ? `<button class="btn btn-danger" onclick="deleteQuestion('${q.id}')">Delete</button>` : ''}
             </div>
             <div class="question-text">${q.text}</div>
 
@@ -556,6 +574,8 @@
               <div class="replies-list">
                 ${q.replies.map(r => {
                   const isReplyOwner = (String(r.authorId) === String(currentUserId));
+                  const canDeleteReply = isReplyOwner || isDevAuthenticated;
+
                   return `
                     <div class="reply-item">
                       <div class="reply-meta">
@@ -564,10 +584,7 @@
                           ${r.isDev ? '<span class="developer-tag">Developer</span><span class="mod-tag">Official</span>' : ''}
                           <span class="date-tag">${r.date}</span>
                         </div>
-                        ${isReplyOwner
-                          ? `<button class="btn btn-danger" onclick="deleteReply('${q.id}','${r.id}')">Delete</button>`
-                          : `<button class="btn btn-dev-del" title="Admin Delete" onclick="deleteReply('${q.id}','${r.id}')">Dev Mod</button>`
-                        }
+                        ${canDeleteReply ? `<button class="btn btn-danger" onclick="deleteReply('${q.id}','${r.id}')">Delete</button>` : ''}
                       </div>
                       <div style="line-height: 1.45; color: #333;">${r.text}</div>
                     </div>
