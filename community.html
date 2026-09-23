@@ -312,7 +312,6 @@
 
     let currentDevUser = null;
 
-    // Track authentication state directly with Firebase Auth
     onAuthStateChanged(auth, (user) => {
       currentDevUser = user;
       const devToggleBtn = document.getElementById('devToggleBtn');
@@ -365,14 +364,10 @@
     onSnapshot(qQuery, (snapshot) => {
       currentQuestionsData = [];
       snapshot.forEach(docSnap => {
-        questionsDataSnap(docSnap);
+        currentQuestionsData.push({ id: docSnap.id, ...docSnap.data() });
       });
       renderQuestions(currentQuestionsData);
     });
-
-    function questionsDataSnap(docSnap) {
-      currentQuestionsData.push({ id: docSnap.id, ...docSnap.data() });
-    }
 
     document.getElementById('btnPostQuestion').onclick = async () => {
       const author = document.getElementById('qAuthor').value.trim();
