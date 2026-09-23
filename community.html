@@ -318,6 +318,17 @@
       getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged 
     } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 
+    // Persistent unique identifier for visitor device/browser
+    function getUserId() {
+      let id = localStorage.getItem("anima_user_token");
+      if (!id) {
+        id = "user_" + Math.random().toString(36).substring(2, 11) + Date.now().toString(36);
+        localStorage.setItem("anima_user_token", id);
+      }
+      return id;
+    }
+    const myDeviceId = getUserId();
+
     const WORKER_AI_URL = "https://anima-clip-bot.hossainsarowar001.workers.dev";
 
     const firebaseConfig = {
@@ -336,6 +347,7 @@
 
     let currentDevUser = null;
     const openReplyBoxes = new Set();
+    let currentQuestionsData = [];
 
     onAuthStateChanged(auth, (user) => {
       currentDevUser = user;
@@ -384,7 +396,6 @@
       return div.innerHTML;
     }
 
-    let currentQuestionsData = [];
     const qQuery = query(collection(db, "questions"), orderBy("createdAt", "desc"));
     onSnapshot(qQuery, (snapshot) => {
       currentQuestionsData = [];
@@ -411,6 +422,7 @@
         const newDocRef = await addDoc(collection(db, "questions"), {
           author,
           text,
+          userId: myDeviceId,
           createdAt: serverTimestamp(),
           replies: []
         });
@@ -419,7 +431,7 @@
         document.getElementById('qText').value = '';
         showNotification("✓ Your question was successfully posted to the community!");
 
-        // Trigger AI Assistant in background
+        // Background call to Cloudflare Worker AI Bot
         fetch(WORKER_AI_URL, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -483,6 +495,7 @@
         text,
         isDev: isDev,
         devEmail: isDev ? currentDevUser.email : null,
+        userId: myDeviceId,
         date: new Date().toLocaleDateString()
       };
 
@@ -497,9 +510,10 @@
       }
     };
 
-    window.deleteQuestion = async (id) => {
-      if (!currentDevUser) {
-        alert("Unauthorized: Only authenticated developers can delete questions.");
+    window.deleteQuestion = async (id, ownerId) => {
+      const isOwner = ownerId && ownerId === myDeviceId;
+      if (!currentDevUser && !isOwner) {
+        alert("Unauthorized: You can only delete your own questions.");
         return;
       }
 
@@ -513,9 +527,10 @@
       }
     };
 
-    window.deleteReply = async (questionId, replyId) => {
-      if (!currentDevUser) {
-        alert("Unauthorized: Only authenticated developers can delete replies.");
+    window.deleteReply = async (questionId, replyId, replyOwnerId) => {
+      const isOwner = replyOwnerId && replyOwnerId === myDeviceId;
+      if (!currentDevUser && !isOwner) {
+        alert("Unauthorized: You can only delete your own replies.");
         return;
       }
 
@@ -547,12 +562,13 @@
       container.innerHTML = questions.map(q => {
         const replies = q.replies || [];
         const isBoxOpen = openReplyBoxes.has(q.id);
+        const canDeleteQuestion = currentDevUser || (q.userId && q.userId === myDeviceId);
 
         return `
           <div class="question-card">
             <div class="question-header">
               <span class="author-name">${escapeHTML(q.author)}</span>
-              ${currentDevUser ? `<button class="btn btn-danger" onclick="deleteQuestion('${q.id}')">Delete Post</button>` : ''}
+              ${canDeleteQuestion ? `<button class="btn btn-danger" onclick="deleteQuestion('${q.id}', '${escapeHTML(q.userId || '')}')">Delete Post</button>` : ''}
             </div>
             <div class="question-text">${escapeHTML(q.text)}</div>
             <div class="actions-bar">
@@ -568,22 +584,26 @@
 
             ${replies.length > 0 ? `
               <div class="replies-list">
-                ${replies.map(r => `
-                  <div class="reply-item ${r.isDev ? 'developer-reply' : ''} ${r.isAi ? 'ai-reply' : ''}">
-                    <div class="reply-meta">
-                      <div>
-                        <strong>${escapeHTML(r.author)}</strong>
-                        ${r.isDev ? '<span class="developer-tag">Developer</span> <span class="mod-tag">Official</span>' : ''}
-                        ${r.isAi ? '<span class="ai-tag">AI Bot</span>' : ''}
+                ${replies.map(r => {
+                  const canDeleteReply = currentDevUser || (r.userId && r.userId === myDeviceId);
+
+                  return `
+                    <div class="reply-item ${r.isDev ? 'developer-reply' : ''} ${r.isAi ? 'ai-reply' : ''}">
+                      <div class="reply-meta">
+                        <div>
+                          <strong>${escapeHTML(r.author)}</strong>
+                          ${r.isDev ? '<span class="developer-tag">Developer</span> <span class="mod-tag">Official</span>' : ''}
+                          ${r.isAi ? '<span class="ai-tag">AI Bot</span>' : ''}
+                        </div>
+                        <div>
+                          <span class="date-tag">${escapeHTML(r.date)}</span>
+                          ${canDeleteReply ? `<button class="btn-danger-sm" onclick="deleteReply('${q.id}', '${r.id}', '${escapeHTML(r.userId || '')}')">Delete</button>` : ''}
+                        </div>
                       </div>
-                      <div>
-                        <span class="date-tag">${escapeHTML(r.date)}</span>
-                        ${currentDevUser ? `<button class="btn-danger-sm" onclick="deleteReply('${q.id}', '${r.id}')">Delete</button>` : ''}
-                      </div>
+                      <div>${escapeHTML(r.text)}</div>
                     </div>
-                    <div>${escapeHTML(r.text)}</div>
-                  </div>
-                `).join('')}
+                  `;
+                }).join('')}
               </div>
             ` : ''}
           </div>
