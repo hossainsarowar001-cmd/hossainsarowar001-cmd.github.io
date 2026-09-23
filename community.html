@@ -210,6 +210,11 @@
       margin-bottom: 10px;
       font-size: 13.5px;
     }
+    /* Light blue background for developer responses */
+    .reply-item.dev-reply {
+      background: #f0f6ff;
+      border: 1px solid #c2e0ff;
+    }
     .reply-meta {
       display: flex;
       justify-content: space-between;
@@ -239,8 +244,9 @@
       padding: 2px 6px;
       border-radius: 4px;
     }
+    /* Green badge for official tags */
     .mod-tag {
-      background: #5f6368;
+      background: #137333;
       color: #fff;
       font-size: 10px;
       font-weight: bold;
@@ -312,7 +318,7 @@
       </div>
 
       <div class="replies-list" style="margin-top: 10px;">
-        <div class="reply-item" style="background: #ffffff; border: 1px solid #d2e3fc;">
+        <div class="reply-item dev-reply">
           <div class="reply-meta">
             <div class="meta-user">
               <strong>Incrible Studio</strong>
@@ -493,7 +499,6 @@
       questionsData.unshift(newQuestion);
       renderQuestions();
 
-      // Submit with trigger_ai=true for Gemini 3.8 Flash
       syncToDatabase(true);
 
       authorInput.value = '';
@@ -675,9 +680,18 @@
                 ${q.replies.map(r => {
                   const isReplyOwner = (String(r.authorId) === String(currentUserId));
                   const canDeleteReply = isReplyOwner || isDevAuthenticated;
+                  
+                  // Style class conditional: dev-reply gets light blue, bot gets purple tint
+                  let replyClass = 'reply-item';
+                  let customStyle = '';
+                  if (r.isDev) {
+                    replyClass += ' dev-reply';
+                  } else if (r.isBot) {
+                    customStyle = 'background:#faf5ff;border:1px solid #ebd4fc;';
+                  }
 
                   return `
-                    <div class="reply-item" style="${r.isBot ? 'background:#faf5ff;border:1px solid #ebd4fc;' : ''}">
+                    <div class="${replyClass}" style="${customStyle}">
                       <div class="reply-meta">
                         <div class="meta-user">
                           <strong style="color: #202124;">${r.author}</strong>
