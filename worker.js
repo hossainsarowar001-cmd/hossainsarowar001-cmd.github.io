@@ -30,7 +30,14 @@ export default {
         });
       }
 
-      const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.8-flash:generateContent?key=${apiKey.trim()}`;
+      // Priority list of models to try if high-demand errors occur
+      const models = [
+        "gemini-3.8-flash",
+        "gemini-3.7-flash",
+        "gemini-3.6-flash",
+        "gemini-3.5-flash",
+        "gemini-3.5-flash-lite"
+      ];
 
       const payload = {
         contents: [
@@ -41,25 +48,44 @@ export default {
         ]
       };
 
-      const response = await fetch(url, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload)
-      });
+      let finalReply = null;
+      let lastErrorMessage = "";
 
-      const data = await response.json();
+      for (const model of models) {
+        try {
+          const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey.trim()}`;
+          const response = await fetch(url, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(payload)
+          });
 
-      if (data.error) {
-        return new Response(JSON.stringify({ reply: `API Error: ${data.error.message}` }), {
+          const data = await response.json();
+
+          if (data.candidates?.[0]?.content?.parts?.[0]?.text) {
+            finalReply = data.candidates[0].content.parts[0].text;
+            break; // Stop iterating once a valid answer is generated
+          }
+
+          if (data.error) {
+            lastErrorMessage = data.error.message || JSON.stringify(data.error);
+            // Continue loop to fallback models on high-demand or capacity issues
+          }
+        } catch (err) {
+          lastErrorMessage = err.message;
+        }
+      }
+
+      if (!finalReply) {
+        return new Response(JSON.stringify({ reply: `All models busy. Last error: ${lastErrorMessage}` }), {
           headers: { ...corsHeaders, "Content-Type": "application/json" }
         });
       }
 
-      const reply = data.candidates?.[0]?.content?.parts?.[0]?.text || "No response text was generated.";
-
-      return new Response(JSON.stringify({ reply }), {
+      return new Response(JSON.stringify({ reply: finalReply }), {
         headers: { ...corsHeaders, "Content-Type": "application/json" }
       });
+
     } catch (err) {
       return new Response(JSON.stringify({ reply: "Worker error: " + err.message }), {
         headers: { ...corsHeaders, "Content-Type": "application/json" }
