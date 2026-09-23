@@ -210,7 +210,6 @@
       margin-bottom: 10px;
       font-size: 13.5px;
     }
-    /* Light blue background for developer responses */
     .reply-item.dev-reply {
       background: #f0f6ff;
       border: 1px solid #c2e0ff;
@@ -244,7 +243,6 @@
       padding: 2px 6px;
       border-radius: 4px;
     }
-    /* Green badge for official tags */
     .mod-tag {
       background: #137333;
       color: #fff;
@@ -680,8 +678,7 @@
                 ${q.replies.map(r => {
                   const isReplyOwner = (String(r.authorId) === String(currentUserId));
                   const canDeleteReply = isReplyOwner || isDevAuthenticated;
-                  
-                  // Style class conditional: dev-reply gets light blue, bot gets purple tint
+
                   let replyClass = 'reply-item';
                   let customStyle = '';
                   if (r.isDev) {
