@@ -30,7 +30,7 @@ export default {
         });
       }
 
-      const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key=${apiKey.trim()}`;
+      const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.8-flash:generateContent?key=${apiKey.trim()}`;
 
       const payload = {
         contents: [
@@ -41,23 +41,13 @@ export default {
         ]
       };
 
-      let response = await fetch(url, {
+      const response = await fetch(url, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload)
       });
 
-      let data = await response.json();
-
-      if (data.error) {
-        const fallbackUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=${apiKey.trim()}`;
-        response = await fetch(fallbackUrl, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(payload)
-        });
-        data = await response.json();
-      }
+      const data = await response.json();
 
       if (data.error) {
         return new Response(JSON.stringify({ reply: `API Error: ${data.error.message}` }), {
