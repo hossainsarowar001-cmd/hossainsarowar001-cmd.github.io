@@ -107,22 +107,22 @@
     <form id="contactForm">
       <div class="form-group">
         <label for="userName">Your Name</label>
-        <input type="text" id="userName" name="name" placeholder="e.g. Alex" required>
+        <input type="text" id="userName" placeholder="e.g. Alex" required>
       </div>
 
       <div class="form-group">
         <label for="userEmail">Your Email Address</label>
-        <input type="email" id="userEmail" name="email" placeholder="e.g. alex@example.com" required>
+        <input type="email" id="userEmail" placeholder="e.g. alex@example.com" required>
       </div>
 
       <div class="form-group">
         <label for="ticketSubject">Subject (Optional)</label>
-        <input type="text" id="ticketSubject" name="_subject" placeholder="e.g. Export issue on Layer 3">
+        <input type="text" id="ticketSubject" placeholder="e.g. Export issue on Layer 3">
       </div>
 
       <div class="form-group">
         <label for="ticketMessage">Message</label>
-        <textarea id="ticketMessage" name="message" placeholder="Describe what you need help with..." required></textarea>
+        <textarea id="ticketMessage" placeholder="Describe what you need help with..." required></textarea>
       </div>
 
       <button type="submit" class="btn-submit" id="btnSubmitTicket">Send Message</button>
@@ -140,8 +140,8 @@
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
     import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
-    // PUT YOUR DEVELOPER EMAIL HERE
-    const DEV_EMAIL = "your-email@gmail.com"; 
+    // Enter your developer receiving email here:
+    const DEV_NOTIFICATION_EMAIL = "your-email@gmail.com";
 
     const firebaseConfig = {
       apiKey: "AIzaSyQzQolHeYJwDcw3jFo2xd8P147PKgw2COE",
@@ -171,8 +171,8 @@
       const message = document.getElementById('ticketMessage').value.trim();
 
       try {
-        // 1. Send straight to your developer inbox
-        await fetch(`https://formsubmit.co/ajax/${DEV_EMAIL}`, {
+        // 1. Direct inbox delivery via FormSubmit
+        await fetch(`https://formsubmit.co/ajax/${DEV_NOTIFICATION_EMAIL}`, {
           method: "POST",
           headers: { 
             'Content-Type': 'application/json',
@@ -181,12 +181,12 @@
           body: JSON.stringify({
             name: name,
             email: email,
-            _subject: subject,
+            _subject: `[Anima Clip Support] ${subject}`,
             message: message
           })
         });
 
-        // 2. Also back up into Firestore database
+        // 2. Encrypted cloud backup in Firestore
         await addDoc(collection(db, "contact_submissions"), {
           name,
           email,
