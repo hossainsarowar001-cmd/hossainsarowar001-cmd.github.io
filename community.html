@@ -314,14 +314,32 @@
     const DEV_SECRET_PIN = '@Mohd834875';
     const DEV_OFFICIAL_EMAIL = 'incriblestudiodeveloper@gmail.com';
 
+    let memoryStorage = {};
     let questionsData = [];
     let isDevAuthenticated = false;
 
+    // Fail-safe storage wrapper (prevents WebView & restricted browser crashes)
+    function safeGetItem(key) {
+      try {
+        return localStorage.getItem(key);
+      } catch (e) {
+        return memoryStorage[key] || null;
+      }
+    }
+
+    function safeSetItem(key, val) {
+      try {
+        localStorage.setItem(key, val);
+      } catch (e) {
+        memoryStorage[key] = val;
+      }
+    }
+
     function getCurrentUserId() {
-      let uid = localStorage.getItem(USER_ID_KEY);
+      let uid = safeGetItem(USER_ID_KEY);
       if (!uid) {
         uid = 'user_' + Math.random().toString(36).substring(2, 11) + '_' + Date.now();
-        localStorage.setItem(USER_ID_KEY, uid);
+        safeSetItem(USER_ID_KEY, uid);
       }
       return uid;
     }
@@ -352,13 +370,13 @@
     window.onQuestionsLoaded = function(data) {
       if (Array.isArray(data)) {
         questionsData = data.filter(q => q && q.authorId !== 'system_mod' && q.id !== 1);
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(questionsData));
+        safeSetItem(STORAGE_KEY, JSON.stringify(questionsData));
       }
       renderQuestions();
     };
 
     function loadOnlineQuestions() {
-      const cached = localStorage.getItem(STORAGE_KEY);
+      const cached = safeGetItem(STORAGE_KEY);
       if (cached) {
         try {
           questionsData = JSON.parse(cached).filter(q => q && q.authorId !== 'system_mod' && q.id !== 1);
@@ -375,7 +393,7 @@
     }
 
     function syncToDatabase() {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(questionsData));
+      safeSetItem(STORAGE_KEY, JSON.stringify(questionsData));
 
       const encodedData = encodeURIComponent(JSON.stringify(questionsData));
       const script = document.createElement('script');
