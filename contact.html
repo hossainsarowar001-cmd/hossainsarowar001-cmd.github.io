@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Contact & Support - Anima Clip</title>
+  <title>Contact Support - Anima Clip</title>
   <style>
     body {
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
@@ -14,12 +14,12 @@
       display: flex;
       justify-content: center;
     }
-    .card {
+    .container {
       background: #ffffff;
       padding: 32px 24px;
       border-radius: 14px;
       box-shadow: 0 4px 14px rgba(0, 0, 0, 0.08);
-      max-width: 500px;
+      max-width: 600px;
       width: 100%;
     }
     h2 {
@@ -33,31 +33,19 @@
       font-size: 14px;
       margin-bottom: 24px;
     }
-    .section {
-      border: 1px solid #e2e8f0;
-      border-radius: 10px;
-      padding: 20px;
-      margin-bottom: 20px;
-    }
-    .section h3 {
-      margin-top: 0;
-      font-size: 17px;
-      color: #202124;
-      display: flex;
-      align-items: center;
-      gap: 8px;
+    .form-group {
+      margin-bottom: 14px;
     }
     label {
       display: block;
+      margin-bottom: 6px;
       font-size: 13px;
-      font-weight: 500;
-      margin-top: 10px;
-      margin-bottom: 4px;
+      font-weight: 600;
       color: #444;
     }
     input, textarea {
       width: 100%;
-      padding: 10px;
+      padding: 11px;
       box-sizing: border-box;
       border: 1px solid #ccc;
       border-radius: 6px;
@@ -66,167 +54,133 @@
     }
     textarea {
       resize: vertical;
-      min-height: 80px;
+      min-height: 120px;
     }
     .btn-submit {
-      margin-top: 14px;
       width: 100%;
       padding: 12px;
-      background-color: #1a73e8;
-      color: #ffffff;
       font-size: 15px;
       font-weight: 600;
+      background-color: #1a73e8;
+      color: #ffffff;
       border: none;
       border-radius: 6px;
       cursor: pointer;
-      transition: background 0.2s;
-    }
-    .btn-submit:hover {
-      background-color: #1557b0;
-    }
-    .btn-submit:disabled {
-      background-color: #9aa0a6;
-      cursor: not-allowed;
     }
     .status-alert {
       display: none;
-      margin-top: 14px;
+      margin-top: 16px;
       padding: 12px 14px;
       border-radius: 8px;
       font-size: 14px;
-      line-height: 1.4;
-      font-weight: 500;
       text-align: center;
     }
     .status-alert.success {
       background-color: #e6f4ea;
       color: #137333;
-      border: 1px solid #ceead6;
     }
     .status-alert.error {
-      background-color: #fce8e6;
+      background-color: #fde8e8;
       color: #c5221f;
-      border: 1px solid #fad2cf;
     }
-    .btn-community {
-      display: block;
+    .nav-links {
       text-align: center;
-      margin-top: 12px;
-      padding: 12px;
-      background-color: #1a73e8;
-      color: #ffffff;
-      text-decoration: none;
-      font-size: 15px;
-      font-weight: 600;
-      border-radius: 6px;
-      transition: background 0.2s;
+      margin-top: 24px;
     }
-    .btn-community:hover {
-      background-color: #1557b0;
-    }
-    .back-link {
-      display: block;
-      text-align: center;
-      margin-top: 16px;
-      font-size: 14px;
+    .nav-links a {
       color: #1a73e8;
       text-decoration: none;
-    }
-    .back-link:hover {
-      text-decoration: underline;
+      font-size: 14px;
+      margin: 0 10px;
     }
   </style>
 </head>
 <body>
 
-  <div class="card">
-    <h2>Help & Support</h2>
-    <p class="subtitle">Choose how you would like to reach out to us.</p>
+  <div class="container">
+    <h2>Contact Support</h2>
+    <p class="subtitle">Have questions or found a bug? Send a message to Incrible Studio.</p>
 
-    <div class="section">
-      <h3>✉️ Option 1: Send Direct Message</h3>
-      <p style="font-size: 13px; color: #666; margin-top: 4px;">
-        Send a direct message to our support team without leaving this page.
-      </p>
-      
-      <form id="contactForm" onsubmit="submitFormDirectly(event)">
-        <label for="userName">Your Name *</label>
-        <input type="text" id="userName" placeholder="Enter your full name" required>
+    <form id="contactForm">
+      <div class="form-group">
+        <label for="userName">Your Name</label>
+        <input type="text" id="userName" placeholder="e.g. Alex" required>
+      </div>
 
-        <label for="userEmail">Your Email Address *</label>
-        <input type="email" id="userEmail" placeholder="Enter your email address" required>
+      <div class="form-group">
+        <label for="userEmail">Your Email Address</label>
+        <input type="email" id="userEmail" placeholder="e.g. alex@example.com" required>
+      </div>
 
-        <label for="userMessage">Message / Issue Details *</label>
-        <textarea id="userMessage" placeholder="Describe your question or issue in detail..." required></textarea>
+      <div class="form-group">
+        <label for="ticketSubject">Subject (Optional)</label>
+        <input type="text" id="ticketSubject" placeholder="e.g. Export issue on Layer 3">
+      </div>
 
-        <button type="submit" id="submitBtn" class="btn-submit">Send Message</button>
-        <div id="formStatus" class="status-alert"></div>
-      </form>
+      <div class="form-group">
+        <label for="ticketMessage">Message</label>
+        <textarea id="ticketMessage" placeholder="Describe what you need help with..." required></textarea>
+      </div>
+
+      <button type="submit" class="btn-submit" id="btnSubmitTicket">Send Message</button>
+    </form>
+
+    <div id="contactStatus" class="status-alert"></div>
+
+    <div class="nav-links">
+      <a href="community.html">Go to Community Q&A →</a>
+      <a href="index.html">Home</a>
     </div>
-
-    <div class="section">
-      <h3>💬 Option 2: Community Q&A</h3>
-      <p style="font-size: 13px; color: #666; margin-top: 4px;">
-        Join our interactive Q&A page to ask questions, read existing solutions, or get answers from other users and the developer.
-      </p>
-      <a href="community.html" class="btn-community">
-        Visit Community Q&A
-      </a>
-    </div>
-
-    <a href="index.html" class="back-link">← Back to Home</a>
   </div>
 
-  <script>
-    // FULLY AUTHORIZED BACKEND URL
-    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbz9wElcmo2rtZp1IclXXmOdkl56t5DQQ4uMq3DlLboxQ7nWtwI70NZt_MZXZC0Yzluz1A/exec';
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+    import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
-    function submitFormDirectly(e) {
+    const firebaseConfig = {
+      apiKey: "AIzaSyQzQolHeYJwDcw3jFo2xd8P147PKgw2COE",
+      authDomain: "anima-clip-support.firebaseapp.com",
+      projectId: "anima-clip-support",
+      storageBucket: "anima-clip-support.firebasestorage.app",
+      messagingSenderId: "998194247470",
+      appId: "1:998194247470:web:9bfb771ce9356dcf3d2597",
+      measurementId: "G-7QKLY9KODR"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    const contactForm = document.getElementById('contactForm');
+    const btn = document.getElementById('btnSubmitTicket');
+    const statusBox = document.getElementById('contactStatus');
+
+    contactForm.addEventListener('submit', async (e) => {
       e.preventDefault();
-      const statusBox = document.getElementById('formStatus');
-      const submitBtn = document.getElementById('submitBtn');
+      btn.disabled = true;
+      btn.innerText = 'Sending...';
 
-      const name = document.getElementById('userName').value.trim();
-      const email = document.getElementById('userEmail').value.trim();
-      const message = document.getElementById('userMessage').value.trim();
+      try {
+        await addDoc(collection(db, "contact_submissions"), {
+          name: document.getElementById('userName').value.trim(),
+          email: document.getElementById('userEmail').value.trim(),
+          subject: document.getElementById('ticketSubject').value.trim() || 'General Inquiry',
+          message: document.getElementById('ticketMessage').value.trim(),
+          createdAt: serverTimestamp()
+        });
 
-      submitBtn.disabled = true;
-      submitBtn.innerText = 'Sending message...';
-      statusBox.style.display = 'none';
-
-      const params = new URLSearchParams();
-      params.append('action', 'submit_contact');
-      params.append('form_type', 'contact');
-      params.append('name', name);
-      params.append('email', email);
-      params.append('subject', 'Contact Support');
-      params.append('message', message);
-
-      fetch(SCRIPT_URL, {
-        method: 'POST',
-        mode: 'no-cors',
-        headers: {
-          'Content-Type': 'application/x-www-form-urlencoded'
-        },
-        body: params.toString()
-      })
-      .then(() => {
+        contactForm.reset();
         statusBox.className = 'status-alert success';
-        statusBox.innerText = '✓ Your message has been sent successfully! We will get back to you soon.';
+        statusBox.innerText = '✓ Message sent successfully!';
         statusBox.style.display = 'block';
-        document.getElementById('contactForm').reset();
-      })
-      .catch(() => {
+      } catch (err) {
         statusBox.className = 'status-alert error';
-        statusBox.innerText = '⚠️ Network error. Please try again.';
+        statusBox.innerText = '⚠️ Failed to send message. Please try again.';
         statusBox.style.display = 'block';
-      })
-      .finally(() => {
-        submitBtn.disabled = false;
-        submitBtn.innerText = 'Send Message';
-      });
-    }
+      } finally {
+        btn.disabled = false;
+        btn.innerText = 'Send Message';
+      }
+    });
   </script>
-
 </body>
 </html>
