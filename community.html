@@ -35,19 +35,23 @@
     }
     .top-bar {
       display: flex;
-      justify-content: flex-end;
+      justify-content: space-between;
+      align-items: center;
       margin-bottom: 12px;
     }
-    .dev-mode-btn {
+    .top-btn {
       background: none;
       border: 1px solid #dadce0;
       color: #5f6368;
       font-size: 11px;
-      padding: 4px 8px;
+      padding: 5px 10px;
       border-radius: 4px;
       cursor: pointer;
     }
-    .dev-mode-btn.active {
+    .top-btn:hover {
+      background-color: #f1f3f4;
+    }
+    .top-btn.active {
       background-color: #e8f0fe;
       color: #1a73e8;
       border-color: #1a73e8;
@@ -270,7 +274,8 @@
 
   <div class="container">
     <div class="top-bar">
-      <button class="dev-mode-btn" id="devToggleBtn" onclick="toggleDevSession()">Developer Mode</button>
+      <button class="top-btn" onclick="loadOnlineQuestions(true)">🔄 Refresh Board</button>
+      <button class="top-btn" id="devToggleBtn" onclick="toggleDevSession()">Developer Mode</button>
     </div>
 
     <h2>Community Q&A</h2>
@@ -324,7 +329,6 @@
 
   <script>
     const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbz9wElcmo2rtZp1IclXXmOdkl56t5DQQ4uMq3DlLboxQ7nWtwI70NZt_MZXZC0Yzluz1A/exec';
-    const STORAGE_KEY = 'animaclip_cache_questions';
     const USER_ID_KEY = 'animaclip_device_user_id';
     
     const DEV_SECRET_PIN = '@Mohd834875';
@@ -386,31 +390,54 @@
     window.onQuestionsLoaded = function(data) {
       if (Array.isArray(data)) {
         questionsData = data.filter(q => q && q.authorId !== 'system_mod' && q.id !== 1);
-        safeSetItem(STORAGE_KEY, JSON.stringify(questionsData));
       }
       renderQuestions();
     };
 
-    function loadOnlineQuestions() {
+    function loadOnlineQuestions(manual) {
       const container = document.getElementById('questionsContainer');
-      container.innerHTML = '<div class="loading-banner">Loading discussions...</div>';
+      if (manual || questionsData.length === 0) {
+        container.innerHTML = '<div class="loading-banner">Connecting live to database...</div>';
+      }
 
-      const script = document.createElement('script');
-      // nocache param prevents Chrome disk cache lock
-      script.src = SCRIPT_URL + '?callback=onQuestionsLoaded&nocache=' + Date.now() + Math.random();
-      script.onerror = function() {
-        renderQuestions();
-      };
-      document.body.appendChild(script);
+      // Anonymous Fetch Mode: Omit cookies so Google Account sessions do not redirect the request
+      fetch(SCRIPT_URL + '?nocache=' + Date.now(), {
+        method: 'GET',
+        credentials: 'omit',
+        cache: 'no-store'
+      })
+      .then(res => res.json())
+      .then(data => {
+        if (Array.isArray(data)) {
+          questionsData = data.filter(q => q && q.authorId !== 'system_mod' && q.id !== 1);
+          renderQuestions();
+        }
+      })
+      .catch(() => {
+        // Fallback: JSONP request with unique anti-cache signature
+        const script = document.createElement('script');
+        script.src = SCRIPT_URL + '?callback=onQuestionsLoaded&nocache=' + Date.now() + Math.random();
+        script.onerror = function() {
+          renderQuestions();
+        };
+        document.body.appendChild(script);
+      });
     }
 
     function syncToDatabase() {
-      safeSetItem(STORAGE_KEY, JSON.stringify(questionsData));
-
       const encodedData = encodeURIComponent(JSON.stringify(questionsData));
-      const script = document.createElement('script');
-      script.src = SCRIPT_URL + '?action=save_community&data=' + encodedData + '&t=' + Date.now();
-      document.body.appendChild(script);
+      
+      // Send anonymous payload omitting profile cookies
+      fetch(SCRIPT_URL + '?action=save_community&data=' + encodedData + '&t=' + Date.now(), {
+        method: 'GET',
+        mode: 'no-cors',
+        credentials: 'omit',
+        cache: 'no-store'
+      }).catch(() => {
+        const script = document.createElement('script');
+        script.src = SCRIPT_URL + '?action=save_community&data=' + encodedData + '&t=' + Date.now();
+        document.body.appendChild(script);
+      });
     }
 
     function submitQuestion() {
@@ -452,7 +479,6 @@
       btn.disabled = false;
       btn.innerText = 'Post Question';
 
-      // Show success alert message
       statusBox.style.display = 'block';
       setTimeout(() => {
         statusBox.style.display = 'none';
@@ -634,7 +660,13 @@
       }).join('');
     }
 
-    loadOnlineQuestions();
+    // Initial fetch
+    loadOnlineQuestions(false);
+
+    // Auto-sync polling every 25 seconds for real-time updates across open sessions
+    setInterval(() => {
+      loadOnlineQuestions(false);
+    }, 25000);
   </script>
 
 </body>
