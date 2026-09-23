@@ -67,6 +67,9 @@
       border-radius: 6px;
       cursor: pointer;
     }
+    .btn-submit:disabled {
+      background-color: #9ac1f6;
+    }
     .status-alert {
       display: none;
       margin-top: 16px;
@@ -104,22 +107,22 @@
     <form id="contactForm">
       <div class="form-group">
         <label for="userName">Your Name</label>
-        <input type="text" id="userName" placeholder="e.g. Alex" required>
+        <input type="text" id="userName" name="name" placeholder="e.g. Alex" required>
       </div>
 
       <div class="form-group">
         <label for="userEmail">Your Email Address</label>
-        <input type="email" id="userEmail" placeholder="e.g. alex@example.com" required>
+        <input type="email" id="userEmail" name="email" placeholder="e.g. alex@example.com" required>
       </div>
 
       <div class="form-group">
         <label for="ticketSubject">Subject (Optional)</label>
-        <input type="text" id="ticketSubject" placeholder="e.g. Export issue on Layer 3">
+        <input type="text" id="ticketSubject" name="_subject" placeholder="e.g. Export issue on Layer 3">
       </div>
 
       <div class="form-group">
         <label for="ticketMessage">Message</label>
-        <textarea id="ticketMessage" placeholder="Describe what you need help with..." required></textarea>
+        <textarea id="ticketMessage" name="message" placeholder="Describe what you need help with..." required></textarea>
       </div>
 
       <button type="submit" class="btn-submit" id="btnSubmitTicket">Send Message</button>
@@ -136,6 +139,9 @@
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
     import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+    // PUT YOUR DEVELOPER EMAIL HERE
+    const DEV_EMAIL = "your-email@gmail.com"; 
 
     const firebaseConfig = {
       apiKey: "AIzaSyQzQolHeYJwDcw3jFo2xd8P147PKgw2COE",
@@ -159,18 +165,39 @@
       btn.disabled = true;
       btn.innerText = 'Sending...';
 
+      const name = document.getElementById('userName').value.trim();
+      const email = document.getElementById('userEmail').value.trim();
+      const subject = document.getElementById('ticketSubject').value.trim() || 'New Support Request';
+      const message = document.getElementById('ticketMessage').value.trim();
+
       try {
+        // 1. Send straight to your developer inbox
+        await fetch(`https://formsubmit.co/ajax/${DEV_EMAIL}`, {
+          method: "POST",
+          headers: { 
+            'Content-Type': 'application/json',
+            'Accept': 'application/json'
+          },
+          body: JSON.stringify({
+            name: name,
+            email: email,
+            _subject: subject,
+            message: message
+          })
+        });
+
+        // 2. Also back up into Firestore database
         await addDoc(collection(db, "contact_submissions"), {
-          name: document.getElementById('userName').value.trim(),
-          email: document.getElementById('userEmail').value.trim(),
-          subject: document.getElementById('ticketSubject').value.trim() || 'General Inquiry',
-          message: document.getElementById('ticketMessage').value.trim(),
+          name,
+          email,
+          subject,
+          message,
           createdAt: serverTimestamp()
         });
 
         contactForm.reset();
         statusBox.className = 'status-alert success';
-        statusBox.innerText = '✓ Message sent successfully!';
+        statusBox.innerText = '✓ Message sent! Developer will review and email you back.';
         statusBox.style.display = 'block';
       } catch (err) {
         statusBox.className = 'status-alert error';
