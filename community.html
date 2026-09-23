@@ -231,6 +231,14 @@
       padding: 2px 6px;
       border-radius: 4px;
     }
+    .bot-tag {
+      background: linear-gradient(135deg, #7b1fa2, #512da8);
+      color: #fff;
+      font-size: 10px;
+      font-weight: bold;
+      padding: 2px 6px;
+      border-radius: 4px;
+    }
     .mod-tag {
       background: #5f6368;
       color: #fff;
@@ -279,7 +287,7 @@
     </div>
 
     <h2>Community Q&A</h2>
-    <p class="subtitle">Ask your questions here and our community will help you!</p>
+    <p class="subtitle">Ask your questions here and our community & AI assistant will help you!</p>
 
     <div class="question-box">
       <h3>Add your question here</h3>
@@ -312,7 +320,7 @@
               <span class="mod-tag">Official</span>
             </div>
           </div>
-          <div>We check here frequently to help answer any questions!</div>
+          <div>We check here frequently, and our AI Assistant helps provide quick tips when we're away!</div>
         </div>
       </div>
     </div>
@@ -393,13 +401,11 @@
       renderQuestions();
     };
 
-    // Checks if the user is currently writing an answer or focused on an input
     function isUserTyping() {
       const activeEl = document.activeElement;
       if (activeEl && (activeEl.tagName === 'INPUT' || activeEl.tagName === 'TEXTAREA')) {
         return true;
       }
-      // Check if any open answer textarea has draft text
       const textareas = document.querySelectorAll('.answer-form textarea');
       for (let t of textareas) {
         if (t.value.trim().length > 0) return true;
@@ -408,10 +414,7 @@
     }
 
     function loadOnlineQuestions() {
-      // If user is currently typing an answer, don't interrupt them with background fetch
-      if (isUserTyping()) {
-        return;
-      }
+      if (isUserTyping()) return;
 
       fetch(SCRIPT_URL + '?nocache=' + Date.now(), {
         method: 'GET',
@@ -435,17 +438,24 @@
       });
     }
 
-    function syncToDatabase() {
+    function syncToDatabase(triggerAI = false) {
       const encodedData = encodeURIComponent(JSON.stringify(questionsData));
-      
-      fetch(SCRIPT_URL + '?action=save_community&data=' + encodedData + '&t=' + Date.now(), {
+      const aiQueryParam = triggerAI ? '&trigger_ai=true' : '';
+
+      fetch(SCRIPT_URL + '?action=save_community&data=' + encodedData + aiQueryParam + '&t=' + Date.now(), {
         method: 'GET',
         mode: 'no-cors',
         credentials: 'omit',
         cache: 'no-store'
+      }).then(() => {
+        if (triggerAI) {
+          setTimeout(() => {
+            loadOnlineQuestions();
+          }, 3500);
+        }
       }).catch(() => {
         const script = document.createElement('script');
-        script.src = SCRIPT_URL + '?action=save_community&data=' + encodedData + '&t=' + Date.now();
+        script.src = SCRIPT_URL + '?action=save_community&data=' + encodedData + aiQueryParam + '&t=' + Date.now();
         document.body.appendChild(script);
       });
     }
@@ -482,7 +492,9 @@
 
       questionsData.unshift(newQuestion);
       renderQuestions();
-      syncToDatabase();
+
+      // Submit with trigger_ai=true for Gemini 3.8 Flash
+      syncToDatabase(true);
 
       authorInput.value = '';
       textInput.value = '';
@@ -512,7 +524,7 @@
       if (confirm("⚠️ Are you sure you want to permanently delete this question?")) {
         questionsData = questionsData.filter(item => String(item.id) !== String(id));
         renderQuestions();
-        syncToDatabase();
+        syncToDatabase(false);
       }
     }
 
@@ -536,7 +548,7 @@
         if (confirm("⚠️ Are you sure you want to permanently delete this reply?")) {
           question.replies = question.replies.filter(r => String(r.id) !== String(rId));
           renderQuestions();
-          syncToDatabase();
+          syncToDatabase(false);
         }
       }
     }
@@ -588,12 +600,13 @@
           authorId: currentUserId,
           author: isDev ? "Incrible Studio" : author,
           isDev: isDev,
+          isBot: false,
           date: new Date().toLocaleDateString(),
           text: text
         });
 
         renderQuestions();
-        syncToDatabase();
+        syncToDatabase(false);
 
         authorInput.value = '';
         emailInput.value = '';
@@ -606,7 +619,6 @@
     function renderQuestions() {
       const container = document.getElementById('questionsContainer');
 
-      // Preserve any open form drafts before DOM replacement
       const formStates = {};
       document.querySelectorAll('.answer-form').forEach(form => {
         const id = form.id.replace('answer-form-', '');
@@ -665,11 +677,12 @@
                   const canDeleteReply = isReplyOwner || isDevAuthenticated;
 
                   return `
-                    <div class="reply-item">
+                    <div class="reply-item" style="${r.isBot ? 'background:#faf5ff;border:1px solid #ebd4fc;' : ''}">
                       <div class="reply-meta">
                         <div class="meta-user">
                           <strong style="color: #202124;">${r.author}</strong>
                           ${r.isDev ? '<span class="developer-tag">Developer</span><span class="mod-tag">Official</span>' : ''}
+                          ${r.isBot ? '<span class="bot-tag">✨ AI Assistant</span>' : ''}
                           <span class="date-tag">${r.date}</span>
                         </div>
                         ${canDeleteReply ? `<button class="btn btn-danger" onclick="deleteReply('${q.id}','${r.id}')">Delete</button>` : ''}
@@ -684,7 +697,6 @@
         `;
       }).join('');
 
-      // Restore drafts and open states after re-rendering
       Object.keys(formStates).forEach(id => {
         const state = formStates[id];
         const box = document.getElementById(`answer-form-${id}`);
@@ -704,7 +716,6 @@
 
     loadOnlineQuestions();
 
-    // Auto-polling interval: safe from overwriting active inputs
     setInterval(() => {
       loadOnlineQuestions();
     }, 25000);
