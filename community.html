@@ -35,27 +35,28 @@
     }
     .top-bar {
       display: flex;
-      justify-content: space-between;
-      align-items: center;
+      justify-content: flex-end;
       margin-bottom: 12px;
     }
     .top-btn {
-      background: none;
-      border: 1px solid #dadce0;
-      color: #5f6368;
+      background-color: #1a73e8;
+      border: 1px solid #1a73e8;
+      color: #ffffff;
       font-size: 11px;
-      padding: 5px 10px;
-      border-radius: 4px;
+      font-weight: 600;
+      padding: 6px 12px;
+      border-radius: 6px;
       cursor: pointer;
+      transition: background-color 0.2s, box-shadow 0.2s;
     }
     .top-btn:hover {
-      background-color: #f1f3f4;
+      background-color: #1557b0;
+      border-color: #1557b0;
     }
     .top-btn.active {
-      background-color: #e8f0fe;
-      color: #1a73e8;
-      border-color: #1a73e8;
-      font-weight: bold;
+      background-color: #0d47a1;
+      border-color: #0d47a1;
+      box-shadow: 0 0 0 2px rgba(26, 115, 232, 0.35);
     }
     .question-box {
       border: 1px solid #dcdfe6;
@@ -274,7 +275,6 @@
 
   <div class="container">
     <div class="top-bar">
-      <button class="top-btn" onclick="loadOnlineQuestions(true)">🔄 Refresh Board</button>
       <button class="top-btn" id="devToggleBtn" onclick="toggleDevSession()">Developer Mode</button>
     </div>
 
@@ -338,7 +338,6 @@
     let questionsData = [];
     let isDevAuthenticated = false;
 
-    // Fail-safe storage wrapper (prevents WebView & restricted browser crashes)
     function safeGetItem(key) {
       try {
         return localStorage.getItem(key);
@@ -394,13 +393,26 @@
       renderQuestions();
     };
 
-    function loadOnlineQuestions(manual) {
-      const container = document.getElementById('questionsContainer');
-      if (manual || questionsData.length === 0) {
-        container.innerHTML = '<div class="loading-banner">Connecting live to database...</div>';
+    // Checks if the user is currently writing an answer or focused on an input
+    function isUserTyping() {
+      const activeEl = document.activeElement;
+      if (activeEl && (activeEl.tagName === 'INPUT' || activeEl.tagName === 'TEXTAREA')) {
+        return true;
+      }
+      // Check if any open answer textarea has draft text
+      const textareas = document.querySelectorAll('.answer-form textarea');
+      for (let t of textareas) {
+        if (t.value.trim().length > 0) return true;
+      }
+      return false;
+    }
+
+    function loadOnlineQuestions() {
+      // If user is currently typing an answer, don't interrupt them with background fetch
+      if (isUserTyping()) {
+        return;
       }
 
-      // Anonymous Fetch Mode: Omit cookies so Google Account sessions do not redirect the request
       fetch(SCRIPT_URL + '?nocache=' + Date.now(), {
         method: 'GET',
         credentials: 'omit',
@@ -414,7 +426,6 @@
         }
       })
       .catch(() => {
-        // Fallback: JSONP request with unique anti-cache signature
         const script = document.createElement('script');
         script.src = SCRIPT_URL + '?callback=onQuestionsLoaded&nocache=' + Date.now() + Math.random();
         script.onerror = function() {
@@ -427,7 +438,6 @@
     function syncToDatabase() {
       const encodedData = encodeURIComponent(JSON.stringify(questionsData));
       
-      // Send anonymous payload omitting profile cookies
       fetch(SCRIPT_URL + '?action=save_community&data=' + encodedData + '&t=' + Date.now(), {
         method: 'GET',
         mode: 'no-cors',
@@ -596,6 +606,21 @@
     function renderQuestions() {
       const container = document.getElementById('questionsContainer');
 
+      // Preserve any open form drafts before DOM replacement
+      const formStates = {};
+      document.querySelectorAll('.answer-form').forEach(form => {
+        const id = form.id.replace('answer-form-', '');
+        if (form.style.display === 'block') {
+          formStates[id] = {
+            isOpen: true,
+            author: form.querySelector(`input[id^="replyAuthor"]`)?.value || '',
+            email: form.querySelector(`input[id^="devEmail"]`)?.value || '',
+            pass: form.querySelector(`input[id^="devPass"]`)?.value || '',
+            text: form.querySelector(`textarea[id^="replyText"]`)?.value || ''
+          };
+        }
+      });
+
       if (!questionsData || questionsData.length === 0) {
         container.innerHTML = '<p style="text-align: center; color: #777;">No community questions yet. Be the first to ask!</p>';
         return;
@@ -658,14 +683,30 @@
           </div>
         `;
       }).join('');
+
+      // Restore drafts and open states after re-rendering
+      Object.keys(formStates).forEach(id => {
+        const state = formStates[id];
+        const box = document.getElementById(`answer-form-${id}`);
+        if (box && state.isOpen) {
+          box.style.display = 'block';
+          const authorInput = document.getElementById(`replyAuthor-${id}`);
+          const emailInput = document.getElementById(`devEmail-${id}`);
+          const passInput = document.getElementById(`devPass-${id}`);
+          const textInput = document.getElementById(`replyText-${id}`);
+          if (authorInput) authorInput.value = state.author;
+          if (emailInput) emailInput.value = state.email;
+          if (passInput) passInput.value = state.pass;
+          if (textInput) textInput.value = state.text;
+        }
+      });
     }
 
-    // Initial fetch
-    loadOnlineQuestions(false);
+    loadOnlineQuestions();
 
-    // Auto-sync polling every 25 seconds for real-time updates across open sessions
+    // Auto-polling interval: safe from overwriting active inputs
     setInterval(() => {
-      loadOnlineQuestions(false);
+      loadOnlineQuestions();
     }, 25000);
   </script>
 
