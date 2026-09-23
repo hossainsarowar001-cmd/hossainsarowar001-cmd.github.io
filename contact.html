@@ -195,9 +195,11 @@
       statusBox.style.display = 'none';
 
       const params = new URLSearchParams();
-      params.append('action', 'contact');
+      params.append('action', 'submit_contact');
+      params.append('form_type', 'contact');
       params.append('name', name);
       params.append('email', email);
+      params.append('subject', 'Contact Support');
       params.append('message', message);
 
       fetch(SCRIPT_URL, {
