@@ -208,12 +208,13 @@
       })
       .then(res => res.json())
       .then(res => {
-        if (res.data) {
+        if (res && res.data && Array.isArray(res.data)) {
           questionsData = res.data;
           renderQuestions();
         }
         if (callback) callback();
-      }).catch(err => {
+      })
+      .catch(err => {
         alert("Network error saving data. Please check your connection.");
         if (callback) callback();
       });
@@ -230,7 +231,7 @@
       if (!author || !text) return alert("Please fill in your name and question.");
 
       btn.disabled = true;
-      btn.innerText = 'Posting...';
+      btn.innerText = 'AI Assistant is thinking...';
 
       const newQ = {
         id: "q_" + Date.now() + "_" + Math.random().toString(36).substring(2, 7),
@@ -242,6 +243,7 @@
       };
 
       questionsData.unshift(newQ);
+      renderQuestions();
       
       saveToServer(true, () => {
         a.value = '';
