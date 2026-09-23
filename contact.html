@@ -140,8 +140,7 @@
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
     import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
-    // Enter your developer receiving email here:
-    const DEV_NOTIFICATION_EMAIL = "your-email@gmail.com";
+    const DEV_NOTIFICATION_EMAIL = "Incriblestudiodeveloper@gmail.com";
 
     const firebaseConfig = {
       apiKey: "AIzaSyQzQolHeYJwDcw3jFo2xd8P147PKgw2COE",
@@ -171,7 +170,6 @@
       const message = document.getElementById('ticketMessage').value.trim();
 
       try {
-        // 1. Direct inbox delivery via FormSubmit
         await fetch(`https://formsubmit.co/ajax/${DEV_NOTIFICATION_EMAIL}`, {
           method: "POST",
           headers: { 
@@ -186,7 +184,6 @@
           })
         });
 
-        // 2. Encrypted cloud backup in Firestore
         await addDoc(collection(db, "contact_submissions"), {
           name,
           email,
