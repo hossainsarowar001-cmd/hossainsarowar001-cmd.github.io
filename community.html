@@ -117,6 +117,21 @@
     .btn-secondary:hover {
       background-color: #d2e3fc;
     }
+    .status-alert {
+      display: none;
+      margin-top: 14px;
+      padding: 12px 14px;
+      border-radius: 8px;
+      font-size: 14px;
+      line-height: 1.4;
+      font-weight: 500;
+      text-align: center;
+    }
+    .status-alert.success {
+      background-color: #e6f4ea;
+      color: #137333;
+      border: 1px solid #ceead6;
+    }
     .feed-title {
       font-size: 18px;
       margin-bottom: 16px;
@@ -266,6 +281,7 @@
       <input type="text" id="qAuthor" placeholder="Your Name or Nickname" required>
       <textarea id="qText" placeholder="Write your question or query here..." required></textarea>
       <button class="btn btn-primary" id="btnPostQuestion" onclick="submitQuestion()">Post Question</button>
+      <div id="postStatus" class="status-alert success">✓ Your question has been posted successfully!</div>
     </div>
 
     <div class="feed-title">Questions & Discussion</div>
@@ -376,16 +392,12 @@
     };
 
     function loadOnlineQuestions() {
-      const cached = safeGetItem(STORAGE_KEY);
-      if (cached) {
-        try {
-          questionsData = JSON.parse(cached).filter(q => q && q.authorId !== 'system_mod' && q.id !== 1);
-          renderQuestions();
-        } catch (e) {}
-      }
+      const container = document.getElementById('questionsContainer');
+      container.innerHTML = '<div class="loading-banner">Loading discussions...</div>';
 
       const script = document.createElement('script');
-      script.src = SCRIPT_URL + '?callback=onQuestionsLoaded&t=' + Date.now();
+      // nocache param prevents Chrome disk cache lock
+      script.src = SCRIPT_URL + '?callback=onQuestionsLoaded&nocache=' + Date.now() + Math.random();
       script.onerror = function() {
         renderQuestions();
       };
@@ -405,6 +417,7 @@
       const authorInput = document.getElementById('qAuthor');
       const textInput = document.getElementById('qText');
       const btn = document.getElementById('btnPostQuestion');
+      const statusBox = document.getElementById('postStatus');
       const author = authorInput.value.trim();
       const text = textInput.value.trim();
 
@@ -438,6 +451,12 @@
       textInput.value = '';
       btn.disabled = false;
       btn.innerText = 'Post Question';
+
+      // Show success alert message
+      statusBox.style.display = 'block';
+      setTimeout(() => {
+        statusBox.style.display = 'none';
+      }, 5000);
     }
 
     function deleteQuestion(id) {
