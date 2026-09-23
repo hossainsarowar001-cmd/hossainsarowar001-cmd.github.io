@@ -201,6 +201,10 @@
       background: #e8f0fe;
       border: 1px solid #c2e7ff;
     }
+    .reply-item.ai-reply {
+      background: #f3e8fd;
+      border: 1px solid #e1bee7;
+    }
     .reply-meta {
       display: flex;
       justify-content: space-between;
@@ -209,6 +213,14 @@
     }
     .developer-tag {
       background: #1a73e8;
+      color: #fff;
+      font-size: 10px;
+      font-weight: bold;
+      padding: 2px 6px;
+      border-radius: 4px;
+    }
+    .ai-tag {
+      background: #8e24aa;
       color: #fff;
       font-size: 10px;
       font-weight: bold;
@@ -306,6 +318,8 @@
       getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged 
     } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 
+    const WORKER_AI_URL = "https://anima-clip-bot.hossainsarowar001.workers.dev";
+
     const firebaseConfig = {
       apiKey: "AIzaSyDzQo1HsYJwdcwOJFo2xd8P347PXgw3COE",
       authDomain: "anima-clip-support.firebaseapp.com",
@@ -321,6 +335,7 @@
     const auth = getAuth(app);
 
     let currentDevUser = null;
+    const openReplyBoxes = new Set();
 
     onAuthStateChanged(auth, (user) => {
       currentDevUser = user;
@@ -384,7 +399,7 @@
       const text = document.getElementById('qText').value.trim();
 
       if (!author || !text) return alert("Please fill out both fields.");
-      if (!currentDevUser && (author.toLowerCase().includes("developer") || author.toLowerCase().includes("mod") || author.toLowerCase().includes("incrible"))) {
+      if (!currentDevUser && (author.toLowerCase().includes("developer") || author.toLowerCase().includes("mod") || author.toLowerCase().includes("incrible") || author.toLowerCase().includes("bot"))) {
         return alert("Reserved name. Please choose another username.");
       }
 
@@ -393,7 +408,7 @@
       btn.innerText = 'Posting...';
 
       try {
-        await addDoc(collection(db, "questions"), {
+        const newDocRef = await addDoc(collection(db, "questions"), {
           author,
           text,
           createdAt: serverTimestamp(),
@@ -403,6 +418,29 @@
         document.getElementById('qAuthor').value = '';
         document.getElementById('qText').value = '';
         showNotification("✓ Your question was successfully posted to the community!");
+
+        // Trigger AI Assistant in background
+        fetch(WORKER_AI_URL, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ question: text })
+        })
+        .then(res => res.json())
+        .then(async data => {
+          if (data && data.reply) {
+            await updateDoc(doc(db, "questions", newDocRef.id), {
+              replies: arrayUnion({
+                id: 'ai_' + Date.now(),
+                author: "Anima Clip Bot",
+                text: data.reply,
+                isAi: true,
+                date: new Date().toLocaleDateString()
+              })
+            });
+          }
+        })
+        .catch(err => console.log("AI response skipped:", err));
+
       } catch (e) {
         alert("Failed to post question: " + e.message);
       } finally {
@@ -412,8 +450,15 @@
     };
 
     window.toggleAnswerBox = (id) => {
+      if (openReplyBoxes.has(id)) {
+        openReplyBoxes.delete(id);
+      } else {
+        openReplyBoxes.add(id);
+      }
       const box = document.getElementById(`reply-box-${id}`);
-      box.style.display = box.style.display === 'block' ? 'none' : 'block';
+      if (box) {
+        box.style.display = openReplyBoxes.has(id) ? 'block' : 'none';
+      }
     };
 
     window.submitAnswer = async (qId) => {
@@ -423,6 +468,13 @@
       const text = textInput.value.trim();
 
       if (!author || !text) return alert("Please provide name and reply message.");
+
+      openReplyBoxes.delete(qId);
+      const box = document.getElementById(`reply-box-${qId}`);
+      if (box) box.style.display = 'none';
+
+      authorInput.value = '';
+      textInput.value = '';
 
       const isDev = currentDevUser !== null;
       const replyData = {
@@ -439,10 +491,6 @@
         await updateDoc(docRef, {
           replies: arrayUnion(replyData)
         });
-
-        authorInput.value = '';
-        textInput.value = '';
-        window.toggleAnswerBox(qId);
         showNotification("✓ Reply posted successfully!");
       } catch (err) {
         alert("Failed to post reply: " + err.message);
@@ -498,6 +546,7 @@
 
       container.innerHTML = questions.map(q => {
         const replies = q.replies || [];
+        const isBoxOpen = openReplyBoxes.has(q.id);
 
         return `
           <div class="question-card">
@@ -511,7 +560,7 @@
               <span style="font-size: 12px; color: #666;">${replies.length} replies</span>
             </div>
 
-            <div id="reply-box-${q.id}" class="answer-form">
+            <div id="reply-box-${q.id}" class="answer-form" style="display: ${isBoxOpen ? 'block' : 'none'};">
               <input type="text" id="replyAuthor-${q.id}" placeholder="Your Name" value="${currentDevUser ? 'Incrible Studio (Official)' : ''}">
               <textarea id="replyText-${q.id}" placeholder="Your reply..."></textarea>
               <button class="btn btn-primary" onclick="submitAnswer('${q.id}')">Post Answer</button>
@@ -520,11 +569,12 @@
             ${replies.length > 0 ? `
               <div class="replies-list">
                 ${replies.map(r => `
-                  <div class="reply-item ${r.isDev ? 'developer-reply' : ''}">
+                  <div class="reply-item ${r.isDev ? 'developer-reply' : ''} ${r.isAi ? 'ai-reply' : ''}">
                     <div class="reply-meta">
                       <div>
                         <strong>${escapeHTML(r.author)}</strong>
                         ${r.isDev ? '<span class="developer-tag">Developer</span> <span class="mod-tag">Official</span>' : ''}
+                        ${r.isAi ? '<span class="ai-tag">AI Bot</span>' : ''}
                       </div>
                       <div>
                         <span class="date-tag">${escapeHTML(r.date)}</span>
