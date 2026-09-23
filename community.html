@@ -30,9 +30,9 @@
     .question-card { border: 1px solid #e1e4e8; border-radius: 10px; padding: 18px; margin-bottom: 16px; background: #fff; }
     .pinned-card { border: 1.5px solid #1a73e8; background: #f8fbff; border-radius: 10px; padding: 18px; margin-bottom: 16px; }
     .pinned-tag { background: #1a73e8; color: #ffffff; font-size: 11px; font-weight: 700; padding: 2px 7px; border-radius: 4px; }
-    .question-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+    .question-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px; }
     .author-name { font-weight: 600; font-size: 14px; color: #1a73e8; }
-    .date-tag { font-size: 12px; color: #888; margin-left: 6px; }
+    .date-tag { font-size: 12px; color: #888; }
     .question-text { font-size: 15px; color: #222; line-height: 1.5; margin: 8px 0 14px; }
     .actions-bar { display: flex; justify-content: space-between; align-items: center; padding-top: 10px; border-top: 1px solid #f1f3f4; }
     .replies-list { margin-top: 14px; padding-left: 14px; border-left: 3px solid #1a73e8; }
@@ -68,9 +68,9 @@
 
     <div class="pinned-card">
       <div class="question-header">
-        <div>
+        <div style="display: flex; align-items: center; gap: 6px;">
           <span class="pinned-tag">📌 PINNED</span>
-          <span class="author-name" style="margin-left: 6px;">Community Mod</span>
+          <span class="author-name">Community Mod</span>
           <span class="mod-tag">Official</span>
         </div>
       </div>
@@ -79,7 +79,7 @@
       </div>
       <div class="replies-list">
         <div class="reply-item dev-reply">
-          <div style="margin-bottom: 6px;">
+          <div style="display: flex; align-items: center; gap: 6px; margin-bottom: 6px;">
             <strong>Incrible Studio</strong>
             <span class="developer-tag">Developer</span>
             <span class="mod-tag">Official</span>
@@ -247,11 +247,11 @@
         return `
           <div class="question-card">
             <div class="question-header">
-              <div>
+              <div style="display: flex; align-items: center; gap: 6px;">
                 <span class="author-name">${escapeHTML(q.author)}</span>
                 <span class="date-tag">${escapeHTML(q.date)}</span>
               </div>
-              ${canDelete ? `<button class="btn btn-danger" onclick="deleteQuestion('${q.id}')">Delete</button>` : ''}
+              ${canDelete ? `<button class="btn btn-danger" style="margin-left: 8px;" onclick="deleteQuestion('${q.id}')">Delete</button>` : ''}
             </div>
             <div class="question-text">${escapeHTML(q.text)}</div>
             <div class="actions-bar">
@@ -273,14 +273,14 @@
                   const canDeleteReply = (r.authorId === currentUserId) || (authenticatedDevPin !== null);
                   return `
                     <div class="reply-item ${r.isDev ? 'dev-reply' : ''}" style="${r.isBot ? 'background:#faf5ff; border:1px solid #ebd4fc;' : ''}">
-                      <div style="display:flex; justify-content:space-between; margin-bottom:6px;">
-                        <div>
+                      <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:6px;">
+                        <div style="display:flex; align-items:center; gap:6px; flex-wrap:wrap;">
                           <strong>${escapeHTML(r.author)}</strong>
                           ${r.isDev ? '<span class="developer-tag">Developer</span><span class="mod-tag">Official</span>' : ''}
                           ${r.isBot ? '<span class="bot-tag">✨ AI Assistant</span>' : ''}
                           <span class="date-tag">${escapeHTML(r.date)}</span>
                         </div>
-                        ${canDeleteReply ? `<button class="btn btn-danger" onclick="deleteReply('${q.id}','${r.id}')">Delete</button>` : ''}
+                        ${canDeleteReply ? `<button class="btn btn-danger" style="margin-left: 10px;" onclick="deleteReply('${q.id}','${r.id}')">Delete</button>` : ''}
                       </div>
                       <div>${escapeHTML(r.text)}</div>
                     </div>
