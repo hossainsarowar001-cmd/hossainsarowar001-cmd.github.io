@@ -20,7 +20,17 @@
     .btn { padding: 10px 18px; font-size: 14px; font-weight: 600; border: none; border-radius: 6px; cursor: pointer; }
     .btn-primary { background-color: #1a73e8; color: #ffffff; }
     .btn-primary:hover { background-color: #1557b0; }
-    .btn-danger { background-color: transparent; color: #d93025; font-size: 12px; padding: 3px 8px; border: 1px solid #f5c2c7; border-radius: 4px; cursor: pointer; margin-left: auto; }
+    .btn-danger {
+      background-color: transparent;
+      color: #d93025;
+      font-size: 12px;
+      padding: 3px 8px;
+      border: 1px solid #f5c2c7;
+      border-radius: 4px;
+      cursor: pointer;
+      flex-shrink: 0; /* Prevents button from collapsing */
+      white-space: nowrap;
+    }
     .btn-danger:hover { background-color: #fde8e8; }
     .btn-secondary { background-color: #e8f0fe; color: #1a73e8; font-size: 13px; padding: 6px 12px; }
     .btn-secondary:hover { background-color: #d2e3fc; }
@@ -29,18 +39,38 @@
     .feed-title { font-size: 18px; margin-bottom: 16px; color: #202124; border-bottom: 2px solid #eee; padding-bottom: 8px; }
     .question-card { border: 1px solid #e1e4e8; border-radius: 10px; padding: 18px; margin-bottom: 16px; background: #fff; }
     .pinned-card { border: 1.5px solid #1a73e8; background: #f8fbff; border-radius: 10px; padding: 18px; margin-bottom: 16px; }
-    .pinned-tag { background: #1a73e8; color: #ffffff; font-size: 11px; font-weight: 700; padding: 2px 7px; border-radius: 4px; }
-    .question-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px; }
-    .author-name { font-weight: 600; font-size: 14px; color: #1a73e8; }
-    .date-tag { font-size: 12px; color: #888; }
-    .question-text { font-size: 15px; color: #222; line-height: 1.5; margin: 8px 0 14px; }
+    .pinned-tag { background: #1a73e8; color: #ffffff; font-size: 11px; font-weight: 700; padding: 2px 7px; border-radius: 4px; white-space: nowrap; }
+    .question-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px; gap: 10px; }
+    .author-name { font-weight: 600; font-size: 14px; color: #1a73e8; white-space: nowrap; }
+    .date-tag { font-size: 12px; color: #888; white-space: nowrap; }
+    .question-text { font-size: 15px; color: #222; line-height: 1.5; margin: 8px 0 14px; word-break: break-word; }
     .actions-bar { display: flex; justify-content: space-between; align-items: center; padding-top: 10px; border-top: 1px solid #f1f3f4; }
     .replies-list { margin-top: 14px; padding-left: 14px; border-left: 3px solid #1a73e8; }
-    .reply-item { background: #f8f9fa; padding: 12px 14px; border-radius: 8px; margin-bottom: 10px; font-size: 13.5px; }
+    .reply-item { background: #f8f9fa; padding: 12px 14px; border-radius: 8px; margin-bottom: 10px; font-size: 13.5px; word-break: break-word; }
     .reply-item.dev-reply { background: #f0f6ff; border: 1px solid #c2e0ff; }
-    .developer-tag { background: #1a73e8; color: #fff; font-size: 10px; font-weight: bold; padding: 2px 6px; border-radius: 4px; }
-    .bot-tag { background: linear-gradient(135deg, #7b1fa2, #512da8); color: #fff; font-size: 10px; font-weight: bold; padding: 2px 6px; border-radius: 4px; }
-    .mod-tag { background: #137333; color: #fff; font-size: 10px; font-weight: bold; padding: 2px 6px; border-radius: 4px; }
+    .developer-tag { background: #1a73e8; color: #fff; font-size: 10px; font-weight: bold; padding: 2px 6px; border-radius: 4px; white-space: nowrap; flex-shrink: 0; }
+    .bot-tag { background: linear-gradient(135deg, #7b1fa2, #512da8); color: #fff; font-size: 10px; font-weight: bold; padding: 2px 6px; border-radius: 4px; white-space: nowrap; flex-shrink: 0; }
+    .mod-tag { background: #137333; color: #fff; font-size: 10px; font-weight: bold; padding: 2px 6px; border-radius: 4px; white-space: nowrap; flex-shrink: 0; }
+    
+    /* Structured Dev Reply Header */
+    .dev-badge-header {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      min-width: 0;
+      flex: 1;
+    }
+    .dev-badge-header .line-one,
+    .dev-badge-header .line-two {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+    .dev-badge-header .line-one strong {
+      white-space: nowrap;
+    }
+
     .answer-form { display: none; margin-top: 12px; padding: 14px; background: #f8f9fa; border-radius: 8px; }
     .dev-auth-row { display: flex; gap: 8px; }
     .dev-auth-row input { flex: 1; }
@@ -68,7 +98,7 @@
 
     <div class="pinned-card">
       <div class="question-header">
-        <div style="display: flex; align-items: center; gap: 6px;">
+        <div style="display: flex; align-items: center; gap: 6px; flex-wrap: wrap;">
           <span class="pinned-tag">📌 PINNED</span>
           <span class="author-name">Community Mod</span>
           <span class="mod-tag">Official</span>
@@ -79,10 +109,14 @@
       </div>
       <div class="replies-list">
         <div class="reply-item dev-reply">
-          <div style="display: flex; align-items: center; gap: 6px; margin-bottom: 6px;">
-            <strong>Incrible Studio</strong>
-            <span class="developer-tag">Developer</span>
-            <span class="mod-tag">Official</span>
+          <div class="dev-badge-header" style="margin-bottom: 6px;">
+            <div class="line-one">
+              <strong>Incrible Studio</strong>
+              <span class="developer-tag">Developer</span>
+            </div>
+            <div class="line-two">
+              <span class="mod-tag">Official</span>
+            </div>
           </div>
           <div>We check here frequently, and our AI Assistant helps provide quick tips when we're away!</div>
         </div>
@@ -247,11 +281,11 @@
         return `
           <div class="question-card">
             <div class="question-header">
-              <div style="display: flex; align-items: center; gap: 6px;">
+              <div style="display: flex; align-items: center; gap: 6px; flex-wrap: wrap; min-width: 0; flex: 1;">
                 <span class="author-name">${escapeHTML(q.author)}</span>
                 <span class="date-tag">${escapeHTML(q.date)}</span>
               </div>
-              ${canDelete ? `<button class="btn btn-danger" style="margin-left: 8px;" onclick="deleteQuestion('${q.id}')">Delete</button>` : ''}
+              ${canDelete ? `<button class="btn btn-danger" style="margin-left: 10px;" onclick="deleteQuestion('${q.id}')">Delete</button>` : ''}
             </div>
             <div class="question-text">${escapeHTML(q.text)}</div>
             <div class="actions-bar">
@@ -273,14 +307,27 @@
                   const canDeleteReply = (r.authorId === currentUserId) || (authenticatedDevPin !== null);
                   return `
                     <div class="reply-item ${r.isDev ? 'dev-reply' : ''}" style="${r.isBot ? 'background:#faf5ff; border:1px solid #ebd4fc;' : ''}">
-                      <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:6px;">
-                        <div style="display:flex; align-items:center; gap:6px; flex-wrap:wrap;">
-                          <strong>${escapeHTML(r.author)}</strong>
-                          ${r.isDev ? '<span class="developer-tag">Developer</span><span class="mod-tag">Official</span>' : ''}
-                          ${r.isBot ? '<span class="bot-tag">✨ AI Assistant</span>' : ''}
-                          <span class="date-tag">${escapeHTML(r.date)}</span>
-                        </div>
-                        ${canDeleteReply ? `<button class="btn btn-danger" style="margin-left: 10px;" onclick="deleteReply('${q.id}','${r.id}')">Delete</button>` : ''}
+                      <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 6px; gap: 12px;">
+                        
+                        ${r.isDev ? `
+                          <div class="dev-badge-header">
+                            <div class="line-one">
+                              <strong>${escapeHTML(r.author)}</strong>
+                              <span class="developer-tag">Developer</span>
+                            </div>
+                            <div class="line-two">
+                              <span class="mod-tag">Official</span>
+                              <span class="date-tag">${escapeHTML(r.date)}</span>
+                            </div>
+                          </div>
+                        ` : `
+                          <div style="display: flex; align-items: center; gap: 6px; flex-wrap: wrap; min-width: 0; flex: 1;">
+                            <strong>${escapeHTML(r.author)}</strong>${r.isBot ? '<span class="bot-tag">✨ AI Assistant</span>' : ''}
+                            <span class="date-tag">${escapeHTML(r.date)}</span>
+                          </div>
+                        `}
+
+                        ${canDeleteReply ? `<button class="btn btn-danger" onclick="deleteReply('${q.id}','${r.id}')">Delete</button>` : ''}
                       </div>
                       <div>${escapeHTML(r.text)}</div>
                     </div>
