@@ -30,7 +30,6 @@ export default {
         });
       }
 
-      // Priority list of models to try if high-demand errors occur
       const models = [
         "gemini-3.8-flash",
         "gemini-3.7-flash",
@@ -39,11 +38,36 @@ export default {
         "gemini-3.5-flash-lite"
       ];
 
+      const promptDirective = `
+You are the official AI Support Assistant for 'Anima Clip', a 2D animation Android mobile app created by Incrible Studio.
+
+Your Search & Answering Procedure:
+1. Search across Google, YouTube tutorials, Google Play Store listings, community forums, and social posts for information specifically regarding:
+   - "Anima Clip" animation app
+   - "Incrible Studio"
+   - Features, how-tos, video imports, frame rates, export formats, or fixes for Anima Clip.
+2. If YouTube tutorials, demo videos, or online documentation mention Anima Clip, extract and prioritize that exact process for the user's question.
+3. If specific Anima Clip data is unavailable or not yet published online:
+   - Search how top 2D animation tools (such as FlipaClip, RoughAnimator, Pencil2D, or standard Android frame-by-frame animation software) handle this exact task.
+   - Provide a practical, accurate walkthrough tailored to standard 2D mobile animation workflows.
+4. Formatting requirements:
+   - Provide clear, numbered step-by-step instructions where applicable.
+   - Maintain a helpful, polite tone.
+   - Do NOT say "I searched YouTube" or "Based on my Google search"—present the guidance directly as the app assistant.
+
+User Question: ${question}
+`;
+
       const payload = {
         contents: [
           {
             role: "user",
-            parts: [{ text: `You are the helpful AI support assistant for 'Anima Clip', a 2D animation mobile app by Incrible Studio. Answer helpfully and concisely.\n\nUser Question: ${question}` }]
+            parts: [{ text: promptDirective }]
+          }
+        ],
+        tools: [
+          {
+            googleSearch: {}
           }
         ]
       };
@@ -64,12 +88,11 @@ export default {
 
           if (data.candidates?.[0]?.content?.parts?.[0]?.text) {
             finalReply = data.candidates[0].content.parts[0].text;
-            break; // Stop iterating once a valid answer is generated
+            break;
           }
 
           if (data.error) {
             lastErrorMessage = data.error.message || JSON.stringify(data.error);
-            // Continue loop to fallback models on high-demand or capacity issues
           }
         } catch (err) {
           lastErrorMessage = err.message;
