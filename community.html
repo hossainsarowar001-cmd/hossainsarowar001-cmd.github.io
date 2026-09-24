@@ -1,657 +1,645 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Anima Clip - Community & Support</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Community Q&A - Anima Clip</title>
   <style>
-    :root {
-      --primary: #6366f1;
-      --primary-hover: #4f46e5;
-      --bg: #f8fafc;
-      --card-bg: #ffffff;
-      --text-main: #0f172a;
-      --text-muted: #64748b;
-      --border: #e2e8f0;
-      --accent-ai: #f5f3ff;
-      --accent-ai-border: #ddd6fe;
-      --badge-ai: #7c3aed;
-      --badge-dev: #0284c7;
-      --danger: #ef4444;
-      --danger-hover: #dc2626;
-    }
-
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-    }
-
     body {
-      background-color: var(--bg);
-      color: var(--text-main);
-      padding: 16px;
-      line-height: 1.5;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background-color: #f4f6f8;
+      margin: 0;
+      padding: 24px 16px;
+      color: #333;
+      display: flex;
+      justify-content: center;
     }
-
     .container {
-      max-width: 720px;
-      margin: 0 auto;
-    }
-
-    /* Header Nav */
-    header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 12px 0 20px 0;
-    }
-
-    .brand-title {
-      font-size: 1.3rem;
-      font-weight: 700;
-      color: var(--text-main);
-      text-decoration: none;
-    }
-
-    .auth-btn {
-      background: transparent;
-      border: 1px solid var(--border);
-      color: var(--text-muted);
-      padding: 6px 12px;
-      border-radius: 6px;
-      font-size: 0.85rem;
-      cursor: pointer;
-      font-weight: 500;
-    }
-
-    .auth-btn:hover {
-      background: #f1f5f9;
-      color: var(--text-main);
-    }
-
-    /* Create Post Card */
-    .card {
-      background: var(--card-bg);
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 16px;
-      margin-bottom: 20px;
-      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
-    }
-
-    .card h2 {
-      font-size: 1.1rem;
-      margin-bottom: 12px;
-      color: var(--text-main);
-    }
-
-    .form-group {
-      margin-bottom: 12px;
-    }
-
-    input[type="text"], textarea {
+      background: #ffffff;
+      padding: 32px 24px;
+      border-radius: 14px;
+      box-shadow: 0 4px 14px rgba(0, 0, 0, 0.08);
+      max-width: 640px;
       width: 100%;
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      padding: 10px 12px;
-      font-size: 0.95rem;
-      color: var(--text-main);
-      outline: none;
-      transition: border-color 0.2s;
     }
-
-    input[type="text"]:focus, textarea:focus {
-      border-color: var(--primary);
+    h2 {
+      margin-top: 0;
+      color: #1a73e8;
+      text-align: center;
     }
-
-    textarea {
-      min-height: 80px;
-      resize: vertical;
+    .subtitle {
+      text-align: center;
+      color: #666;
+      font-size: 14px;
+      margin-bottom: 24px;
     }
-
-    .submit-btn {
-      background-color: var(--primary);
+    .top-bar {
+      display: flex;
+      justify-content: flex-end;
+      margin-bottom: 12px;
+    }
+    .top-btn {
+      background-color: #1a73e8;
+      border: 1px solid #1a73e8;
       color: #ffffff;
-      border: none;
-      padding: 10px 18px;
-      font-size: 0.95rem;
+      font-size: 12px;
       font-weight: 600;
-      border-radius: 8px;
+      padding: 7px 14px;
+      border-radius: 6px;
       cursor: pointer;
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
     }
-
-    .submit-btn:disabled {
-      opacity: 0.6;
-      cursor: not-allowed;
+    .top-btn.active {
+      background-color: #0d47a1;
+      border-color: #0d47a1;
     }
-
-    /* Question Threads */
-    .question-card {
-      background: var(--card-bg);
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 16px;
+    .notification {
+      display: none;
+      background-color: #e6f4ea;
+      color: #137333;
+      padding: 12px 14px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+      font-size: 14px;
+      font-weight: 500;
+      text-align: center;
+      border: 1px solid #ceead6;
+    }
+    .question-box {
+      border: 1px solid #dcdfe6;
+      border-radius: 10px;
+      padding: 20px;
+      background: #fafbfc;
+      margin-bottom: 28px;
+    }
+    .question-box h3 {
+      margin-top: 0;
+      font-size: 16px;
+      color: #202124;
+    }
+    input, textarea {
+      width: 100%;
+      padding: 10px;
+      box-sizing: border-box;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      font-size: 14px;
+      font-family: inherit;
+      margin-bottom: 10px;
+    }
+    textarea {
+      resize: vertical;
+      min-height: 80px;
+    }
+    .btn {
+      padding: 10px 18px;
+      font-size: 14px;
+      font-weight: 600;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+    .btn-primary {
+      background-color: #1a73e8;
+      color: #ffffff;
+    }
+    .btn-secondary {
+      background-color: #e8f0fe;
+      color: #1a73e8;
+      font-size: 13px;
+      padding: 6px 12px;
+    }
+    .btn-danger {
+      background-color: #fde8e8;
+      color: #c5221f;
+      font-size: 12px;
+      padding: 4px 10px;
+      border: 1px solid #f8b4b4;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    .btn-danger-sm {
+      background-color: transparent;
+      color: #c5221f;
+      font-size: 11px;
+      padding: 2px 6px;
+      border: 1px solid #f8b4b4;
+      border-radius: 4px;
+      cursor: pointer;
+      margin-left: 8px;
+    }
+    .feed-title {
+      font-size: 18px;
       margin-bottom: 16px;
-      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+      color: #202124;
+      border-bottom: 2px solid #eee;
+      padding-bottom: 8px;
     }
-
-    .post-header {
+    .question-card {
+      border: 1px solid #e1e4e8;
+      border-radius: 10px;
+      padding: 18px;
+      margin-bottom: 16px;
+      background: #fff;
+    }
+    .pinned-card {
+      border: 1.5px solid #1a73e8;
+      background: #f8fbff;
+      border-radius: 10px;
+      padding: 18px;
+      margin-bottom: 16px;
+    }
+    .pinned-tag {
+      background: #1a73e8;
+      color: #ffffff;
+      font-size: 11px;
+      font-weight: 700;
+      padding: 2px 7px;
+      border-radius: 4px;
+    }
+    .question-header {
       display: flex;
       justify-content: space-between;
-      align-items: flex-start;
+      align-items: center;
       margin-bottom: 8px;
     }
-
-    .author-info {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-
     .author-name {
       font-weight: 600;
-      font-size: 0.95rem;
-      color: var(--text-main);
+      font-size: 14px;
+      color: #1a73e8;
     }
-
-    .post-date {
-      font-size: 0.8rem;
-      color: var(--text-muted);
+    .date-tag {
+      font-size: 12px;
+      color: #888;
+      white-space: nowrap;
     }
-
-    .delete-action-btn {
-      background: #fef2f2;
-      border: 1px solid #fecaca;
-      color: var(--danger);
-      padding: 4px 8px;
-      font-size: 0.75rem;
-      font-weight: 600;
-      border-radius: 6px;
-      cursor: pointer;
-    }
-
-    .delete-action-btn:hover {
-      background: var(--danger);
-      color: #ffffff;
-    }
-
-    .question-body {
-      font-size: 1rem;
-      color: var(--text-main);
-      line-height: 1.6;
-      margin-bottom: 12px;
-      white-space: pre-wrap;
+    .question-text {
+      font-size: 15px;
+      color: #222;
+      line-height: 1.5;
+      margin: 8px 0 14px;
+      white-space: pre-line;
       word-break: break-word;
     }
-
-    /* Replies Container */
-    .replies-section {
-      border-top: 1px solid var(--border);
-      padding-top: 12px;
-      margin-top: 12px;
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-    }
-
-    .reply-bubble {
-      background: #f8fafc;
-      border: 1px solid var(--border);
-      border-radius: 10px;
-      padding: 12px;
-      position: relative;
-    }
-
-    .reply-bubble.ai-reply {
-      background: var(--accent-ai);
-      border-color: var(--accent-ai-border);
-      border-left: 4px solid var(--badge-ai);
-    }
-
-    .reply-header {
+    .actions-bar {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 6px;
+      padding-top: 10px;
+      border-top: 1px solid #f1f3f4;
     }
-
-    .badge {
-      display: inline-block;
-      font-size: 0.7rem;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 0.03em;
+    .replies-list {
+      margin-top: 14px;
+      padding-left: 14px;
+      border-left: 3px solid #1a73e8;
+    }
+    .reply-item {
+      background: #f8f9fa;
+      padding: 12px 14px;
+      border-radius: 8px;
+      margin-bottom: 10px;
+      font-size: 13.5px;
+      border: 1px solid #e1e4e8;
+    }
+    .reply-item.developer-reply {
+      background: #e8f0fe;
+      border: 1px solid #c2e7ff;
+    }
+    .reply-item.ai-reply {
+      background: #f3e8fd;
+      border: 1px solid #e1bee7;
+    }
+    .reply-meta {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+      gap: 8px;
+    }
+    .reply-meta-left {
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+    .reply-meta-right {
+      display: flex;
+      align-items: center;
+      white-space: nowrap;
+    }
+    .developer-tag {
+      background: #1a73e8;
+      color: #fff;
+      font-size: 10px;
+      font-weight: bold;
       padding: 2px 6px;
       border-radius: 4px;
-      color: #ffffff;
+      white-space: nowrap;
     }
-
-    .badge-ai { background: var(--badge-ai); }
-    .badge-dev { background: var(--badge-dev); }
-
-    .reply-content {
-      font-size: 0.95rem;
-      color: #334155;
-      line-height: 1.6;
+    .ai-tag {
+      background: #8e24aa;
+      color: #fff;
+      font-size: 10px;
+      font-weight: bold;
+      padding: 2px 6px;
+      border-radius: 4px;
+      white-space: nowrap;
+    }
+    .mod-tag {
+      background: #137333;
+      color: #fff;
+      font-size: 10px;
+      font-weight: bold;
+      padding: 2px 6px;
+      border-radius: 4px;
+      white-space: nowrap;
+    }
+    .reply-text {
+      white-space: pre-line;
       word-break: break-word;
+      line-height: 1.5;
     }
-
-    .reply-form {
-      display: flex;
-      gap: 8px;
-      margin-top: 10px;
-    }
-
-    .reply-input {
-      flex: 1;
-      padding: 8px 12px;
-      font-size: 0.9rem;
-      border: 1px solid var(--border);
-      border-radius: 6px;
-    }
-
-    .reply-send-btn {
-      background: var(--primary);
-      color: white;
-      border: none;
-      padding: 8px 14px;
-      font-size: 0.85rem;
-      font-weight: 600;
-      border-radius: 6px;
-      cursor: pointer;
-    }
-
-    /* Modal for Dev Login */
-    .modal-backdrop {
+    .answer-form {
       display: none;
-      position: fixed;
-      inset: 0;
-      background: rgba(0, 0, 0, 0.4);
-      align-items: center;
-      justify-content: center;
-      padding: 16px;
-      z-index: 100;
+      margin-top: 12px;
+      padding: 14px;
+      background: #f8f9fa;
+      border-radius: 8px;
     }
-
-    .modal-box {
-      background: white;
-      width: 100%;
-      max-width: 360px;
-      border-radius: 12px;
-      padding: 20px;
-      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+    .nav-links {
+      text-align: center;
+      margin-top: 24px;
     }
-
-    .modal-title {
-      font-size: 1.15rem;
-      font-weight: 700;
-      margin-bottom: 12px;
-    }
-
-    .close-modal-btn {
-      background: transparent;
-      border: none;
-      color: var(--text-muted);
-      cursor: pointer;
-      font-size: 0.9rem;
-      float: right;
+    .nav-links a {
+      color: #1a73e8;
+      text-decoration: none;
+      font-size: 14px;
+      margin: 0 10px;
     }
   </style>
 </head>
 <body>
 
   <div class="container">
-    <header>
-      <a href="index.html" class="brand-title">Anima Clip Community</a>
-      <button class="auth-btn" id="devAuthTrigger">Developer Login</button>
-    </header>
-
-    <!-- Post Creation Box -->
-    <div class="card">
-      <h2>Ask a Question or Share Feedback</h2>
-      <div class="form-group">
-        <input type="text" id="authorInput" placeholder="Your name (e.g. John, Risa)" maxlength="50" />
-      </div>
-      <div class="form-group">
-        <textarea id="questionInput" placeholder="How do I import images, add audio, or export animations?" maxlength="2000"></textarea>
-      </div>
-      <button class="submit-btn" id="submitPostBtn">Post to Community</button>
+    <div class="top-bar">
+      <button class="top-btn" id="devToggleBtn">Developer Login</button>
     </div>
 
-    <!-- Questions Feed -->
-    <div id="questionsFeed">
-      <div style="text-align: center; color: var(--text-muted); padding: 30px 0;">Loading discussions...</div>
+    <h2>Community Q&A</h2>
+    <p class="subtitle">Ask your questions here and our community will help you!</p>
+
+    <div id="postNotification" class="notification"></div>
+
+    <div class="question-box">
+      <h3>Add your question here</h3>
+      <input type="text" id="qAuthor" placeholder="Your Name or Nickname" required>
+      <textarea id="qText" placeholder="Write your question or query here..." required></textarea>
+      <button class="btn btn-primary" id="btnPostQuestion">Post Question</button>
+    </div>
+
+    <div class="feed-title">Questions & Discussion</div>
+
+    <div class="pinned-card">
+      <div class="question-header">
+        <div class="reply-meta-left">
+          <span class="pinned-tag">📌 PINNED</span>
+          <span class="author-name">Community Mod</span>
+          <span class="mod-tag">Official</span>
+        </div>
+      </div>
+      <div class="question-text">Welcome to the Anima Clip Q&A board! Feel free to ask anything about features, updates, or troubleshooting.</div>
+      <div class="replies-list">
+        <div class="reply-item developer-reply">
+          <div class="reply-meta">
+            <div class="reply-meta-left">
+              <strong>Incrible Studio</strong>
+              <span class="developer-tag">Developer</span>
+              <span class="mod-tag">Official</span>
+            </div>
+          </div>
+          <div class="reply-text">We check here frequently to help answer any questions!</div>
+        </div>
+      </div>
+    </div>
+
+    <div id="questionsContainer">Loading discussions...</div>
+
+    <div class="nav-links">
+      <a href="contact.html">← Back to Contact Support</a>
+      <a href="index.html">Home</a>
     </div>
   </div>
 
-  <!-- Developer Login Modal -->
-  <div class="modal-backdrop" id="devModal">
-    <div class="modal-box">
-      <button class="close-modal-btn" id="closeModalBtn">&times;</button>
-      <div class="modal-title">Developer Access</div>
-      <div class="form-group">
-        <input type="text" id="devEmail" placeholder="Email" />
-      </div>
-      <div class="form-group">
-        <input type="password" id="devPassword" placeholder="Password" />
-      </div>
-      <button class="submit-btn" style="width: 100%; justify-content: center;" id="devLoginSubmit">Log In</button>
-    </div>
-  </div>
-
-  <!-- Firebase & Logic Module -->
   <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
     import { 
-      getFirestore, collection, addDoc, updateDoc, deleteDoc, doc, onSnapshot, query, orderBy, serverTimestamp 
-    } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+      getFirestore, collection, addDoc, updateDoc, doc, deleteDoc, 
+      onSnapshot, query, orderBy, serverTimestamp, arrayUnion 
+    } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
     import { 
       getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged 
-    } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+    } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 
-    // 1. Firebase Config
+    function getUserId() {
+      let id = localStorage.getItem("anima_user_token");
+      if (!id) {
+        id = "user_" + Math.random().toString(36).substring(2, 11) + Date.now().toString(36);
+        localStorage.setItem("anima_user_token", id);
+      }
+      return id;
+    }
+    const myDeviceId = getUserId();
+
+    const WORKER_AI_URL = "https://anima-clip-bot.hossainsarowar001.workers.dev";
+
     const firebaseConfig = {
       apiKey: "AIzaSyDzQo1HsYJwdcwOJFo2xd8P347PXgw3COE",
       authDomain: "anima-clip-support.firebaseapp.com",
       projectId: "anima-clip-support",
-      storageBucket: "anima-clip-support.appspot.com",
-      messagingSenderId: "1098696874251",
-      appId: "1:1098696874251:web:2fefc2ad05186b5952f441"
+      storageBucket: "anima-clip-support.firebasestorage.app",
+      messagingSenderId: "998194247470",
+      appId: "1:998194247470:web:9bfb771ce9356dcf3d2597",
+      measurementId: "G-7QKLY9KODR"
     };
 
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
     const auth = getAuth(app);
 
-    const WORKER_ENDPOINT = "https://anima-clip-bot.hossainsarowar001.workers.dev";
-    const DEV_EMAIL = "incriblestudiodeveloper@gmail.com";
+    let currentDevUser = null;
+    const openReplyBoxes = new Set();
+    let currentQuestionsData = [];
 
-    // 2. Identify Current Device Client-Side
-    let myDeviceId = localStorage.getItem("anima_device_id");
-    if (!myDeviceId) {
-      myDeviceId = "user_" + Math.random().toString(36).substring(2, 15) + Date.now().toString(36);
-      localStorage.setItem("anima_device_id", myDeviceId);
+    onAuthStateChanged(auth, (user) => {
+      currentDevUser = user;
+      const devToggleBtn = document.getElementById('devToggleBtn');
+      if (user) {
+        devToggleBtn.innerText = `Logout (${user.email})`;
+        devToggleBtn.classList.add('active');
+      } else {
+        devToggleBtn.innerText = 'Developer Login';
+        devToggleBtn.classList.remove('active');
+      }
+      renderQuestions(currentQuestionsData);
+    });
+
+    document.getElementById('devToggleBtn').onclick = async () => {
+      if (currentDevUser) {
+        await signOut(auth);
+        showNotification("Logged out of Developer account.");
+      } else {
+        const email = prompt("Enter Developer Email:");
+        if (!email) return;
+        const password = prompt("Enter Developer Password:");
+        if (!password) return;
+
+        try {
+          await signInWithEmailAndPassword(auth, email.trim(), password);
+          showNotification("✓ Authenticated as Developer! Delete controls and badges enabled.");
+        } catch (err) {
+          alert("Login failed: " + err.message);
+        }
+      }
+    };
+
+    function showNotification(msg) {
+      const banner = document.getElementById('postNotification');
+      banner.innerText = msg;
+      banner.style.display = 'block';
+      setTimeout(() => {
+        banner.style.display = 'none';
+      }, 4500);
     }
 
-    let currentDevUser = null;
+    function escapeHTML(str) {
+      const div = document.createElement('div');
+      div.innerText = str || '';
+      return div.innerHTML;
+    }
 
-    // 3. Clean Text Renderer (Sanitizes HTML & cleans up markdown asterisks/headers)
-    function renderCleanContent(rawText) {
-      if (!rawText) return "";
-      let clean = rawText
-        .replace(/&/g, "&amp;")
-        .replace(/</g, "&lt;")
-        .replace(/>/g, "&gt;");
-      clean = clean.replace(/\*\*(.*?)\*\*/g, '<strong style="font-weight: 600; color: #0f172a;">$1</strong>');
-      clean = clean.replace(/\*(.*?)\*/g, '<em>$1</em>');
+    // Strips markdown asterisks and hash symbols cleanly from plain text
+    function cleanFormatting(str) {
+      if (!str) return '';
+      let clean = escapeHTML(str);
+      clean = clean.replace(/\*\*(.*?)\*\*/g, '$1');
+      clean = clean.replace(/\*(.*?)\*/g, '$1');
       clean = clean.replace(/#{1,6}\s?/g, '');
-      clean = clean.replace(/\n\n+/g, '<br><br>').replace(/\n/g, '<br>');
       return clean;
     }
 
-    function escapeHtml(text) {
-      if (!text) return "";
-      return text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
-    }
+    const qQuery = query(collection(db, "questions"), orderBy("createdAt", "desc"));
+    onSnapshot(qQuery, (snapshot) => {
+      currentQuestionsData = [];
+      snapshot.forEach(docSnap => {
+        currentQuestionsData.push({ id: docSnap.id, ...docSnap.data() });
+      });
+      renderQuestions(currentQuestionsData);
+    });
 
-    // 4. Developer Auth State Tracker
-    const devAuthTrigger = document.getElementById("devAuthTrigger");
-    const devModal = document.getElementById("devModal");
-    const closeModalBtn = document.getElementById("closeModalBtn");
+    document.getElementById('btnPostQuestion').onclick = async () => {
+      const author = document.getElementById('qAuthor').value.trim();
+      const text = document.getElementById('qText').value.trim();
 
-    onAuthStateChanged(auth, (user) => {
-      currentDevUser = (user && user.email.toLowerCase() === DEV_EMAIL) ? user : null;
-      if (currentDevUser) {
-        devAuthTrigger.textContent = "Log Out (Dev)";
-        devAuthTrigger.style.borderColor = "var(--badge-dev)";
-        devAuthTrigger.style.color = "var(--badge-dev)";
-      } else {
-        devAuthTrigger.textContent = "Developer Login";
-        devAuthTrigger.style.borderColor = "var(--border)";
-        devAuthTrigger.style.color = "var(--text-muted)";
+      if (!author || !text) return alert("Please fill out both fields.");
+      if (!currentDevUser && (author.toLowerCase().includes("developer") || author.toLowerCase().includes("mod") || author.toLowerCase().includes("incrible") || author.toLowerCase().includes("assistant") || author.toLowerCase().includes("bot"))) {
+        return alert("Reserved name. Please choose another username.");
       }
-    });
 
-    devAuthTrigger.addEventListener("click", () => {
-      if (currentDevUser) {
-        signOut(auth);
-      } else {
-        devModal.style.display = "flex";
-      }
-    });
+      const btn = document.getElementById('btnPostQuestion');
+      btn.disabled = true;
+      btn.innerText = 'Posting...';
 
-    closeModalBtn.addEventListener("click", () => {
-      devModal.style.display = "none";
-    });
-
-    document.getElementById("devLoginSubmit").addEventListener("click", async () => {
-      const email = document.getElementById("devEmail").value.trim();
-      const pass = document.getElementById("devPassword").value.trim();
       try {
-        await signInWithEmailAndPassword(auth, email, pass);
-        devModal.style.display = "none";
-        document.getElementById("devEmail").value = "";
-        document.getElementById("devPassword").value = "";
-      } catch (err) {
-        alert("Developer login failed: " + err.message);
+        const newDocRef = await addDoc(collection(db, "questions"), {
+          author,
+          text,
+          userId: myDeviceId,
+          createdAt: serverTimestamp(),
+          replies: []
+        });
+
+        document.getElementById('qAuthor').value = '';
+        document.getElementById('qText').value = '';
+        showNotification("✓ Your question was successfully posted to the community!");
+
+        // Background call to Cloudflare Worker AI Assistant
+        fetch(WORKER_AI_URL, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ question: text })
+        })
+        .then(res => res.json())
+        .then(async data => {
+          if (data && data.reply) {
+            await updateDoc(doc(db, "questions", newDocRef.id), {
+              replies: arrayUnion({
+                id: 'ai_' + Date.now(),
+                author: "Anima Clip Assistant",
+                text: data.reply,
+                isAi: true,
+                date: new Date().toLocaleDateString()
+              })
+            });
+          }
+        })
+        .catch(err => console.log("AI response skipped:", err));
+
+      } catch (e) {
+        alert("Failed to post question: " + e.message);
+      } finally {
+        btn.disabled = false;
+        btn.innerText = 'Post Question';
       }
-    });
+    };
 
-    // 5. Submit Question & Trigger Automated Assistant
-    const submitPostBtn = document.getElementById("submitPostBtn");
-    const authorInput = document.getElementById("authorInput");
-    const questionInput = document.getElementById("questionInput");
+    window.toggleAnswerBox = (id) => {
+      if (openReplyBoxes.has(id)) {
+        openReplyBoxes.delete(id);
+      } else {
+        openReplyBoxes.add(id);
+      }
+      const box = document.getElementById(`reply-box-${id}`);
+      if (box) {
+        box.style.display = openReplyBoxes.has(id) ? 'block' : 'none';
+      }
+    };
 
-    submitPostBtn.addEventListener("click", async () => {
-      const author = authorInput.value.trim() || "Anonymous Creator";
-      const text = questionInput.value.trim();
+    window.submitAnswer = async (qId) => {
+      const authorInput = document.getElementById(`replyAuthor-${qId}`);
+      const textInput = document.getElementById(`replyText-${qId}`);
+      const author = authorInput.value.trim();
+      const text = textInput.value.trim();
 
-      if (!text) {
-        alert("Please write your question before submitting.");
+      if (!author || !text) return alert("Please provide name and reply message.");
+
+      openReplyBoxes.delete(qId);
+      const box = document.getElementById(`reply-box-${qId}`);
+      if (box) box.style.display = 'none';
+
+      authorInput.value = '';
+      textInput.value = '';
+
+      const isDev = currentDevUser !== null;
+      const replyData = {
+        id: 'r_' + Date.now(),
+        author: isDev ? "Incrible Studio" : author,
+        text,
+        isDev: isDev,
+        devEmail: isDev ? currentDevUser.email : null,
+        userId: myDeviceId,
+        date: new Date().toLocaleDateString()
+      };
+
+      try {
+        const docRef = doc(db, "questions", qId);
+        await updateDoc(docRef, {
+          replies: arrayUnion(replyData)
+        });
+        showNotification("✓ Reply posted successfully!");
+      } catch (err) {
+        alert("Failed to post reply: " + err.message);
+      }
+    };
+
+    window.deleteQuestion = async (id, ownerId) => {
+      const isOwner = ownerId && ownerId === myDeviceId;
+      if (!currentDevUser && !isOwner) {
+        alert("Unauthorized: You can only delete your own questions.");
         return;
       }
 
-      submitPostBtn.disabled = true;
-      submitPostBtn.textContent = "Posting...";
-
-      try {
-        // Save question into Firestore
-        const docRef = await addDoc(collection(db, "questions"), {
-          author: author,
-          text: text,
-          userId: myDeviceId,
-          replies: [],
-          createdAt: serverTimestamp()
-        });
-
-        questionInput.value = "";
-        submitPostBtn.textContent = "Consulting Assistant...";
-
-        // Request AI answer via Cloudflare Worker
+      if (confirm("Are you sure you want to delete this question?")) {
         try {
-          const aiRes = await fetch(WORKER_ENDPOINT, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ question: text })
+          await deleteDoc(doc(db, "questions", id));
+          showNotification("Question removed successfully.");
+        } catch (err) {
+          alert("Delete failed: " + err.message);
+        }
+      }
+    };
+
+    window.deleteReply = async (questionId, replyId, replyOwnerId) => {
+      const isOwner = replyOwnerId && replyOwnerId === myDeviceId;
+      if (!currentDevUser && !isOwner) {
+        alert("Unauthorized: You can only delete your own replies.");
+        return;
+      }
+
+      if (confirm("Are you sure you want to delete this reply?")) {
+        try {
+          const targetQuestion = currentQuestionsData.find(q => q.id === questionId);
+          if (!targetQuestion) return;
+
+          const updatedReplies = (targetQuestion.replies || []).filter(r => r.id !== replyId);
+          const docRef = doc(db, "questions", questionId);
+          await updateDoc(docRef, {
+            replies: updatedReplies
           });
 
-          if (aiRes.ok) {
-            const aiData = await aiRes.json();
-            if (aiData.reply) {
-              const aiReplyObj = {
-                id: "ai_" + Date.now(),
-                author: "Anima Clip Assistant",
-                text: aiData.reply,
-                isAi: true,
-                date: new Date().toLocaleDateString("en-GB")
-              };
-              await updateDoc(docRef, {
-                replies: [aiReplyObj]
-              });
-            }
-          }
-        } catch (workerErr) {
-          console.warn("AI automated reply skipped:", workerErr);
+          showNotification("Reply removed successfully.");
+        } catch (err) {
+          alert("Delete reply failed: " + err.message);
         }
-
-      } catch (dbErr) {
-        alert("Error publishing question: " + dbErr.message);
-      } finally {
-        submitPostBtn.disabled = false;
-        submitPostBtn.textContent = "Post to Community";
       }
-    });
+    };
 
-    // 6. Real-Time Discussions Feed
-    const feed = document.getElementById("questionsFeed");
-    const qQuery = query(collection(db, "questions"), orderBy("createdAt", "desc"));
-
-    onSnapshot(qQuery, (snapshot) => {
-      if (snapshot.empty) {
-        feed.innerHTML = '<div style="text-align: center; color: var(--text-muted); padding: 30px 0;">No questions yet. Be the first to ask!</div>';
+    function renderQuestions(questions) {
+      const container = document.getElementById('questionsContainer');
+      if (questions.length === 0) {
+        container.innerHTML = '<p style="text-align: center; color: #888;">No questions yet.</p>';
         return;
       }
 
-      feed.innerHTML = "";
+      container.innerHTML = questions.map(q => {
+        const replies = q.replies || [];
+        const isBoxOpen = openReplyBoxes.has(q.id);
+        const canDeleteQuestion = currentDevUser || (q.userId && q.userId === myDeviceId);
 
-      snapshot.forEach((docSnap) => {
-        const qData = docSnap.data();
-        const qId = docSnap.id;
-        const isAuthor = qData.userId === myDeviceId;
-        const isMasterDev = currentDevUser !== null;
+        return `
+          <div class="question-card">
+            <div class="question-header">
+              <span class="author-name">${escapeHTML(q.author)}</span>
+              ${canDeleteQuestion ? `<button class="btn btn-danger" onclick="deleteQuestion('${q.id}', '${escapeHTML(q.userId || '')}')">Delete Post</button>` : ''}
+            </div>
+            <div class="question-text">${cleanFormatting(q.text)}</div>
+            <div class="actions-bar">
+              <button class="btn btn-secondary" onclick="toggleAnswerBox('${q.id}')">💬 Reply</button>
+              <span style="font-size: 12px; color: #666;">${replies.length} replies</span>
+            </div>
 
-        const dateStr = qData.createdAt?.toDate 
-          ? qData.createdAt.toDate().toLocaleDateString("en-GB") 
-          : "Recently";
+            <div id="reply-box-${q.id}" class="answer-form" style="display: ${isBoxOpen ? 'block' : 'none'};">
+              <input type="text" id="replyAuthor-${q.id}" placeholder="Your Name" value="${currentDevUser ? 'Incrible Studio (Official)' : ''}">
+              <textarea id="replyText-${q.id}" placeholder="Your reply..."></textarea>
+              <button class="btn btn-primary" onclick="submitAnswer('${q.id}')">Post Answer</button>
+            </div>
 
-        const card = document.createElement("div");
-        card.className = "question-card";
+            ${replies.length > 0 ? `
+              <div class="replies-list">
+                ${replies.map(r => {
+                  const canDeleteReply = currentDevUser || (r.userId && r.userId === myDeviceId);
 
-        // Build replies HTML
-        let repliesHtml = "";
-        const replies = Array.isArray(qData.replies) ? qData.replies : [];
-
-        replies.forEach((rep, idx) => {
-          const canDeleteReply = isMasterDev || rep.userId === myDeviceId;
-          repliesHtml += `
-            <div class="reply-bubble ${rep.isAi ? 'ai-reply' : ''}">
-              <div class="reply-header">
-                <div style="display: flex; align-items: center; gap: 6px;">
-                  <strong style="font-size: 0.9rem; color: var(--text-main);">${escapeHtml(rep.author)}</strong>
-                  ${rep.isAi ? '<span class="badge badge-ai">AI Assistant</span>' : ''}
-                  ${rep.isDev ? '<span class="badge badge-dev">Developer</span>' : ''}
-                  <span class="post-date">${rep.date || ''}</span>
-                </div>
-                ${canDeleteReply ? `<button class="delete-action-btn" data-action="delete-reply" data-qid="${qId}" data-index="${idx}">Delete</button>` : ''}
+                  return `
+                    <div class="reply-item ${r.isDev ? 'developer-reply' : ''} ${r.isAi ? 'ai-reply' : ''}">
+                      <div class="reply-meta">
+                        <div class="reply-meta-left">
+                          <strong>${escapeHTML(r.author)}</strong>
+                          ${r.isDev ? '<span class="developer-tag">Developer</span> <span class="mod-tag">Official</span>' : ''}
+                          ${r.isAi ? '<span class="ai-tag">AI Assistant</span>' : ''}
+                        </div>
+                        <div class="reply-meta-right">
+                          <span class="date-tag">${escapeHTML(r.date)}</span>
+                          ${canDeleteReply ? `<button class="btn-danger-sm" onclick="deleteReply('${q.id}', '${r.id}', '${escapeHTML(r.userId || '')}')">Delete</button>` : ''}
+                        </div>
+                      </div>
+                      <div class="reply-text">${cleanFormatting(r.text)}</div>
+                    </div>
+                  `;
+                }).join('')}
               </div>
-              <div class="reply-content">${renderCleanContent(rep.text)}</div>
-            </div>
-          `;
-        });
-
-        card.innerHTML = `
-          <div class="post-header">
-            <div class="author-info">
-              <span class="author-name">${escapeHtml(qData.author)}</span>
-              <span class="post-date">${dateStr}</span>
-            </div>
-            ${(isAuthor || isMasterDev) ? `<button class="delete-action-btn" data-action="delete-question" data-qid="${qId}">Delete Post</button>` : ''}
-          </div>
-          <div class="question-body">${renderCleanContent(qData.text)}</div>
-          <div class="replies-section">
-            ${repliesHtml}
-            <div class="reply-form">
-              <input type="text" class="reply-input" placeholder="Write a reply..." id="replyInput_${qId}" maxlength="1000" />
-              <button class="reply-send-btn" data-action="send-reply" data-qid="${qId}">Reply</button>
-            </div>
+            ` : ''}
           </div>
         `;
-
-        feed.appendChild(card);
-      });
-    }, (error) => {
-      console.error("Firestore feed listener error:", error);
-      feed.innerHTML = '<div style="text-align: center; color: var(--danger); padding: 20px;">Could not load community feed.</div>';
-    });
-
-    // 7. Global Click Handlers for Reply, Delete Reply, and Delete Post
-    document.addEventListener("click", async (e) => {
-      const action = e.target.dataset.action;
-      if (!action) return;
-
-      const qId = e.target.dataset.qid;
-      const questionDocRef = doc(db, "questions", qId);
-
-      // Handle User Reply
-      if (action === "send-reply") {
-        const inputEl = document.getElementById(`replyInput_${qId}`);
-        const replyText = inputEl.value.trim();
-        if (!replyText) return;
-
-        e.target.disabled = true;
-
-        try {
-          const authorName = localStorage.getItem("anima_user_name") || "Animator";
-          const newReply = {
-            id: "rep_" + Date.now(),
-            author: currentDevUser ? "Incrible Studio (Dev)" : authorName,
-            text: replyText,
-            userId: myDeviceId,
-            isDev: currentDevUser !== null,
-            isAi: false,
-            date: new Date().toLocaleDateString("en-GB")
-          };
-
-          const targetDoc = (await import("https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js")).getDoc;
-          const currentSnap = await targetDoc(questionDocRef);
-          
-          if (currentSnap.exists()) {
-            const list = currentSnap.data().replies || [];
-            list.push(newReply);
-            await updateDoc(questionDocRef, { replies: list });
-            inputEl.value = "";
-          }
-        } catch (err) {
-          alert("Error adding reply: " + err.message);
-        } finally {
-          e.target.disabled = false;
-        }
-      }
-
-      // Handle Reply Deletion
-      if (action === "delete-reply") {
-        const replyIndex = parseInt(e.target.dataset.index, 10);
-        if (confirm("Are you sure you want to delete this reply?")) {
-          try {
-            const targetDoc = (await import("https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js")).getDoc;
-            const currentSnap = await targetDoc(questionDocRef);
-            if (currentSnap.exists()) {
-              const list = currentSnap.data().replies || [];
-              list.splice(replyIndex, 1);
-              await updateDoc(questionDocRef, { replies: list });
-            }
-          } catch (err) {
-            alert("Error removing reply: " + err.message);
-          }
-        }
-      }
-
-      // Handle Question Post Deletion
-      if (action === "delete-question") {
-        if (confirm("Are you sure you want to delete this entire question thread?")) {
-          try {
-            await deleteDoc(questionDocRef);
-          } catch (err) {
-            alert("Could not delete question: " + err.message);
-          }
-        }
-      }
-    });
+      }).join('');
+    }
   </script>
 </body>
 </html>
