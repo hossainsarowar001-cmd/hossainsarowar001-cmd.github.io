@@ -6,7 +6,7 @@ const CORS_HEADERS = {
 
 export default {
   async fetch(request, env) {
-    // 1. Handle Preflight Options
+    // 1. Handle CORS preflight
     if (request.method === "OPTIONS") {
       return new Response(null, { headers: CORS_HEADERS });
     }
@@ -31,13 +31,13 @@ export default {
 
       const apiKey = env.GEMINI_API_KEY;
       if (!apiKey) {
-        return new Response(JSON.stringify({ reply: "Error: GEMINI_API_KEY is not set in Worker environment variables." }), {
+        return new Response(JSON.stringify({ reply: "Error: GEMINI_API_KEY is missing in Cloudflare settings." }), {
           status: 500,
           headers: { ...CORS_HEADERS, "Content-Type": "application/json" }
         });
       }
 
-      // Gemini 3.x Flash series array
+      // Priority list of Gemini Flash models
       const models = [
         "gemini-3.8-flash",
         "gemini-3.7-flash",
@@ -51,8 +51,10 @@ Answer helpfully, naturally, and concisely like a human animator in the communit
 - Do NOT use markdown symbols like asterisks (**bold** or *italic*). Output clean, regular text.
 - If giving steps, use simple numbering (1., 2., 3.).
 - Keep the answer direct and under 3-4 steps. No generic welcome or closing boilerplate.
+- Finish all thoughts and sentences completely.
 
-User Question: ${question}`;
+User Question: ${question}
+Assistant:`;
 
       const payload = {
         contents: [
@@ -62,8 +64,8 @@ User Question: ${question}`;
           }
         ],
         generationConfig: {
-          temperature: 0.5,
-          maxOutputTokens: 250
+          temperature: 0.6,
+          maxOutputTokens: 1000
         }
       };
 
@@ -89,11 +91,12 @@ User Question: ${question}`;
           let rawOutput = data.candidates?.[0]?.content?.parts?.[0]?.text;
 
           if (rawOutput) {
-            // Strip markdown asterisks, hashes, and cleanup spacing
+            // Strip markdown asterisks, hashes, and unwanted leading colons/dashes
             finalReply = rawOutput
               .replace(/\*\*/g, "")
               .replace(/\*/g, "")
               .replace(/#{1,6}\s?/g, "")
+              .replace(/^[:\s-]+/, "")
               .trim();
             break;
           }
@@ -106,7 +109,7 @@ User Question: ${question}`;
         }
       }
 
-      // Resilient fallback if all models in array are busy or rate-limited
+      // Resilient fallback if upstream models are temporarily busy
       if (!finalReply) {
         finalReply = "To work with layers, audio, or frames in Anima Clip, open your canvas and tap the tool icons in the bottom menu. If you experience an issue, make sure app permissions for storage are enabled.";
       }
