@@ -9,11 +9,13 @@
     :root {
       --primary: #2563eb;
       --primary-hover: #1d4ed8;
-      --bg: #090d16;
-      --surface-card: #131d2e;
-      --border: #1e293b;
-      --text: #f8fafc;
-      --text-muted: #94a3b8;
+      --bg: #f8fafc;
+      --surface-card: #ffffff;
+      --border: #e2e8f0;
+      --text: #0f172a;
+      --text-muted: #64748b;
+      --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.05), 0 1px 2px rgba(0, 0, 0, 0.03);
+      --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.07), 0 2px 4px -2px rgba(0, 0, 0, 0.05);
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
@@ -21,9 +23,9 @@
 
     .container { max-width: 900px; margin: 0 auto; padding: 0 1.5rem; }
 
-    /* Centered Header with Image Logo */
+    /* Centered Header with App Logo */
     .top-brand-header {
-      padding: 2.5rem 0 1rem;
+      padding: 2.5rem 0 1.25rem;
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -37,44 +39,44 @@
       height: 72px;
       border-radius: 16px;
       object-fit: cover;
-      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+      box-shadow: var(--shadow-md);
       border: 1px solid var(--border);
-      background-color: var(--surface-card);
+      background-color: #fff;
     }
 
     .brand-title {
       font-size: 1.5rem;
       font-weight: 800;
-      color: #fff;
+      color: var(--text);
       letter-spacing: -0.01em;
     }
 
     /* Hero Section */
     .hero { text-align: center; padding: 4.5rem 0 3.5rem; }
-    .badge { display: inline-block; background: rgba(37, 99, 235, 0.12); color: #60a5fa; border: 1px solid rgba(37, 99, 235, 0.25); padding: 0.3rem 0.85rem; border-radius: 9999px; font-size: 0.8rem; font-weight: 600; margin-bottom: 1.25rem; letter-spacing: 0.02em; }
-    .hero h1 { font-size: clamp(2.2rem, 5vw, 3.2rem); font-weight: 800; line-height: 1.15; color: #fff; margin-bottom: 1rem; }
+    .badge { display: inline-block; background: #eff6ff; color: #2563eb; border: 1px solid #bfdbfe; padding: 0.35rem 0.95rem; border-radius: 9999px; font-size: 0.8rem; font-weight: 600; margin-bottom: 1.25rem; letter-spacing: 0.02em; }
+    .hero h1 { font-size: clamp(2.2rem, 5vw, 3.2rem); font-weight: 800; line-height: 1.15; color: var(--text); margin-bottom: 1rem; }
     .hero p { font-size: 1.1rem; color: var(--text-muted); max-width: 580px; margin: 0 auto 2.2rem; }
 
-    .btn-play { display: inline-flex; align-items: center; gap: 0.6rem; background: var(--primary); color: #fff; padding: 0.85rem 1.8rem; border-radius: 8px; font-weight: 600; text-decoration: none; font-size: 0.95rem; transition: background 0.2s; }
-    .btn-play:hover { background: var(--primary-hover); }
+    .btn-play { display: inline-flex; align-items: center; gap: 0.6rem; background: var(--primary); color: #fff; padding: 0.85rem 1.8rem; border-radius: 8px; font-weight: 600; text-decoration: none; font-size: 0.95rem; transition: background 0.2s, transform 0.1s; box-shadow: var(--shadow-sm); }
+    .btn-play:hover { background: var(--primary-hover); transform: translateY(-1px); }
 
     /* Features Grid */
     .features { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 1.25rem; margin-bottom: 4rem; }
-    .card { background: var(--surface-card); border: 1px solid var(--border); border-radius: 12px; padding: 1.75rem; }
-    .card h3 { font-size: 1.05rem; color: #fff; margin-bottom: 0.5rem; font-weight: 600; }
+    .card { background: var(--surface-card); border: 1px solid var(--border); border-radius: 12px; padding: 1.75rem; box-shadow: var(--shadow-sm); }
+    .card h3 { font-size: 1.05rem; color: var(--text); margin-bottom: 0.5rem; font-weight: 600; }
     .card p { color: var(--text-muted); font-size: 0.9rem; line-height: 1.55; }
 
     /* Feedback / Support Panel */
-    .feedback-panel { background: var(--surface-card); border: 1px solid var(--border); border-radius: 14px; padding: 2.5rem 1.5rem; text-align: center; margin-bottom: 5rem; }
-    .feedback-panel h2 { font-size: 1.35rem; color: #fff; margin-bottom: 0.5rem; font-weight: 700; }
+    .feedback-panel { background: var(--surface-card); border: 1px solid var(--border); border-radius: 14px; padding: 2.5rem 1.5rem; text-align: center; margin-bottom: 5rem; box-shadow: var(--shadow-sm); }
+    .feedback-panel h2 { font-size: 1.35rem; color: var(--text); margin-bottom: 0.5rem; font-weight: 700; }
     .feedback-panel p { color: var(--text-muted); font-size: 0.95rem; max-width: 520px; margin: 0 auto 1.5rem; }
-    .btn-feedback { display: inline-block; background: transparent; color: #fff; border: 1px solid var(--border); padding: 0.65rem 1.4rem; border-radius: 8px; font-size: 0.9rem; font-weight: 600; text-decoration: none; transition: all 0.2s; }
-    .btn-feedback:hover { background: rgba(255, 255, 255, 0.05); border-color: #475569; }
+    .btn-feedback { display: inline-block; background: #fff; color: var(--text); border: 1px solid var(--border); padding: 0.65rem 1.4rem; border-radius: 8px; font-size: 0.9rem; font-weight: 600; text-decoration: none; transition: all 0.2s; }
+    .btn-feedback:hover { background: #f1f5f9; border-color: #cbd5e1; }
 
     /* Footer */
     footer { border-top: 1px solid var(--border); padding: 2.5rem 0 3.5rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; font-size: 0.85rem; color: var(--text-muted); }
     .footer-links a { color: var(--text-muted); text-decoration: none; margin-left: 1.25rem; transition: color 0.2s; }
-    .footer-links a:hover { color: #fff; }
+    .footer-links a:hover { color: var(--text); }
 
     @media (max-width: 600px) {
       footer { flex-direction: column; text-align: center; }
