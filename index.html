@@ -57,8 +57,32 @@
     .hero h1 { font-size: clamp(2.2rem, 5vw, 3.2rem); font-weight: 800; line-height: 1.15; color: var(--text); margin-bottom: 1rem; }
     .hero p { font-size: 1.1rem; color: var(--text-muted); max-width: 580px; margin: 0 auto 2.2rem; }
 
-    .btn-play { display: inline-flex; align-items: center; gap: 0.6rem; background: var(--primary); color: #fff; padding: 0.85rem 1.8rem; border-radius: 8px; font-weight: 600; text-decoration: none; font-size: 0.95rem; transition: background 0.2s, transform 0.1s; box-shadow: var(--shadow-sm); }
-    .btn-play:hover { background: var(--primary-hover); transform: translateY(-1px); }
+    /* Google Play Button with Icon */
+    .btn-play { 
+      display: inline-flex; 
+      align-items: center; 
+      justify-content: center;
+      gap: 0.75rem; 
+      background: #0f172a; 
+      color: #fff; 
+      padding: 0.85rem 1.8rem; 
+      border-radius: 10px; 
+      font-weight: 600; 
+      text-decoration: none; 
+      font-size: 0.95rem; 
+      transition: all 0.2s; 
+      box-shadow: var(--shadow-sm); 
+    }
+    .btn-play:hover { 
+      background: #1e293b; 
+      transform: translateY(-1px); 
+      box-shadow: var(--shadow-md);
+    }
+    .play-icon {
+      width: 22px;
+      height: 22px;
+      display: block;
+    }
 
     /* Features Grid */
     .features { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 1.25rem; margin-bottom: 4rem; }
@@ -70,8 +94,27 @@
     .feedback-panel { background: var(--surface-card); border: 1px solid var(--border); border-radius: 14px; padding: 2.5rem 1.5rem; text-align: center; margin-bottom: 5rem; box-shadow: var(--shadow-sm); }
     .feedback-panel h2 { font-size: 1.35rem; color: var(--text); margin-bottom: 0.5rem; font-weight: 700; }
     .feedback-panel p { color: var(--text-muted); font-size: 0.95rem; max-width: 520px; margin: 0 auto 1.5rem; }
-    .btn-feedback { display: inline-block; background: #fff; color: var(--text); border: 1px solid var(--border); padding: 0.65rem 1.4rem; border-radius: 8px; font-size: 0.9rem; font-weight: 600; text-decoration: none; transition: all 0.2s; }
-    .btn-feedback:hover { background: #f1f5f9; border-color: #cbd5e1; }
+
+    /* Blue Contact Support Button */
+    .btn-feedback { 
+      display: inline-block; 
+      background: var(--primary); 
+      color: #ffffff; 
+      border: 1px solid var(--primary); 
+      padding: 0.75rem 1.6rem; 
+      border-radius: 8px; 
+      font-size: 0.95rem; 
+      font-weight: 600; 
+      text-decoration: none; 
+      transition: all 0.2s; 
+      box-shadow: var(--shadow-sm);
+    }
+    .btn-feedback:hover { 
+      background: var(--primary-hover); 
+      border-color: var(--primary-hover);
+      transform: translateY(-1px);
+      box-shadow: var(--shadow-md);
+    }
 
     /* Footer */
     footer { border-top: 1px solid var(--border); padding: 2.5rem 0 3.5rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; font-size: 0.85rem; color: var(--text-muted); }
@@ -99,8 +142,15 @@
       <h1>Bring Your Drawings to Life</h1>
       <p>A lightweight 2D animation studio designed for smooth frame-by-frame sketching, timeline control, and instant playback on mobile.</p>
       
+      <!-- Google Play Store Button with Logo -->
       <a href="https://play.google.com/store/apps/details?id=com.animaclip.app" class="btn-play" target="_blank" rel="noopener">
-        Get it on Google Play
+        <svg class="play-icon" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
+          <path fill="#4285F4" d="M325.3 234.3L104.6 13l280.8 161.2-60.1 59.8z"/>
+          <path fill="#34A853" d="M47 0C34 6.8 25.3 19.2 25.3 35.3v441.3c0 16.1 8.7 28.5 21.7 35.3l256.6-256L47 0z"/>
+          <path fill="#EA4335" d="M325.6 277.4l60.1 59.8L104.6 499c-2.3-1.3-4.4-2.8-6.3-4.5l227.3-217.1z"/>
+          <path fill="#FBBC04" d="M471.6 230.1l-85.9-49.4-60.4 60 60.4 60 86.2-49.5c15.2-8.7 24.8-24.8 24.8-42.3 0-17.7-9.8-33.8-25.1-42.2z"/>
+        </svg>
+        <span>Get it on Google Play</span>
       </a>
     </main>
 
