@@ -16,7 +16,7 @@
     }
     .container {
       background: #ffffff;
-      padding: 32px 24px;
+      padding: 20px 24px 32px 24px;
       border-radius: 14px;
       box-shadow: 0 4px 14px rgba(0, 0, 0, 0.08);
       max-width: 640px;
@@ -36,7 +36,8 @@
     .top-bar {
       display: flex;
       justify-content: flex-end;
-      margin-bottom: 12px;
+      margin-top: -8px;
+      margin-bottom: 6px;
     }
     .top-btn {
       background-color: #1a73e8;
@@ -416,7 +417,6 @@
       return div.innerHTML;
     }
 
-    // Strips markdown asterisks and hash symbols cleanly from plain text
     function cleanFormatting(str) {
       if (!str) return '';
       let clean = escapeHTML(str);
@@ -461,7 +461,6 @@
         document.getElementById('qText').value = '';
         showNotification("✓ Your question was successfully posted to the community!");
 
-        // Background call to Cloudflare Worker AI Assistant
         fetch(WORKER_AI_URL, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
