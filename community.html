@@ -351,6 +351,7 @@
       line-height: 1.45;
       max-width: 82%;
       word-break: break-word;
+      white-space: pre-line; /* Renders line breaks properly */
     }
     .chat-bubble.bot {
       background: #ffffff;
@@ -555,13 +556,17 @@
       return div.innerHTML;
     }
 
+    // Cleans formatting and converts <br> tags into clean linebreaks
     function cleanFormatting(str) {
       if (!str) return '';
-      let clean = escapeHTML(str);
+      let clean = str;
+      // Convert any literal or escaped <br> tags into real newlines
+      clean = clean.replace(/&lt;br\s*\/?&gt;/gi, '\n');
+      clean = clean.replace(/<br\s*[\/]?>/gi, '\n');
       clean = clean.replace(/\*\*(.*?)\*\*/g, '$1');
       clean = clean.replace(/\*(.*?)\*/g, '$1');
       clean = clean.replace(/#{1,6}\s?/g, '');
-      return clean;
+      return clean.trim();
     }
 
     const qQuery = query(collection(db, "questions"), orderBy("createdAt", "desc"));
@@ -611,7 +616,7 @@
               replies: arrayUnion({
                 id: 'ai_' + Date.now(),
                 author: "Anima Clip Assistant",
-                text: data.reply,
+                text: cleanFormatting(data.reply),
                 isAi: true,
                 date: new Date().toLocaleDateString()
               })
@@ -737,7 +742,7 @@
               <span class="author-name">${escapeHTML(q.author)}</span>
               ${canDeleteQuestion ? `<button class="btn btn-danger" onclick="deleteQuestion('${q.id}', '${escapeHTML(q.userId || '')}')">Delete Post</button>` : ''}
             </div>
-            <div class="question-text">${cleanFormatting(q.text)}</div>
+            <div class="question-text">${escapeHTML(cleanFormatting(q.text))}</div>
             <div class="actions-bar">
               <button class="btn btn-secondary" onclick="toggleAnswerBox('${q.id}')">💬 Reply</button>
               <span style="font-size: 12px; color: #666;">${replies.length} replies</span>
@@ -767,7 +772,7 @@
                           ${canDeleteReply ? `<button class="btn-danger-sm" onclick="deleteReply('${q.id}', '${r.id}', '${escapeHTML(r.userId || '')}')">Delete</button>` : ''}
                         </div>
                       </div>
-                      <div class="reply-text">${cleanFormatting(r.text)}</div>
+                      <div class="reply-text">${escapeHTML(cleanFormatting(r.text))}</div>
                     </div>
                   `;
                 }).join('')}
@@ -800,17 +805,15 @@
       const question = aiChatInput.value.trim();
       if (!question) return;
 
-      // Add user message bubble
       const userBubble = document.createElement('div');
       userBubble.className = 'chat-bubble user';
-      userBubble.innerText = question;
+      userBubble.textContent = question;
       aiChatMessages.appendChild(userBubble);
       aiChatInput.value = '';
 
-      // Add temporary loading indicator bubble
       const loadingBubble = document.createElement('div');
       loadingBubble.className = 'chat-bubble loading';
-      loadingBubble.innerText = 'Assistant is typing...';
+      loadingBubble.textContent = 'Assistant is typing...';
       aiChatMessages.appendChild(loadingBubble);
       aiChatMessages.scrollTop = aiChatMessages.scrollHeight;
 
@@ -825,13 +828,13 @@
         loadingBubble.remove();
         const botBubble = document.createElement('div');
         botBubble.className = 'chat-bubble bot';
-        botBubble.innerText = cleanFormatting(data.reply || "Sorry, I could not process your query right now.");
+        botBubble.textContent = cleanFormatting(data.reply || "Sorry, I could not process your query right now.");
         aiChatMessages.appendChild(botBubble);
       } catch (err) {
         loadingBubble.remove();
         const errBubble = document.createElement('div');
         errBubble.className = 'chat-bubble bot';
-        errBubble.innerText = "Connection issue. Please try again in a moment.";
+        errBubble.textContent = "Connection issue. Please try again in a moment.";
         aiChatMessages.appendChild(errBubble);
       }
 
