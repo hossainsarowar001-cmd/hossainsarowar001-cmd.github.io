@@ -190,8 +190,8 @@
       white-space: nowrap;
     }
     .date-tag {
-      font-size: 11px;
-      color: #888;
+      font-size: 11.5px;
+      color: #777;
       white-space: nowrap;
     }
     .question-text {
@@ -246,28 +246,30 @@
       flex-direction: column;
       gap: 4px;
     }
-    .reply-name-badge-row {
+    .reply-name-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      width: 100%;
+      gap: 8px;
+    }
+    .reply-name-row strong {
+      font-size: 13.5px;
+      color: #202124;
+      white-space: nowrap;
+    }
+    .reply-sub-row {
       display: flex;
       align-items: center;
       gap: 6px;
       flex-wrap: wrap;
     }
-    .reply-name-badge-row strong {
-      font-size: 13.5px;
-      color: #202124;
+    .reply-meta-right {
+      display: flex;
+      align-items: center;
       white-space: nowrap;
-    }
-    .reply-sub-badges {
-      display: flex;
-      align-items: center;
-      gap: 5px;
-    }
-    .reply-meta-row {
-      display: flex;
-      align-items: center;
-      justify-content: flex-end;
-      width: 100%;
-      margin-top: 2px;
+      flex-shrink: 0;
+      margin-left: auto;
     }
 
     .developer-tag {
@@ -484,11 +486,11 @@
       <div class="replies-list">
         <div class="reply-item developer-reply">
           <div class="reply-header">
-            <div class="reply-name-badge-row">
+            <div class="reply-name-row">
               <strong>Incrible Studio</strong>
-              <span class="developer-tag">Developer</span>
             </div>
-            <div class="reply-sub-badges">
+            <div class="reply-sub-row">
+              <span class="developer-tag">Developer</span>
               <span class="mod-tag">Official</span>
             </div>
           </div>
@@ -835,19 +837,16 @@
                   return `
                     <div class="reply-item ${r.isDev ? 'developer-reply' : ''} ${r.isAi ? 'ai-reply' : ''}">
                       <div class="reply-header">
-                        <div class="reply-name-badge-row">
+                        <div class="reply-name-row">
                           <strong>${escapeHTML(r.author)}</strong>
-                          ${r.isDev ? '<span class="developer-tag">Developer</span>' : ''}
-                          ${r.isAi ? '<span class="ai-tag">AI Assistant</span>' : ''}
-                        </div>
-                        ${r.isDev ? `
-                          <div class="reply-sub-badges">
-                            <span class="mod-tag">Official</span>
+                          <div class="reply-meta-right">
+                            <span class="date-tag">${escapeHTML(r.date)}</span>
+                            ${canDeleteReply ? `<button class="btn-danger-sm" onclick="deleteReply('${q.id}', '${r.id}', '${escapeHTML(r.userId || '')}')">Delete</button>` : ''}
                           </div>
-                        ` : ''}
-                        <div class="reply-meta-row">
-                          <span class="date-tag">${escapeHTML(r.date)}</span>
-                          ${canDeleteReply ? `<button class="btn-danger-sm" onclick="deleteReply('${q.id}', '${r.id}', '${escapeHTML(r.userId || '')}')">Delete</button>` : ''}
+                        </div>
+                        <div class="reply-sub-row">
+                          ${r.isDev ? '<span class="developer-tag">Developer</span><span class="mod-tag">Official</span>' : ''}
+                          ${r.isAi ? '<span class="ai-tag">AI Assistant</span>' : ''}
                         </div>
                       </div>
                       <div class="reply-text">${escapeHTML(cleanFormatting(r.text))}</div>
