@@ -277,34 +277,39 @@
       margin: 0 10px;
     }
 
-    /* Floating AI Chat Assistant Widget */
+    /* Cute Floating Bot Action Button */
     .ai-fab-btn {
       position: fixed;
       bottom: 24px;
       right: 24px;
+      width: 54px;
+      height: 54px;
       background: linear-gradient(135deg, #7c3aed, #4f46e5);
-      color: #ffffff;
       border: none;
-      border-radius: 50px;
-      padding: 12px 20px;
-      font-size: 14px;
-      font-weight: 600;
-      box-shadow: 0 4px 16px rgba(124, 58, 237, 0.35);
+      border-radius: 50%;
+      box-shadow: 0 4px 16px rgba(124, 58, 237, 0.4);
       cursor: pointer;
       display: flex;
       align-items: center;
-      gap: 8px;
+      justify-content: center;
       z-index: 999;
-      transition: transform 0.2s, box-shadow 0.2s;
+      transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.2s;
     }
     .ai-fab-btn:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 6px 20px rgba(124, 58, 237, 0.45);
+      transform: scale(1.08);
+      box-shadow: 0 6px 20px rgba(124, 58, 237, 0.55);
     }
+    .ai-fab-btn svg {
+      width: 28px;
+      height: 28px;
+      fill: #ffffff;
+    }
+
+    /* Floating Chat Popup Window */
     .ai-chat-window {
       display: none;
       position: fixed;
-      bottom: 80px;
+      bottom: 88px;
       right: 24px;
       width: 340px;
       max-width: calc(100vw - 32px);
@@ -351,7 +356,7 @@
       line-height: 1.45;
       max-width: 82%;
       word-break: break-word;
-      white-space: pre-line; /* Renders line breaks properly */
+      white-space: pre-line;
     }
     .chat-bubble.bot {
       background: #ffffff;
@@ -450,12 +455,21 @@
     </div>
   </div>
 
-  <!-- Floating Direct AI Assistant Widget -->
-  <button class="ai-fab-btn" id="aiChatToggle">✨ Ask AI Assistant</button>
+  <!-- Cute Floating Bot Action Button -->
+  <button class="ai-fab-btn" id="aiChatToggle" title="Chat with Anima Clip Assistant" aria-label="Open AI Assistant">
+    <svg viewBox="0 0 24 24">
+      <path d="M12 2a1 1 0 0 1 1 1v1.07C16.83 4.56 20 7.92 20 12v6a2 2 0 0 1-2 2h-1v1a1 1 0 0 1-1.7.7L12.58 20H6a2 2 0 0 1-2-2v-6c0-4.08 3.17-7.44 7-7.93V3a1 1 0 0 1 1-1zm-4 8a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3zm8 0a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3zm-6.5 5.5a.75.75 0 0 0 0 1.5h5a.75.75 0 0 0 0-1.5h-5z"/>
+    </svg>
+  </button>
 
   <div class="ai-chat-window" id="aiChatWindow">
     <div class="ai-chat-header">
-      <span>Anima Clip AI Assistant</span>
+      <div style="display:flex; align-items:center; gap:8px;">
+        <svg viewBox="0 0 24 24" style="width:20px; height:20px; fill:#fff;">
+          <path d="M12 2a1 1 0 0 1 1 1v1.07C16.83 4.56 20 7.92 20 12v6a2 2 0 0 1-2 2h-1v1a1 1 0 0 1-1.7.7L12.58 20H6a2 2 0 0 1-2-2v-6c0-4.08 3.17-7.44 7-7.93V3a1 1 0 0 1 1-1zm-4 8a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3zm8 0a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3zm-6.5 5.5a.75.75 0 0 0 0 1.5h5a.75.75 0 0 0 0-1.5h-5z"/>
+        </svg>
+        <span>Anima Clip Assistant</span>
+      </div>
       <button class="ai-chat-close" id="aiChatClose">&times;</button>
     </div>
     <div class="ai-chat-messages" id="aiChatMessages">
@@ -464,7 +478,7 @@
       </div>
     </div>
     <div class="ai-chat-footer">
-      <input type="text" class="ai-chat-input" id="aiChatInput" placeholder="Ask about tools, exporting, etc..." maxlength="500">
+      <input type="text" class="ai-chat-input" id="aiChatInput" placeholder="Ask about tools, layers, export..." maxlength="500">
       <button class="ai-chat-send" id="aiChatSend">Send</button>
     </div>
   </div>
@@ -556,11 +570,9 @@
       return div.innerHTML;
     }
 
-    // Cleans formatting and converts <br> tags into clean linebreaks
     function cleanFormatting(str) {
       if (!str) return '';
       let clean = str;
-      // Convert any literal or escaped <br> tags into real newlines
       clean = clean.replace(/&lt;br\s*\/?&gt;/gi, '\n');
       clean = clean.replace(/<br\s*[\/]?>/gi, '\n');
       clean = clean.replace(/\*\*(.*?)\*\*/g, '$1');
