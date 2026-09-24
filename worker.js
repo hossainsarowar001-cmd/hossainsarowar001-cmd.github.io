@@ -1,164 +1,111 @@
-/**
- * Anima Clip Assistant - Cloudflare Worker Proxy
- * Features: Web grounding fallback, natural community tone, plain text numbering (no asterisks).
- */
-
-const ALLOWED_ORIGIN = "https://hossainsarowar001-cmd.github.io";
-
-const SYSTEM_INSTRUCTION = `
-You are the official in-app community assistant for "Anima Clip" (developed by Incrible Studio).
-You are writing a helpful answer directly on a public community thread, NOT drafting a robotic technical manual or corporate email.
-
-STRICT TONE & FORMATTING RULES:
-1. NO generic greetings: Never say "Hello! Welcome to Anima Clip support by Incrible Studio..." or similar fluff. Start directly with the answer.
-2. NO MARKDOWN ASTERISKS: Never use asterisks for bolding or italics (Do NOT write "**Step 1:**" or "**Layers**"). Output clean, regular text.
-3. STRUCTURE: If a step-by-step procedure is needed, use clear numbered lines without asterisks:
-   1. Open Project: Launch Anima Clip and open your project canvas.
-   2. Layers Panel: Tap the Layers icon in the corner.
-   3. Import Image: Choose your image from your gallery.
-4. BREVITY: Keep answers concise (under 4-5 numbered points or 1-2 short paragraphs).
-5. NO robotic sign-offs: Omit boilerplate phrases like "Happy animating!" or "Let me know if you need anything else!". Wrap up naturally.
-6. DOMAIN FOCUS: Prioritize Anima Clip features, workflows, frame manipulation, and 2D animation practices.
-`;
-
 export default {
   async fetch(request, env) {
-    // 1. Handle CORS Preflight
+    const corsHeaders = {
+      "Access-Control-Allow-Origin": "https://hossainsarowar001-cmd.github.io",
+      "Access-Control-Allow-Methods": "POST, OPTIONS",
+      "Access-Control-Allow-Headers": "Content-Type",
+    };
+
     if (request.method === "OPTIONS") {
-      return new Response(null, {
-        headers: {
-          "Access-Control-Allow-Origin": ALLOWED_ORIGIN,
-          "Access-Control-Allow-Methods": "POST, OPTIONS",
-          "Access-Control-Allow-Headers": "Content-Type",
-          "Access-Control-Max-Age": "86400",
-        },
-      });
+      return new Response(null, { headers: corsHeaders });
     }
 
     if (request.method !== "POST") {
-      return new Response(JSON.stringify({ error: "Method not allowed" }), {
-        status: 405,
-        headers: {
-          "Content-Type": "application/json",
-          "Access-Control-Allow-Origin": ALLOWED_ORIGIN,
-        },
-      });
+      return new Response("Method Not Allowed", { status: 405, headers: corsHeaders });
     }
 
     try {
       const { question } = await request.json();
-      if (!question || typeof question !== "string" || question.trim().length === 0) {
-        return new Response(JSON.stringify({ error: "Missing valid question string" }), {
+      if (!question) {
+        return new Response(JSON.stringify({ error: "No question provided" }), {
           status: 400,
-          headers: {
-            "Content-Type": "application/json",
-            "Access-Control-Allow-Origin": ALLOWED_ORIGIN,
-          },
+          headers: { ...corsHeaders, "Content-Type": "application/json" }
         });
       }
 
       const apiKey = env.GEMINI_API_KEY;
       if (!apiKey) {
-        return new Response(JSON.stringify({ error: "API key unconfigured on server" }), {
-          status: 500,
-          headers: {
-            "Content-Type": "application/json",
-            "Access-Control-Allow-Origin": ALLOWED_ORIGIN,
-          },
+        return new Response(JSON.stringify({ reply: "Error: GEMINI_API_KEY is missing." }), {
+          headers: { ...corsHeaders, "Content-Type": "application/json" }
         });
       }
 
-      // Models list with fallback support
+      // Gemini 3.x Flash series priority list
       const models = [
-        "gemini-2.5-flash",
-        "gemini-2.0-flash",
-        "gemini-1.5-flash"
+        "gemini-3.8-flash",
+        "gemini-3.7-flash",
+        "gemini-3.6-flash",
+        "gemini-3.5-flash",
+        "gemini-3.5-flash-lite"
       ];
 
-      let lastError = null;
+      const promptInstruction = `You are the official in-app community assistant for 'Anima Clip', a 2D animation mobile app by Incrible Studio.
+Answer helpfully, naturally, and concisely like a human animator in the community forum.
+- Do NOT use markdown symbols like asterisks (**bold** or *italic*). Output clean, regular text.
+- If giving steps, use simple numbering (1., 2., 3.).
+- Keep the answer direct and under 3-4 steps. No generic welcome or closing boilerplate.
+
+User Question: ${question}`;
+
+      const payload = {
+        contents: [
+          {
+            role: "user",
+            parts: [{ text: promptInstruction }]
+          }
+        ]
+      };
+
+      let finalReply = null;
+      let lastErrorMessage = "";
 
       for (const model of models) {
         try {
-          const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
-
-          const payload = {
-            system_instruction: {
-              parts: [{ text: SYSTEM_INSTRUCTION }]
-            },
-            contents: [
-              {
-                role: "user",
-                parts: [{ text: `Question regarding Anima Clip: ${question}` }]
-              }
-            ],
-            tools: [
-              {
-                google_search: {} // Live search grounding
-              }
-            ],
-            generationConfig: {
-              temperature: 0.5,
-              maxOutputTokens: 350
-            }
-          };
-
-          const response = await fetch(endpoint, {
+          const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey.trim()}`;
+          const response = await fetch(url, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(payload)
           });
 
-          if (!response.ok) {
-            const errBody = await response.text();
-            lastError = `Model ${model} failed (${response.status}): ${errBody}`;
-            continue; // Cycle to next fallback model
-          }
-
           const data = await response.json();
-          let replyText = data.candidates?.[0]?.content?.parts?.[0]?.text;
 
-          if (replyText) {
-            // Safety sanitization: remove any accidental remaining asterisks or markdown headings
-            replyText = replyText
-              .replace(/\*\*(.*?)\*\*/g, "$1")
-              .replace(/\*(.*?)\*/g, "$1")
+          if (data.candidates?.[0]?.content?.parts?.[0]?.text) {
+            let cleanText = data.candidates[0].content.parts[0].text;
+            // Remove any accidental leftover markdown characters
+            cleanText = cleanText
+              .replace(/\*\*/g, "")
+              .replace(/\*/g, "")
               .replace(/#{1,6}\s?/g, "")
               .trim();
 
-            return new Response(JSON.stringify({ reply: replyText }), {
-              status: 200,
-              headers: {
-                "Content-Type": "application/json",
-                "Access-Control-Allow-Origin": ALLOWED_ORIGIN,
-              },
-            });
+            finalReply = cleanText;
+            break;
+          }
+
+          if (data.error) {
+            lastErrorMessage = data.error.message || JSON.stringify(data.error);
           }
         } catch (err) {
-          lastError = err.message;
+          lastErrorMessage = err.message;
         }
       }
 
-      // Fallback if all models hit rate-limit or temporary outage
-      return new Response(
-        JSON.stringify({
-          reply: "To import or manage elements in Anima Clip, open your project, tap the Layers icon, and select your action from the tools menu. If you run into issues, try re-saving your project file or check that your media permissions are enabled."
-        }),
-        {
-          status: 200,
-          headers: {
-            "Content-Type": "application/json",
-            "Access-Control-Allow-Origin": ALLOWED_ORIGIN,
-          },
-        }
-      );
+      if (!finalReply) {
+        return new Response(JSON.stringify({ 
+          reply: "To work with layers, audio, or frames in Anima Clip, open your project canvas and check the corresponding tool icons in the editor menu. If something isn't working as expected, verify your device permissions or restart the app." 
+        }), {
+          headers: { ...corsHeaders, "Content-Type": "application/json" }
+        });
+      }
 
-    } catch (globalErr) {
-      return new Response(JSON.stringify({ error: globalErr.message }), {
-        status: 500,
-        headers: {
-          "Content-Type": "application/json",
-          "Access-Control-Allow-Origin": ALLOWED_ORIGIN,
-        },
+      return new Response(JSON.stringify({ reply: finalReply }), {
+        headers: { ...corsHeaders, "Content-Type": "application/json" }
+      });
+
+    } catch (err) {
+      return new Response(JSON.stringify({ reply: "Worker error: " + err.message }), {
+        headers: { ...corsHeaders, "Content-Type": "application/json" }
       });
     }
   }
