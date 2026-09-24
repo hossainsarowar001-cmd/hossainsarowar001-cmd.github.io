@@ -1,36 +1,43 @@
+const CORS_HEADERS = {
+  "Access-Control-Allow-Origin": "https://hossainsarowar001-cmd.github.io",
+  "Access-Control-Allow-Methods": "POST, OPTIONS",
+  "Access-Control-Allow-Headers": "Content-Type",
+};
+
 export default {
   async fetch(request, env) {
-    const corsHeaders = {
-      "Access-Control-Allow-Origin": "https://hossainsarowar001-cmd.github.io",
-      "Access-Control-Allow-Methods": "POST, OPTIONS",
-      "Access-Control-Allow-Headers": "Content-Type",
-    };
-
+    // 1. Handle Preflight Options
     if (request.method === "OPTIONS") {
-      return new Response(null, { headers: corsHeaders });
+      return new Response(null, { headers: CORS_HEADERS });
     }
 
     if (request.method !== "POST") {
-      return new Response("Method Not Allowed", { status: 405, headers: corsHeaders });
+      return new Response(JSON.stringify({ error: "Method Not Allowed" }), { 
+        status: 405, 
+        headers: { ...CORS_HEADERS, "Content-Type": "application/json" } 
+      });
     }
 
     try {
-      const { question } = await request.json();
+      const body = await request.json();
+      const question = body?.question?.trim();
+
       if (!question) {
         return new Response(JSON.stringify({ error: "No question provided" }), {
           status: 400,
-          headers: { ...corsHeaders, "Content-Type": "application/json" }
+          headers: { ...CORS_HEADERS, "Content-Type": "application/json" }
         });
       }
 
       const apiKey = env.GEMINI_API_KEY;
       if (!apiKey) {
-        return new Response(JSON.stringify({ reply: "Error: GEMINI_API_KEY is missing." }), {
-          headers: { ...corsHeaders, "Content-Type": "application/json" }
+        return new Response(JSON.stringify({ reply: "Error: GEMINI_API_KEY is not set in Worker environment variables." }), {
+          status: 500,
+          headers: { ...CORS_HEADERS, "Content-Type": "application/json" }
         });
       }
 
-      // Gemini 3.x Flash series priority list
+      // Gemini 3.x Flash series array
       const models = [
         "gemini-3.8-flash",
         "gemini-3.7-flash",
@@ -39,7 +46,7 @@ export default {
         "gemini-3.5-flash-lite"
       ];
 
-      const promptInstruction = `You are the official in-app community assistant for 'Anima Clip', a 2D animation mobile app by Incrible Studio.
+      const promptText = `You are the official in-app community assistant for 'Anima Clip', a 2D animation mobile app by Incrible Studio.
 Answer helpfully, naturally, and concisely like a human animator in the community forum.
 - Do NOT use markdown symbols like asterisks (**bold** or *italic*). Output clean, regular text.
 - If giving steps, use simple numbering (1., 2., 3.).
@@ -51,9 +58,13 @@ User Question: ${question}`;
         contents: [
           {
             role: "user",
-            parts: [{ text: promptInstruction }]
+            parts: [{ text: promptText }]
           }
-        ]
+        ],
+        generationConfig: {
+          temperature: 0.5,
+          maxOutputTokens: 250
+        }
       };
 
       let finalReply = null;
@@ -68,18 +79,22 @@ User Question: ${question}`;
             body: JSON.stringify(payload)
           });
 
-          const data = await response.json();
+          if (!response.ok) {
+            const errData = await response.text();
+            lastErrorMessage = `Model ${model} returned status ${response.status}: ${errData}`;
+            continue;
+          }
 
-          if (data.candidates?.[0]?.content?.parts?.[0]?.text) {
-            let cleanText = data.candidates[0].content.parts[0].text;
-            // Remove any accidental leftover markdown characters
-            cleanText = cleanText
+          const data = await response.json();
+          let rawOutput = data.candidates?.[0]?.content?.parts?.[0]?.text;
+
+          if (rawOutput) {
+            // Strip markdown asterisks, hashes, and cleanup spacing
+            finalReply = rawOutput
               .replace(/\*\*/g, "")
               .replace(/\*/g, "")
               .replace(/#{1,6}\s?/g, "")
               .trim();
-
-            finalReply = cleanText;
             break;
           }
 
@@ -91,21 +106,20 @@ User Question: ${question}`;
         }
       }
 
+      // Resilient fallback if all models in array are busy or rate-limited
       if (!finalReply) {
-        return new Response(JSON.stringify({ 
-          reply: "To work with layers, audio, or frames in Anima Clip, open your project canvas and check the corresponding tool icons in the editor menu. If something isn't working as expected, verify your device permissions or restart the app." 
-        }), {
-          headers: { ...corsHeaders, "Content-Type": "application/json" }
-        });
+        finalReply = "To work with layers, audio, or frames in Anima Clip, open your canvas and tap the tool icons in the bottom menu. If you experience an issue, make sure app permissions for storage are enabled.";
       }
 
       return new Response(JSON.stringify({ reply: finalReply }), {
-        headers: { ...corsHeaders, "Content-Type": "application/json" }
+        status: 200,
+        headers: { ...CORS_HEADERS, "Content-Type": "application/json" }
       });
 
     } catch (err) {
-      return new Response(JSON.stringify({ reply: "Worker error: " + err.message }), {
-        headers: { ...corsHeaders, "Content-Type": "application/json" }
+      return new Response(JSON.stringify({ error: "Worker internal failure: " + err.message }), {
+        status: 500,
+        headers: { ...CORS_HEADERS, "Content-Type": "application/json" }
       });
     }
   }
