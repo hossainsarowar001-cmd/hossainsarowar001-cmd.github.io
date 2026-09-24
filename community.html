@@ -167,6 +167,7 @@
       font-weight: 600;
       font-size: 14px;
       color: #1a73e8;
+      white-space: nowrap;
     }
     .date-tag {
       font-size: 12px;
@@ -219,13 +220,20 @@
     .reply-meta-left {
       display: flex;
       align-items: center;
-      flex-wrap: wrap;
+      flex-wrap: nowrap;
       gap: 6px;
+      white-space: nowrap;
+      overflow-x: auto;
+    }
+    .reply-meta-left strong {
+      white-space: nowrap;
     }
     .reply-meta-right {
       display: flex;
       align-items: center;
       white-space: nowrap;
+      margin-left: auto;
+      flex-shrink: 0;
     }
     .developer-tag {
       background: #1a73e8;
@@ -787,7 +795,7 @@
                       <div class="reply-meta">
                         <div class="reply-meta-left">
                           <strong>${escapeHTML(r.author)}</strong>
-                          ${r.isDev ? '<span class="developer-tag">Developer</span> <span class="mod-tag">Official</span>' : ''}
+                          ${r.isDev ? '<span class="developer-tag">Developer</span><span class="mod-tag">Official</span>' : ''}
                           ${r.isAi ? '<span class="ai-tag">AI Assistant</span>' : ''}
                         </div>
                         <div class="reply-meta-right">
