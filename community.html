@@ -248,15 +248,17 @@
     }
     .reply-name-row {
       display: flex;
-      align-items: center;
+      align-items: flex-start;
       justify-content: space-between;
       width: 100%;
       gap: 8px;
     }
-    .reply-name-row strong {
+    .reply-author {
       font-size: 13.5px;
+      font-weight: 600;
       color: #202124;
-      white-space: nowrap;
+      line-height: 1.35;
+      word-break: normal;
     }
     .reply-sub-row {
       display: flex;
@@ -487,7 +489,7 @@
         <div class="reply-item developer-reply">
           <div class="reply-header">
             <div class="reply-name-row">
-              <strong>Incrible Studio</strong>
+              <span class="reply-author">Incrible Studio</span>
             </div>
             <div class="reply-sub-row">
               <span class="developer-tag">Developer</span>
@@ -690,7 +692,7 @@
             await updateDoc(doc(db, "questions", newDocRef.id), {
               replies: arrayUnion({
                 id: 'ai_' + Date.now(),
-                author: "Anima Clip Assistant",
+                author: "Anima Clip\nAssistant",
                 text: cleanFormatting(data.reply),
                 isAi: true,
                 date: new Date().toLocaleDateString()
@@ -833,12 +835,19 @@
               <div class="replies-list">
                 ${replies.map(r => {
                   const canDeleteReply = currentDevUser || (r.userId && r.userId === myDeviceId);
+                  const isAiBot = r.isAi || (r.author && r.author.toLowerCase().includes('assistant'));
+                  
+                  // Wrap "Assistant" to the next line so the date fits cleanly on the right
+                  let authorMarkup = escapeHTML(r.author);
+                  if (isAiBot) {
+                    authorMarkup = 'Anima Clip<br>Assistant';
+                  }
 
                   return `
                     <div class="reply-item ${r.isDev ? 'developer-reply' : ''} ${r.isAi ? 'ai-reply' : ''}">
                       <div class="reply-header">
                         <div class="reply-name-row">
-                          <strong>${escapeHTML(r.author)}</strong>
+                          <span class="reply-author">${authorMarkup}</span>
                           <div class="reply-meta-right">
                             <span class="date-tag">${escapeHTML(r.date)}</span>
                             ${canDeleteReply ? `<button class="btn-danger-sm" onclick="deleteReply('${q.id}', '${r.id}', '${escapeHTML(r.userId || '')}')">Delete</button>` : ''}
