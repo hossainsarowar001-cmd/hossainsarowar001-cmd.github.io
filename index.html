@@ -1,98 +1,140 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Anima Clip - Support & Developer Portal</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Anima Clip - 2D Animation & Frame-by-Frame Drawing</title>
+  <meta name="description" content="Bring sketches to life with Anima Clip. Minimalist 2D frame-by-frame animation, media asset importing, text tools, and offline local device storage." />
   <style>
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
+    :root {
+      --primary: #2563eb;
+      --primary-hover: #1d4ed8;
+      --bg: #090d16;
+      --surface: #111827;
+      --surface-card: #1e293b;
+      --border: #334155;
+      --text: #f8fafc;
+      --text-muted: #94a3b8;
     }
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-      background-color: #f8fafc;
-      color: #334155;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      min-height: 100vh;
-      padding: 20px;
-    }
-    .card {
-      background: #ffffff;
-      padding: 38px 24px;
-      border-radius: 16px;
-      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
-      max-width: 420px;
-      width: 100%;
-      text-align: center;
-    }
-    h1 {
-      color: #1a73e8;
-      font-size: 26px;
-      font-weight: 700;
-      margin-bottom: 12px;
-    }
-    p {
-      color: #64748b;
-      font-size: 14.5px;
-      line-height: 1.6;
-      margin-bottom: 24px;
-    }
-    .btn-group {
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-      align-items: center;
-    }
-    .btn {
-      text-decoration: none;
-      font-weight: 600;
-      transition: all 0.2s ease;
-    }
-    /* Compact Oval / Egg Button */
-    .btn-primary {
-      display: inline-block;
-      width: auto;
-      padding: 10px 28px;
-      font-size: 14px;
-      background-color: #1a73e8;
-      color: #ffffff;
-      border-radius: 9999px;
-      box-shadow: 0 2px 8px rgba(26, 115, 232, 0.25);
-    }
-    .btn-primary:hover {
-      background-color: #1557b0;
-    }
-    /* Secondary Grey Button */
-    .btn-grey {
-      display: inline-block;
-      width: auto;
-      padding: 8px 18px;
-      font-size: 13px;
-      background-color: #f1f3f5;
-      color: #495057;
-      border: 1px solid #ced4da;
-      border-radius: 8px;
-    }
-    .btn-grey:hover {
-      background-color: #e9ecef;
-      color: #212529;
-    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+    body { background-color: var(--bg); color: var(--text); line-height: 1.6; }
+
+    .container { max-width: 960px; margin: 0 auto; padding: 0 1.5rem; }
+
+    /* Navigation */
+    nav { display: flex; justify-content: space-between; align-items: center; padding: 1.5rem 0; border-bottom: 1px solid rgba(51, 65, 85, 0.4); }
+    .brand { font-size: 1.3rem; font-weight: 800; color: #fff; text-decoration: none; display: flex; align-items: center; gap: 0.5rem; }
+    .nav-links a { color: var(--text-muted); text-decoration: none; margin-left: 1.25rem; font-size: 0.95rem; font-weight: 500; transition: color 0.2s; }
+    .nav-links a:hover { color: #fff; }
+
+    /* Hero Section */
+    .hero { text-align: center; padding: 4.5rem 0 3rem; }
+    .badge { display: inline-block; background: rgba(37, 99, 235, 0.15); color: #60a5fa; border: 1px solid rgba(37, 99, 235, 0.3); padding: 0.35rem 1rem; border-radius: 9999px; font-size: 0.85rem; font-weight: 600; margin-bottom: 1.25rem; }
+    .hero h1 { font-size: clamp(2.3rem, 5vw, 3.5rem); font-weight: 800; line-height: 1.15; color: #fff; margin-bottom: 1.2rem; }
+    .hero p { font-size: 1.15rem; color: var(--text-muted); max-width: 620px; margin: 0 auto 2.25rem; }
+
+    .btn-group { display: flex; justify-content: center; gap: 1rem; flex-wrap: wrap; }
+    .btn { display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem; padding: 0.85rem 1.75rem; border-radius: 8px; font-weight: 600; text-decoration: none; font-size: 0.95rem; transition: all 0.2s; }
+    .btn-primary { background: var(--primary); color: #fff; }
+    .btn-primary:hover { background: var(--primary-hover); }
+    .btn-secondary { background: var(--surface-card); color: var(--text); border: 1px solid var(--border); }
+    .btn-secondary:hover { background: #334155; }
+
+    /* Quick App Info */
+    .showcase { margin: 3rem auto 4.5rem; max-width: 700px; background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 2.5rem 1.5rem; text-align: center; }
+    .showcase-badge { font-size: 0.85rem; color: #10b981; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.5rem; }
+    .showcase h2 { font-size: 1.4rem; color: #fff; margin-bottom: 0.5rem; }
+    .showcase p { color: var(--text-muted); font-size: 0.95rem; }
+
+    /* Features Grid */
+    .features { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 1.25rem; margin-bottom: 5rem; }
+    .card { background: var(--surface-card); border: 1px solid var(--border); border-radius: 12px; padding: 1.5rem; }
+    .card h3 { font-size: 1.1rem; color: #fff; margin-bottom: 0.5rem; }
+    .card p { color: var(--text-muted); font-size: 0.95rem; line-height: 1.5; }
+
+    /* Support Callout */
+    .support-card { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 2.5rem 1.5rem; text-align: center; margin-bottom: 4rem; }
+    .support-card h2 { font-size: 1.5rem; color: #fff; margin-bottom: 0.5rem; }
+    .support-card p { color: var(--text-muted); font-size: 0.95rem; margin-bottom: 1.5rem; }
+
+    /* Footer */
+    footer { border-top: 1px solid var(--border); padding: 2.5rem 0; text-align: center; font-size: 0.9rem; color: var(--text-muted); }
+    .footer-links { margin-top: 0.75rem; }
+    .footer-links a { color: var(--text-muted); text-decoration: none; margin: 0 0.75rem; transition: color 0.2s; }
+    .footer-links a:hover { color: #fff; }
   </style>
 </head>
 <body>
 
-  <div class="card">
-    <h1>Anima Clip</h1>
-    <p>Welcome to the official developer support page for Anima Clip.</p>
+  <div class="container">
+    <!-- Navigation -->
+    <nav>
+      <a href="#" class="brand">🎬 Anima Clip</a>
+      <div class="nav-links">
+        <a href="#features">Features</a>
+        <a href="contact.html">Contact Us</a>
+        <a href="https://sites.google.com/view/anima-clip-privacy-policy/home?pli=1&authuser=0" target="_blank">Privacy Policy</a>
+      </div>
+    </nav>
 
-    <div class="btn-group">
-      <a href="contact.html" class="btn btn-primary">Contact Us</a>
-      <a href="/app-ads.txt" class="btn btn-grey">Verify app-ads.txt</a>
-    </div>
+    <!-- Hero -->
+    <header class="hero">
+      <span class="badge">Official Mobile Release</span>
+      <h1>Bring Your Drawings to Life with Anima Clip</h1>
+      <p>A minimalist 2D animation app designed for smooth frame-by-frame sketching, timeline management, and rapid creativity right on your phone.</p>
+      
+      <div class="btn-group">
+        <a href="https://play.google.com/store/apps/details?id=com.animaclip.app" class="btn btn-primary" target="_blank">
+          <span>Get it on Google Play</span>
+        </a>
+        <a href="contact.html" class="btn btn-secondary">Contact Support</a>
+      </div>
+    </header>
+
+    <!-- Showcase Highlight -->
+    <section class="showcase">
+      <div class="showcase-badge">Built for Focus</div>
+      <h2>Lightweight & Intuitive</h2>
+      <p>Zero complicated desktop clutter. Open the app, sketch your frames, and play your animations instantly.</p>
+    </section>
+
+    <!-- Features -->
+    <section id="features" class="features">
+      <div class="card">
+        <h3>🎬 Frame-by-Frame Timeline</h3>
+        <p>Effortlessly add, duplicate, reorder, and review frames with fluid timeline controls designed for mobile touch screens.</p>
+      </div>
+      <div class="card">
+        <h3>🖼️ Import Media Assets</h3>
+        <p>Bring background imagery and video reference clips directly onto your canvas to animate over or trace with precision.</p>
+      </div>
+      <div class="card">
+        <h3>📝 Text Tool & Layering</h3>
+        <p>Easily import and overlay text assets to design animated titles, dialogues, and motion typography.</p>
+      </div>
+      <div class="card">
+        <h3>💾 100% Local Device Storage</h3>
+        <p>Keep your drawings and project assets safe on your local phone storage—no mandatory accounts or cloud dependencies.</p>
+      </div>
+    </section>
+
+    <!-- Help & Support -->
+    <section class="support-card">
+      <h2>Have Questions or Feedback?</h2>
+      <p>Need assistance with your animations, found a bug, or have a feature idea? Visit our support page.</p>
+      <a href="contact.html" class="btn btn-primary">Go to Support Page</a>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+      <p>&copy; 2026 Anima Clip. All rights reserved.</p>
+      <div class="footer-links">
+        <a href="https://sites.google.com/view/anima-clip-privacy-policy/home?pli=1&authuser=0" target="_blank">Privacy Policy</a>
+        <a href="contact.html">Contact Us</a>
+        <a href="/app-ads.txt">app-ads.txt</a>
+      </div>
+    </footer>
   </div>
 
 </body>
