@@ -238,7 +238,7 @@
       border: 1px solid #e1bee7;
     }
 
-    /* Structured header for replies */
+    /* Reply Header Layout */
     .reply-header {
       margin-bottom: 8px;
       width: 100%;
@@ -246,44 +246,36 @@
       flex-direction: column;
       gap: 4px;
     }
-    .reply-top-row {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 8px;
-      width: 100%;
-    }
-    .reply-author-badges {
+    .reply-name-badge-row {
       display: flex;
       align-items: center;
       gap: 6px;
-      white-space: nowrap;
-      flex-shrink: 0;
+      flex-wrap: wrap;
     }
-    .reply-author-badges strong {
-      white-space: nowrap;
+    .reply-name-badge-row strong {
       font-size: 13.5px;
-    }
-    .reply-meta-right {
-      display: flex;
-      align-items: center;
+      color: #202124;
       white-space: nowrap;
-      flex-shrink: 0;
-      margin-left: auto;
     }
     .reply-sub-badges {
       display: flex;
       align-items: center;
       gap: 5px;
-      margin-top: 1px;
+    }
+    .reply-meta-row {
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      width: 100%;
+      margin-top: 2px;
     }
 
     .developer-tag {
       background: #1a73e8;
       color: #fff;
       font-size: 10px;
-      font-weight: bold;
-      padding: 2px 6px;
+      font-weight: 700;
+      padding: 2px 7px;
       border-radius: 4px;
       white-space: nowrap;
       flex-shrink: 0;
@@ -292,8 +284,8 @@
       background: #8e24aa;
       color: #fff;
       font-size: 10px;
-      font-weight: bold;
-      padding: 2px 6px;
+      font-weight: 700;
+      padding: 2px 7px;
       border-radius: 4px;
       white-space: nowrap;
       flex-shrink: 0;
@@ -302,8 +294,8 @@
       background: #137333;
       color: #fff;
       font-size: 10px;
-      font-weight: bold;
-      padding: 2px 6px;
+      font-weight: 700;
+      padding: 2px 7px;
       border-radius: 4px;
       white-space: nowrap;
       flex-shrink: 0;
@@ -482,7 +474,7 @@
 
     <div class="pinned-card">
       <div class="question-header">
-        <div class="reply-author-badges">
+        <div style="display: flex; align-items: center; gap: 6px;">
           <span class="pinned-tag">📌 PINNED</span>
           <span class="author-name">Community Mod</span>
           <span class="mod-tag">Official</span>
@@ -492,11 +484,9 @@
       <div class="replies-list">
         <div class="reply-item developer-reply">
           <div class="reply-header">
-            <div class="reply-top-row">
-              <div class="reply-author-badges">
-                <strong>Incrible Studio</strong>
-                <span class="developer-tag">Developer</span>
-              </div>
+            <div class="reply-name-badge-row">
+              <strong>Incrible Studio</strong>
+              <span class="developer-tag">Developer</span>
             </div>
             <div class="reply-sub-badges">
               <span class="mod-tag">Official</span>
@@ -832,7 +822,7 @@
             </div>
 
             <div id="reply-box-${q.id}" class="answer-form" style="display: ${isBoxOpen ? 'block' : 'none'};">
-              <input type="text" id="replyAuthor-${q.id}" placeholder="Your Name" value="${currentDevUser ? 'Incrible Studio (Official)' : ''}">
+              <input type="text" id="replyAuthor-${q.id}" placeholder="Your Name" value="${currentDevUser ? 'Incrible Studio' : ''}">
               <textarea id="replyText-${q.id}" placeholder="Your reply..."></textarea>
               <button class="btn btn-primary" onclick="submitAnswer('${q.id}')">Post Answer</button>
             </div>
@@ -845,22 +835,20 @@
                   return `
                     <div class="reply-item ${r.isDev ? 'developer-reply' : ''} ${r.isAi ? 'ai-reply' : ''}">
                       <div class="reply-header">
-                        <div class="reply-top-row">
-                          <div class="reply-author-badges">
-                            <strong>${escapeHTML(r.author)}</strong>
-                            ${r.isDev ? '<span class="developer-tag">Developer</span>' : ''}
-                            ${r.isAi ? '<span class="ai-tag">AI Assistant</span>' : ''}
-                          </div>
-                          <div class="reply-meta-right">
-                            <span class="date-tag">${escapeHTML(r.date)}</span>
-                            ${canDeleteReply ? `<button class="btn-danger-sm" onclick="deleteReply('${q.id}', '${r.id}', '${escapeHTML(r.userId || '')}')">Delete</button>` : ''}
-                          </div>
+                        <div class="reply-name-badge-row">
+                          <strong>${escapeHTML(r.author)}</strong>
+                          ${r.isDev ? '<span class="developer-tag">Developer</span>' : ''}
+                          ${r.isAi ? '<span class="ai-tag">AI Assistant</span>' : ''}
                         </div>
                         ${r.isDev ? `
                           <div class="reply-sub-badges">
                             <span class="mod-tag">Official</span>
                           </div>
                         ` : ''}
+                        <div class="reply-meta-row">
+                          <span class="date-tag">${escapeHTML(r.date)}</span>
+                          ${canDeleteReply ? `<button class="btn-danger-sm" onclick="deleteReply('${q.id}', '${r.id}', '${escapeHTML(r.userId || '')}')">Delete</button>` : ''}
+                        </div>
                       </div>
                       <div class="reply-text">${escapeHTML(cleanFormatting(r.text))}</div>
                     </div>
