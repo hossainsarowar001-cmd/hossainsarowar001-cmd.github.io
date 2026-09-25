@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Custom Brushes - Anima Clip</title>
+  <meta name="description" content="Download official community and handcrafted custom brush packs for Anima Clip." />
+  <style>
+    :root {
+      --primary: #2563eb;
+      --primary-hover: #1d4ed8;
+      --bg: #f8fafc;
+      --surface-card: #ffffff;
+      --border: #e2e8f0;
+      --text: #0f172a;
+      --text-muted: #64748b;
+      --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.05), 0 1px 2px rgba(0, 0, 0, 0.03);
+      --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.07), 0 2px 4px -2px rgba(0, 0, 0, 0.05);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+    body { background-color: var(--bg); color: var(--text); line-height: 1.6; }
+
+    .container { max-width: 960px; margin: 0 auto; padding: 0 1.5rem; }
+
+    /* Top Navigation */
+    .top-nav {
+      padding: 1.75rem 0;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .brand-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.75rem;
+      text-decoration: none;
+      color: var(--text);
+      font-weight: 800;
+      font-size: 1.25rem;
+    }
+
+    .app-logo {
+      width: 40px;
+      height: 40px;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      object-fit: cover;
+    }
+
+    .nav-back {
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      transition: color 0.2s;
+    }
+    .nav-back:hover { color: var(--primary); }
+
+    /* Hero */
+    .brush-hero {
+      text-align: center;
+      padding: 3.5rem 0 2.5rem;
+    }
+    .badge {
+      display: inline-block;
+      background: #eff6ff;
+      color: #2563eb;
+      border: 1px solid #bfdbfe;
+      padding: 0.35rem 0.95rem;
+      border-radius: 9999px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      margin-bottom: 1rem;
+    }
+    .brush-hero h1 {
+      font-size: clamp(2rem, 4vw, 2.75rem);
+      font-weight: 800;
+      color: var(--text);
+      margin-bottom: 0.75rem;
+    }
+    .brush-hero p {
+      font-size: 1.05rem;
+      color: var(--text-muted);
+      max-width: 600px;
+      margin: 0 auto;
+    }
+
+    /* Brushes Grid */
+    .brushes-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(285px, 1fr));
+      gap: 1.75rem;
+      margin-bottom: 5rem;
+    }
+
+    .brush-card {
+      background: var(--surface-card);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      box-shadow: var(--shadow-sm);
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .brush-card:hover {
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-md);
+    }
+
+    /* Visual Artwork Showcase */
+    .brush-art-header {
+      width: 100%;
+      height: 165px;
+      background-color: #f1f5f9;
+      position: relative;
+      overflow: hidden;
+      border-bottom: 1px solid var(--border);
+    }
+    .brush-art-img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    /* Card Details */
+    .brush-body {
+      padding: 1.25rem;
+      display: flex;
+      flex-direction: column;
+      flex-grow: 1;
+      justify-content: space-between;
+    }
+
+    .brush-tag {
+      font-size: 0.75rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      color: var(--primary);
+      margin-bottom: 0.25rem;
+      display: inline-block;
+    }
+
+    .brush-title {
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 0.4rem;
+    }
+
+    .brush-desc {
+      font-size: 0.88rem;
+      color: var(--text-muted);
+      line-height: 1.5;
+      margin-bottom: 1rem;
+    }
+
+    /* Stroke Specimen Strip */
+    .stroke-preview {
+      background: #f8fafc;
+      border: 1px dashed var(--border);
+      border-radius: 8px;
+      padding: 0.5rem;
+      margin-bottom: 1.25rem;
+      text-align: center;
+    }
+    .stroke-img {
+      max-width: 100%;
+      height: 38px;
+      object-fit: contain;
+      display: block;
+      margin: 0 auto;
+    }
+
+    /* Download Button */
+    .btn-download-brush {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.6rem;
+      background: #eff6ff;
+      color: var(--primary);
+      border: 1px solid #bfdbfe;
+      padding: 0.7rem 1rem;
+      border-radius: 8px;
+      font-weight: 600;
+      font-size: 0.88rem;
+      text-decoration: none;
+      transition: all 0.2s;
+    }
+    .btn-download-brush:hover {
+      background: var(--primary);
+      color: #ffffff;
+      border-color: var(--primary);
+    }
+
+    /* Footer */
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 2.5rem 0 3.5rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1rem;
+      font-size: 0.875rem;
+      color: var(--text-muted);
+    }
+    .copyright { color: var(--text-muted); }
+    .footer-links a {
+      color: var(--text-muted);
+      text-decoration: none;
+      margin-left: 1.25rem;
+      transition: color 0.2s;
+    }
+    .footer-links a:hover { color: var(--text); }
+
+    @media (max-width: 600px) {
+      footer { flex-direction: column; text-align: center; gap: 1.25rem; }
+      .footer-links a { margin: 0 0.6rem; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <!-- Top Header -->
+    <header class="top-nav">
+      <a href="index.html" class="brand-link">
+        <img src="logo.png" alt="Anima Clip Logo" class="app-logo" onerror="this.style.display='none'" />
+        <span>Anima Clip</span>
+      </a>
+      <a href="index.html" class="nav-back">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="19" y1="12" x2="5" y2="12"></line>
+          <polyline points="12 19 5 12 12 5"></polyline>
+        </svg>
+        <span>Back to Home</span>
+      </a>
+    </header>
+
+    <!-- Main Content -->
+    <main>
+      <section class="brush-hero">
+        <span class="badge">Asset Library</span>
+        <h1>Custom Brush Presets</h1>
+        <p>Enhance your frame-by-frame sketches with handcrafted textures, pencils, clean inkers, and screentone brushes.</p>
+      </section>
+
+      <!-- Brushes Grid -->
+      <section class="brushes-grid">
+
+        <!-- Brush 1: Rough Pencil -->
+        <article class="brush-card">
+          <!-- Artwork Representation Image -->
+          <div class="brush-art-header">
+            <img src="art-pencil.png" alt="Pencil Art Representation" class="brush-art-img" onerror="this.style.display='none'; this.parentElement.style.display='flex'; this.parentElement.style.alignItems='center'; this.parentElement.style.justifyContent='center'; this.parentElement.innerHTML='<span style=\'color:#94a3b8;font-size:0.85rem;font-weight:600;\'>Artwork Representation (art-pencil.png)</span>'">
+          </div>
+
+          <div class="brush-body">
+            <div>
+              <span class="brush-tag">Sketching</span>
+              <h2 class="brush-title">Rough Pencil 01</h2>
+              <p class="brush-desc">Authentic graphite tooth designed for rapid gesture drawing and initial keyframe animatics.</p>
+              
+              <!-- Stroke Specimen Strip -->
+              <div class="stroke-preview">
+                <img src="stroke-pencil.png" alt="Pencil Stroke Specimen" class="stroke-img" onerror="this.parentElement.innerHTML='<span style=\'color:#94a3b8;font-size:0.75rem;\'>Stroke Specimen Preview</span>'">
+              </div>
+            </div>
+
+            <a href="brushes/rough-pencil.zip" class="btn-download-brush" download>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                <polyline points="7 10 12 15 17 10"></polyline>
+                <line x1="12" y1="15" x2="12" y2="3"></line>
+              </svg>
+              <span>Download Preset</span>
+            </a>
+          </div>
+        </article>
+
+        <!-- Brush 2: Studio Inker -->
+        <article class="brush-card">
+          <!-- Artwork Representation Image -->
+          <div class="brush-art-header">
+            <img src="art-inker.png" alt="Inker Art Representation" class="brush-art-img" onerror="this.style.display='none'; this.parentElement.style.display='flex'; this.parentElement.style.alignItems='center'; this.parentElement.style.justifyContent='center'; this.parentElement.innerHTML='<span style=\'color:#94a3b8;font-size:0.85rem;font-weight:600;\'>Artwork Representation (art-inker.png)</span>'">
+          </div>
+
+          <div class="brush-body">
+            <div>
+              <span class="brush-tag">Line Art</span>
+              <h2 class="brush-title">Studio Inker</h2>
+              <p class="brush-desc">Smooth pressure taper with precise tapering for clean, professional final line work and vector tracing.</p>
+              
+              <!-- Stroke Specimen Strip -->
+              <div class="stroke-preview">
+                <img src="stroke-inker.png" alt="Inker Stroke Specimen" class="stroke-img" onerror="this.parentElement.innerHTML='<span style=\'color:#94a3b8;font-size:0.75rem;\'>Stroke Specimen Preview</span>'">
+              </div>
+            </div>
+
+            <a href="brushes/studio-inker.zip" class="btn-download-brush" download>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                <polyline points="7 10 12 15 17 10"></polyline>
+                <line x1="12" y1="15" x2="12" y2="3"></line>
+              </svg>
+              <span>Download Preset</span>
+            </a>
+          </div>
+        </article>
+
+        <!-- Brush 3: Halftone Dots -->
+        <article class="brush-card">
+          <!-- Artwork Representation Image -->
+          <div class="brush-art-header">
+            <img src="art-halftone.png" alt="Halftone Art Representation" class="brush-art-img" onerror="this.style.display='none'; this.parentElement.style.display='flex'; this.parentElement.style.alignItems='center'; this.parentElement.style.justifyContent='center'; this.parentElement.innerHTML='<span style=\'color:#94a3b8;font-size:0.85rem;font-weight:600;\'>Artwork Representation (art-halftone.png)</span>'">
+          </div>
+
+          <div class="brush-body">
+            <div>
+              <span class="brush-tag">Shading</span>
+              <h2 class="brush-title">Halftone Dots</h2>
+              <p class="brush-desc">Manga-style screen pattern for adding stylized shadow density without muddying the animation frames.</p>
+              
+              <!-- Stroke Specimen Strip -->
+              <div class="stroke-preview">
+                <img src="stroke-halftone.png" alt="Halftone Stroke Specimen" class="stroke-img" onerror="this.parentElement.innerHTML='<span style=\'color:#94a3b8;font-size:0.75rem;\'>Stroke Specimen Preview</span>'">
+              </div>
+            </div>
+
+            <a href="brushes/halftone-dots.zip" class="btn-download-brush" download>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                <polyline points="7 10 12 15 17 10"></polyline>
+                <line x1="12" y1="15" x2="12" y2="3"></line>
+              </svg>
+              <span>Download Preset</span>
+            </a>
+          </div>
+        </article>
+
+      </section>
+    </main>
+
+    <!-- Footer -->
+    <footer>
+      <p class="copyright">&copy; 2026 Anima Clip. All rights reserved.</p>
+      <div class="footer-links">
+        <a href="index.html">Home</a>
+        <a href="contact.html">Support</a>
+        <a href="https://sites.google.com/view/anima-clip-privacy-policy/home?pli=1&authuser=0" target="_blank" rel="noopener">Privacy Policy</a>
+        <a href="/app-ads.txt">app-ads.txt</a>
+      </div>
+    </footer>
+  </div>
+
+</body>
+</html>
