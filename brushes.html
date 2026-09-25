@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Custom Brushes - Anima Clip</title>
-  <meta name="description" content="Download official community and handcrafted custom brush packs for Anima Clip." />
+  <meta name="description" content="Download custom brush presets and packs for Anima Clip." />
   <style>
     :root {
       --primary: #2563eb;
@@ -23,7 +23,6 @@
 
     .container { max-width: 960px; margin: 0 auto; padding: 0 1.5rem; }
 
-    /* Top Navigation */
     .top-nav {
       padding: 1.75rem 0;
       display: flex;
@@ -62,7 +61,6 @@
     }
     .nav-back:hover { color: var(--primary); }
 
-    /* Hero */
     .brush-hero {
       text-align: center;
       padding: 3.5rem 0 2.5rem;
@@ -91,7 +89,6 @@
       margin: 0 auto;
     }
 
-    /* Brushes Grid */
     .brushes-grid {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(285px, 1fr));
@@ -114,7 +111,6 @@
       box-shadow: var(--shadow-md);
     }
 
-    /* Visual Artwork Showcase */
     .brush-art-header {
       width: 100%;
       height: 165px;
@@ -122,6 +118,9 @@
       position: relative;
       overflow: hidden;
       border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
     .brush-art-img {
       width: 100%;
@@ -130,7 +129,6 @@
       display: block;
     }
 
-    /* Card Details */
     .brush-body {
       padding: 1.25rem;
       display: flex;
@@ -154,6 +152,7 @@
       font-weight: 700;
       color: var(--text);
       margin-bottom: 0.4rem;
+      text-transform: capitalize;
     }
 
     .brush-desc {
@@ -163,7 +162,6 @@
       margin-bottom: 1rem;
     }
 
-    /* Stroke Specimen Strip */
     .stroke-preview {
       background: #f8fafc;
       border: 1px dashed var(--border);
@@ -171,6 +169,10 @@
       padding: 0.5rem;
       margin-bottom: 1.25rem;
       text-align: center;
+      min-height: 48px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
     .stroke-img {
       max-width: 100%;
@@ -180,7 +182,6 @@
       margin: 0 auto;
     }
 
-    /* Download Button */
     .btn-download-brush {
       display: inline-flex;
       align-items: center;
@@ -202,7 +203,6 @@
       border-color: var(--primary);
     }
 
-    /* Footer */
     footer {
       border-top: 1px solid var(--border);
       padding: 2.5rem 0 3.5rem;
@@ -232,10 +232,9 @@
 <body>
 
   <div class="container">
-    <!-- Top Header -->
     <header class="top-nav">
       <a href="index.html" class="brand-link">
-        <img src="logo.png" alt="Anima Clip Logo" class="app-logo" onerror="this.style.display='none'" />
+        <img src="images/logo.png" alt="Anima Clip Logo" class="app-logo" onerror="this.style.display='none'" />
         <span>Anima Clip</span>
       </a>
       <a href="index.html" class="nav-back">
@@ -247,7 +246,6 @@
       </a>
     </header>
 
-    <!-- Main Content -->
     <main>
       <section class="brush-hero">
         <span class="badge">Asset Library</span>
@@ -255,103 +253,12 @@
         <p>Enhance your frame-by-frame sketches with handcrafted textures, pencils, clean inkers, and screentone brushes.</p>
       </section>
 
-      <!-- Brushes Grid -->
-      <section class="brushes-grid">
-
-        <!-- Brush 1: Rough Pencil -->
-        <article class="brush-card">
-          <!-- Artwork Representation Image -->
-          <div class="brush-art-header">
-            <img src="art-pencil.png" alt="Pencil Art Representation" class="brush-art-img" onerror="this.style.display='none'; this.parentElement.style.display='flex'; this.parentElement.style.alignItems='center'; this.parentElement.style.justifyContent='center'; this.parentElement.innerHTML='<span style=\'color:#94a3b8;font-size:0.85rem;font-weight:600;\'>Artwork Representation (art-pencil.png)</span>'">
-          </div>
-
-          <div class="brush-body">
-            <div>
-              <span class="brush-tag">Sketching</span>
-              <h2 class="brush-title">Rough Pencil 01</h2>
-              <p class="brush-desc">Authentic graphite tooth designed for rapid gesture drawing and initial keyframe animatics.</p>
-              
-              <!-- Stroke Specimen Strip -->
-              <div class="stroke-preview">
-                <img src="stroke-pencil.png" alt="Pencil Stroke Specimen" class="stroke-img" onerror="this.parentElement.innerHTML='<span style=\'color:#94a3b8;font-size:0.75rem;\'>Stroke Specimen Preview</span>'">
-              </div>
-            </div>
-
-            <a href="brushes/rough-pencil.zip" class="btn-download-brush" download>
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-                <polyline points="7 10 12 15 17 10"></polyline>
-                <line x1="12" y1="15" x2="12" y2="3"></line>
-              </svg>
-              <span>Download Preset</span>
-            </a>
-          </div>
-        </article>
-
-        <!-- Brush 2: Studio Inker -->
-        <article class="brush-card">
-          <!-- Artwork Representation Image -->
-          <div class="brush-art-header">
-            <img src="art-inker.png" alt="Inker Art Representation" class="brush-art-img" onerror="this.style.display='none'; this.parentElement.style.display='flex'; this.parentElement.style.alignItems='center'; this.parentElement.style.justifyContent='center'; this.parentElement.innerHTML='<span style=\'color:#94a3b8;font-size:0.85rem;font-weight:600;\'>Artwork Representation (art-inker.png)</span>'">
-          </div>
-
-          <div class="brush-body">
-            <div>
-              <span class="brush-tag">Line Art</span>
-              <h2 class="brush-title">Studio Inker</h2>
-              <p class="brush-desc">Smooth pressure taper with precise tapering for clean, professional final line work and vector tracing.</p>
-              
-              <!-- Stroke Specimen Strip -->
-              <div class="stroke-preview">
-                <img src="stroke-inker.png" alt="Inker Stroke Specimen" class="stroke-img" onerror="this.parentElement.innerHTML='<span style=\'color:#94a3b8;font-size:0.75rem;\'>Stroke Specimen Preview</span>'">
-              </div>
-            </div>
-
-            <a href="brushes/studio-inker.zip" class="btn-download-brush" download>
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-                <polyline points="7 10 12 15 17 10"></polyline>
-                <line x1="12" y1="15" x2="12" y2="3"></line>
-              </svg>
-              <span>Download Preset</span>
-            </a>
-          </div>
-        </article>
-
-        <!-- Brush 3: Halftone Dots -->
-        <article class="brush-card">
-          <!-- Artwork Representation Image -->
-          <div class="brush-art-header">
-            <img src="art-halftone.png" alt="Halftone Art Representation" class="brush-art-img" onerror="this.style.display='none'; this.parentElement.style.display='flex'; this.parentElement.style.alignItems='center'; this.parentElement.style.justifyContent='center'; this.parentElement.innerHTML='<span style=\'color:#94a3b8;font-size:0.85rem;font-weight:600;\'>Artwork Representation (art-halftone.png)</span>'">
-          </div>
-
-          <div class="brush-body">
-            <div>
-              <span class="brush-tag">Shading</span>
-              <h2 class="brush-title">Halftone Dots</h2>
-              <p class="brush-desc">Manga-style screen pattern for adding stylized shadow density without muddying the animation frames.</p>
-              
-              <!-- Stroke Specimen Strip -->
-              <div class="stroke-preview">
-                <img src="stroke-halftone.png" alt="Halftone Stroke Specimen" class="stroke-img" onerror="this.parentElement.innerHTML='<span style=\'color:#94a3b8;font-size:0.75rem;\'>Stroke Specimen Preview</span>'">
-              </div>
-            </div>
-
-            <a href="brushes/halftone-dots.zip" class="btn-download-brush" download>
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-                <polyline points="7 10 12 15 17 10"></polyline>
-                <line x1="12" y1="15" x2="12" y2="3"></line>
-              </svg>
-              <span>Download Preset</span>
-            </a>
-          </div>
-        </article>
-
+      <!-- Auto-Generated Grid Container -->
+      <section class="brushes-grid" id="brush-container">
+        <p style="text-align:center; grid-column: 1/-1; color: var(--text-muted);">Loading brushes...</p>
       </section>
     </main>
 
-    <!-- Footer -->
     <footer>
       <p class="copyright">&copy; 2026 Anima Clip. All rights reserved.</p>
       <div class="footer-links">
@@ -363,5 +270,71 @@
     </footer>
   </div>
 
+  <script>
+    // GitHub API URL to read the brushes directory directly from your repo
+    const GITHUB_USER = "hossainsarowar001-cmd";
+    const GITHUB_REPO = "hossainsarowar001-cmd.github.io";
+    const API_URL = `https://api.github.com/repos/${GITHUB_USER}/${GITHUB_REPO}/contents/brushes`;
+
+    async function loadBrushesAuto() {
+      const container = document.getElementById('brush-container');
+      try {
+        const response = await fetch(API_URL);
+        if (!response.ok) throw new Error("Could not fetch folder");
+        const files = await response.json();
+
+        // Filter out hidden files like .gitkeep
+        const brushFiles = files.filter(f => f.type === 'file' && !f.name.startsWith('.'));
+
+        if (brushFiles.length === 0) {
+          container.innerHTML = '<p style="text-align:center; grid-column: 1/-1; color: var(--text-muted);">No brushes uploaded yet.</p>';
+          return;
+        }
+
+        container.innerHTML = brushFiles.map(file => {
+          // Extract the base name (e.g. "rough-pencil" from "rough-pencil.zip")
+          const baseName = file.name.substring(0, file.name.lastIndexOf('.')) || file.name;
+          
+          // Format "rough-pencil" into "Rough Pencil"
+          const displayTitle = baseName.replace(/[-_]/g, ' ');
+
+          // Automatically build the expected paths in images/
+          const artImgPath = `images/${baseName}-art.png`;
+          const strokeImgPath = `images/${baseName}-stroke.png`;
+
+          return `
+            <article class="brush-card">
+              <div class="brush-art-header">
+                <img src="${artImgPath}" alt="${displayTitle} Preview" class="brush-art-img" onerror="this.parentElement.innerHTML='<span style=\\'color:#94a3b8;font-size:0.85rem;font-weight:600;\\'>Art Representation</span>'">
+              </div>
+              <div class="brush-body">
+                <div>
+                  <span class="brush-tag">Preset Pack</span>
+                  <h2 class="brush-title">${displayTitle}</h2>
+                  <p class="brush-desc">Official community brush pack for Anima Clip. Download and import into canvas.</p>
+                  <div class="stroke-preview">
+                    <img src="${strokeImgPath}" alt="${displayTitle} Stroke" class="stroke-img" onerror="this.parentElement.innerHTML='<span style=\\'color:#94a3b8;font-size:0.75rem;\\'>Stroke Specimen</span>'">
+                  </div>
+                </div>
+                <a href="${file.path}" class="btn-download-brush" download>
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                    <polyline points="7 10 12 15 17 10"></polyline>
+                    <line x1="12" y1="15" x2="12" y2="3"></line>
+                  </svg>
+                  <span>Download Preset</span>
+                </a>
+              </div>
+            </article>
+          `;
+        }).join('');
+
+      } catch (err) {
+        container.innerHTML = '<p style="text-align:center; grid-column: 1/-1; color: var(--text-muted);">Unable to load brushes list.</p>';
+      }
+    }
+
+    loadBrushesAuto();
+  </script>
 </body>
 </html>
