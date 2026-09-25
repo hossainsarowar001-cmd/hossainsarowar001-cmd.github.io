@@ -104,6 +104,18 @@
       box-shadow: var(--shadow-md);
     }
 
+    /* 3. White / Neutral Secondary Button (Brushes) */
+    .btn-white {
+      background: #ffffff;
+      color: var(--text);
+      border: 1px solid var(--border);
+    }
+    .btn-white:hover {
+      background: #f1f5f9;
+      transform: translateY(-1px);
+      box-shadow: var(--shadow-md);
+    }
+
     .btn-icon {
       width: 22px;
       height: 22px;
@@ -192,7 +204,7 @@
 
     <!-- Hero -->
     <main class="hero">
-      <span class="badge">Official</span>
+      <span class="badge">Official Releases</span>
       <h1>Bring Your Drawings to Life</h1>
       <p>A lightweight 2D animation studio designed for smooth frame-by-frame sketching, timeline control, and instant playback on mobile.</p>
       
@@ -216,6 +228,17 @@
             <polygon fill="#FFC107" points="288,256 368,304 464,256 368,208" />
           </svg>
           <span>Get it on Google Play</span>
+        </a>
+
+        <!-- 3. Explore Custom Brushes Link Button -->
+        <a href="brushes.html" class="btn-action btn-white">
+          <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 19l7-7 3 3-7 7-3-3z"></path>
+            <path d="M18 13l-1.5-7.5L2 2l3.5 14.5L13 18l5-5z"></path>
+            <path d="M2 2l7.586 7.586"></path>
+            <circle cx="11" cy="11" r="2"></circle>
+          </svg>
+          <span>Explore Custom Brushes</span>
         </a>
       </div>
     </main>
@@ -251,6 +274,7 @@
     <footer>
       <p class="copyright">&copy; 2026 Anima Clip. All rights reserved.</p>
       <div class="footer-links">
+        <a href="brushes.html">Brushes</a>
         <a href="contact.html">Support</a>
         <a href="https://sites.google.com/view/anima-clip-privacy-policy/home?pli=1&authuser=0" target="_blank" rel="noopener">Privacy Policy</a>
         <a href="/app-ads.txt">app-ads.txt</a>
