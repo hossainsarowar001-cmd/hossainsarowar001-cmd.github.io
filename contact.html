@@ -5,14 +5,18 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Contact Support - Anima Clip</title>
   <style>
+    *, *::before, *::after {
+      box-sizing: border-box;
+    }
     body {
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
       background-color: #f4f6f8;
       margin: 0;
-      padding: 24px 16px;
+      padding: 24px 16px 96px 16px; /* Generous bottom padding to clear floating bot */
       color: #333;
       display: flex;
       justify-content: center;
+      overflow-x: hidden;
     }
     .container {
       background: #ffffff;
@@ -21,6 +25,8 @@
       box-shadow: 0 4px 14px rgba(0, 0, 0, 0.08);
       max-width: 600px;
       width: 100%;
+      min-width: 0;
+      overflow: hidden;
     }
     h2 {
       margin-top: 0;
@@ -46,7 +52,6 @@
     input, textarea {
       width: 100%;
       padding: 11px;
-      box-sizing: border-box;
       border: 1px solid #ccc;
       border-radius: 6px;
       font-size: 14px;
@@ -86,18 +91,47 @@
       background-color: #fde8e8;
       color: #c5221f;
     }
-    .nav-links {
-      text-align: center;
-      margin-top: 24px;
+
+    /* Dedicated Bottom Navigation Bar */
+    .nav-buttons-bar {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 12px;
+      margin-top: 28px;
+      flex-wrap: wrap;
     }
-    .nav-links a {
-      color: #1a73e8;
+    .nav-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 10px 18px;
+      border-radius: 8px;
+      font-size: 13.5px;
+      font-weight: 600;
       text-decoration: none;
-      font-size: 14px;
-      margin: 0 10px;
+      transition: background-color 0.2s, transform 0.15s;
+    }
+    .nav-btn-primary {
+      background-color: #e8f0fe;
+      color: #1a73e8;
+      border: 1px solid #c2e7ff;
+    }
+    .nav-btn-primary:hover {
+      background-color: #d2e3fc;
+      transform: translateY(-1px);
+    }
+    .nav-btn-secondary {
+      background-color: #f1f3f4;
+      color: #3c4043;
+      border: 1px solid #dadce0;
+    }
+    .nav-btn-secondary:hover {
+      background-color: #e8eaed;
+      transform: translateY(-1px);
     }
 
-    /* Cute Floating Bot Action Button */
+    /* Floating Bot Action Button */
     .ai-fab-btn {
       position: fixed;
       bottom: 24px;
@@ -255,14 +289,15 @@
 
     <div id="contactStatus" class="status-alert"></div>
 
-    <div class="nav-links">
-      <a href="community.html">Go to Community Q&A →</a>
-      <a href="index.html">Home</a>
+    <!-- Dedicated Styled Navigation Buttons -->
+    <div class="nav-buttons-bar">
+      <a href="community.html" class="nav-btn nav-btn-primary">💬 Community Q&A</a>
+      <a href="index.html" class="nav-btn nav-btn-secondary">🏠 Home</a>
     </div>
   </div>
 
-  <!-- Cheerful Smiling Bot Floating Button -->
-  <button class="ai-fab-btn" id="aiChatToggle" title="Chat with Anima Clip Assistant" aria-label="Open AI Assistant">
+  <!-- Smiling Bot Floating Action Button -->
+  <button class="ai-fab-btn" id="aiChatToggle" title="Chat with Anima Clip Bot" aria-label="Open AI Assistant">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
       <path d="M12 2v3" stroke-width="2"/>
       <circle cx="12" cy="2" r="1" fill="currentColor"/>
@@ -274,7 +309,6 @@
     </svg>
   </button>
 
-  <!-- Floating Chat Popup Window -->
   <div class="ai-chat-window" id="aiChatWindow">
     <div class="ai-chat-header">
       <div style="display:flex; align-items:center; gap:8px;">
@@ -286,13 +320,13 @@
           <circle cx="15.5" cy="10" r="1.3" fill="#fff" stroke="none"/>
           <path d="M9.5 13.8c.8.9 1.7 1.2 2.5 1.2s1.7-.3 2.5-1.2"/>
         </svg>
-        <span>Anima Clip Assistant</span>
+        <span>Anima Clip Bot</span>
       </div>
       <button class="ai-chat-close" id="aiChatClose">&times;</button>
     </div>
     <div class="ai-chat-messages" id="aiChatMessages">
       <div class="chat-bubble bot">
-        Hi! I'm your Anima Clip Assistant. How can I help you with your animation project, tools, or layers today?
+        Hi! I'm your Anima Clip Bot. How can I help you with your animation project, tools, or layers today?
       </div>
     </div>
     <div class="ai-chat-footer">
@@ -372,7 +406,6 @@
       }
     });
 
-    // Formatting cleaner that eliminates <br> tags, asterisks, and hashes
     function cleanFormatting(str) {
       if (!str) return '';
       let clean = str;
@@ -414,7 +447,7 @@
 
       const loadingBubble = document.createElement('div');
       loadingBubble.className = 'chat-bubble loading';
-      loadingBubble.textContent = 'Assistant is typing...';
+      loadingBubble.textContent = 'Bot is typing...';
       aiChatMessages.appendChild(loadingBubble);
       aiChatMessages.scrollTop = aiChatMessages.scrollHeight;
 
