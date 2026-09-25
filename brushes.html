@@ -47,6 +47,7 @@
       border-radius: 10px;
       border: 1px solid var(--border);
       object-fit: cover;
+      background-color: #fff;
     }
 
     .nav-back {
@@ -113,12 +114,12 @@
 
     .brush-art-header {
       width: 100%;
-      height: 180px;
+      height: 190px;
       background-color: #f1f5f9;
       position: relative;
       overflow: hidden;
       border-bottom: 1px solid var(--border);
-      display: none; /* Shown dynamically if image exists */
+      display: none;
     }
     .brush-art-img {
       width: 100%;
@@ -150,7 +151,6 @@
       font-weight: 700;
       color: var(--text);
       margin-bottom: 0.45rem;
-      text-transform: capitalize;
       line-height: 1.35;
     }
 
@@ -213,7 +213,12 @@
   <div class="container">
     <header class="top-nav">
       <a href="index.html" class="brand-link">
-        <img src="images/logo.png" alt="Anima Clip Logo" class="app-logo" onerror="this.style.display='none'" />
+        <img 
+          src="images/logo.png" 
+          alt="Anima Clip Logo" 
+          class="app-logo" 
+          onerror="if(this.src.indexOf('images/logo.png')!==-1){this.src='logo.png';}else if(this.src.indexOf('logo.png')!==-1){this.src='images/logo.jpg';}" 
+        />
         <span>Anima Clip</span>
       </a>
       <a href="index.html" class="nav-back">
@@ -232,7 +237,6 @@
         <p>Handcrafted brush collections, textures, and ink sets ready to download and import into Anima Clip.</p>
       </section>
 
-      <!-- Auto-Generated Grid Container -->
       <section class="brushes-grid" id="brush-container">
         <p style="text-align:center; grid-column: 1/-1; color: var(--text-muted);">Loading brush packs...</p>
       </section>
@@ -261,7 +265,6 @@
         if (!response.ok) throw new Error("Could not fetch folder");
         const files = await response.json();
 
-        // Filter out hidden files like .gitkeep
         const brushFiles = files.filter(f => f.type === 'file' && !f.name.startsWith('.'));
 
         if (brushFiles.length === 0) {
@@ -269,19 +272,29 @@
           return;
         }
 
-        container.innerHTML = brushFiles.map(file => {
-          const baseName = file.name.substring(0, file.name.lastIndexOf('.')) || file.name;
-          const displayTitle = baseName.replace(/[-_]/g, ' ');
-          const previewImgPath = `images/${baseName}.png`;
+        container.innerHTML = brushFiles.map((file, index) => {
+          const rawBaseName = file.name.substring(0, file.name.lastIndexOf('.')) || file.name;
+          const displayTitle = rawBaseName.replace(/[-_]/g, ' ');
+          const encodedBase = encodeURIComponent(rawBaseName);
 
           return `
             <article class="brush-card">
-              <div class="brush-art-header" id="header-${baseName}">
-                <img src="${previewImgPath}" 
-                     alt="${displayTitle} Preview" 
+              <div class="brush-art-header" id="art-header-${index}">
+                <img src="images/${encodedBase}.png" 
+                     alt="${displayTitle} Artwork" 
                      class="brush-art-img"
-                     onload="document.getElementById('header-${baseName}').style.display='block'"
-                     onerror="document.getElementById('header-${baseName}').style.display='none'">
+                     onload="this.parentElement.style.display='block';"
+                     onerror="
+                       if (this.src.endsWith('.png')) {
+                         this.src = 'images/${encodedBase}.jpg';
+                       } else if (this.src.endsWith('.jpg')) {
+                         this.src = 'images/${encodedBase}.jpeg';
+                       } else if (this.src.endsWith('.jpeg')) {
+                         this.src = 'images/${encodedBase}.webp';
+                       } else {
+                         this.parentElement.style.display='none';
+                       }
+                     ">
               </div>
               <div class="brush-body">
                 <div>
@@ -289,7 +302,7 @@
                   <h2 class="brush-title">${displayTitle}</h2>
                   <p class="brush-desc">Curated texture and stroke collection for Anima Clip. Download the pack and extract presets into your canvas tool.</p>
                 </div>
-                <a href="${file.path}" class="btn-download-brush" download>
+                <a href="${file.download_url || file.path}" class="btn-download-brush" download>
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
                     <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
                     <polyline points="7 10 12 15 17 10"></polyline>
