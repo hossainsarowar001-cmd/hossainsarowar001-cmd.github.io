@@ -158,3 +158,4 @@ my-cast.tv, 987033, RESELLER, 8c33fe1bd714ffd7
 triplelift.com, 8614, RESELLER, 6c33edb13117fd86
 adwmg.com, 159512, RESELLER, c9688a22012618e7
 bold-win.com, 1013, RESELLER, 71746737d0bab951
+pubmatic.com, 165874, RESELLER, 5d62403b186f2ace
