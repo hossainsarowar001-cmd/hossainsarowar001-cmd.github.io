@@ -123,6 +123,7 @@
       border: 1px solid #f8b4b4;
       border-radius: 4px;
       cursor: pointer;
+      flex-shrink: 0;
     }
     .btn-danger-sm {
       background-color: transparent;
@@ -132,7 +133,8 @@
       border: 1px solid #f8b4b4;
       border-radius: 4px;
       cursor: pointer;
-      margin-left: 6px;
+      flex-shrink: 0;
+      margin-left: auto;
     }
     .feed-title {
       font-size: 18px;
@@ -153,8 +155,7 @@
       background: #fff;
       width: 100%;
       min-width: 0;
-      word-break: break-word;
-      overflow-wrap: break-word;
+      overflow: hidden;
     }
     .pinned-card {
       border: 1.5px solid #1a73e8;
@@ -164,8 +165,7 @@
       margin-bottom: 16px;
       width: 100%;
       min-width: 0;
-      word-break: break-word;
-      overflow-wrap: break-word;
+      overflow: hidden;
     }
     .pinned-tag {
       background: #1a73e8;
@@ -176,30 +176,38 @@
       border-radius: 4px;
       flex-shrink: 0;
     }
+
+    /* Question Header: wrap gracefully without overflowing */
     .question-header {
       display: flex;
       justify-content: space-between;
       align-items: center;
       margin-bottom: 8px;
-      gap: 8px;
+      gap: 10px;
+      flex-wrap: wrap;
     }
     .author-name {
       font-weight: 600;
       font-size: 14px;
       color: #1a73e8;
-      white-space: nowrap;
+      word-break: break-word;
+      overflow-wrap: anywhere;
+      min-width: 0;
+      flex: 1 1 180px;
     }
     .date-tag {
-      font-size: 11px;
+      font-size: 11.5px;
       color: #777;
       white-space: nowrap;
+      flex-shrink: 0;
     }
     .question-meta-right {
-      display: flex;
+      display: inline-flex;
       align-items: center;
       gap: 8px;
       white-space: nowrap;
       flex-shrink: 0;
+      margin-left: auto;
     }
     .question-text {
       font-size: 15px;
@@ -208,7 +216,7 @@
       margin: 8px 0 14px;
       white-space: pre-line;
       word-break: break-word;
-      overflow-wrap: break-word;
+      overflow-wrap: anywhere;
     }
     .actions-bar {
       display: flex;
@@ -233,8 +241,7 @@
       border: 1px solid #e1e4e8;
       width: 100%;
       min-width: 0;
-      word-break: break-word;
-      overflow-wrap: break-word;
+      overflow: hidden;
     }
     .reply-item.developer-reply {
       background: #e8f0fe;
@@ -245,12 +252,13 @@
       border: 1px solid #e1bee7;
     }
 
+    /* Reply Header Layout */
     .reply-header {
       margin-bottom: 8px;
       width: 100%;
       display: flex;
       flex-direction: column;
-      gap: 4px;
+      gap: 6px;
     }
     .reply-name-row {
       display: flex;
@@ -263,7 +271,10 @@
       font-size: 13.5px;
       font-weight: 600;
       color: #202124;
-      white-space: nowrap;
+      word-break: break-word;
+      overflow-wrap: anywhere;
+      min-width: 0;
+      flex: 1 1 auto;
     }
     .reply-sub-row {
       display: flex;
@@ -271,6 +282,7 @@
       justify-content: space-between;
       width: 100%;
       gap: 6px;
+      flex-wrap: wrap;
     }
     .reply-badges-left {
       display: flex;
@@ -312,7 +324,7 @@
     .reply-text {
       white-space: pre-line;
       word-break: break-word;
-      overflow-wrap: break-word;
+      overflow-wrap: anywhere;
       line-height: 1.5;
     }
     .answer-form {
@@ -500,7 +512,7 @@
 
     <div class="question-box">
       <h3>Add your question here</h3>
-      <input type="text" id="qAuthor" placeholder="Your Name or Nickname" required>
+      <input type="text" id="qAuthor" placeholder="Your Name or Nickname" required maxlength="30">
       <textarea id="qText" placeholder="Write your question or query here..." required></textarea>
       <button class="btn btn-primary" id="btnPostQuestion">Post Question</button>
     </div>
@@ -869,7 +881,7 @@
             </div>
 
             <div id="reply-box-${q.id}" class="answer-form" style="display: ${isBoxOpen ? 'block' : 'none'};">
-              <input type="text" id="replyAuthor-${q.id}" placeholder="Your Name" value="${currentDevUser ? 'Incrible Studio' : ''}">
+              <input type="text" id="replyAuthor-${q.id}" placeholder="Your Name" value="${currentDevUser ? 'Incrible Studio' : ''}" maxlength="30">
               <textarea id="replyText-${q.id}" placeholder="Your reply..."></textarea>
               <button class="btn btn-primary" onclick="submitAnswer('${q.id}')">Post Answer</button>
             </div>
