@@ -190,7 +190,7 @@
       white-space: nowrap;
     }
     .date-tag {
-      font-size: 11.5px;
+      font-size: 11px;
       color: #777;
       white-space: nowrap;
     }
@@ -238,7 +238,7 @@
       border: 1px solid #e1bee7;
     }
 
-    /* Reply Header Layout */
+    /* Structured header */
     .reply-header {
       margin-bottom: 8px;
       width: 100%;
@@ -248,7 +248,7 @@
     }
     .reply-name-row {
       display: flex;
-      align-items: flex-start;
+      align-items: center;
       justify-content: space-between;
       width: 100%;
       gap: 8px;
@@ -257,13 +257,19 @@
       font-size: 13.5px;
       font-weight: 600;
       color: #202124;
-      line-height: 1.35;
-      word-break: normal;
+      white-space: nowrap;
     }
     .reply-sub-row {
       display: flex;
       align-items: center;
+      justify-content: space-between;
+      width: 100%;
       gap: 6px;
+    }
+    .reply-badges-left {
+      display: flex;
+      align-items: center;
+      gap: 5px;
       flex-wrap: wrap;
     }
     .reply-meta-right {
@@ -492,8 +498,10 @@
               <span class="reply-author">Incrible Studio</span>
             </div>
             <div class="reply-sub-row">
-              <span class="developer-tag">Developer</span>
-              <span class="mod-tag">Official</span>
+              <div class="reply-badges-left">
+                <span class="developer-tag">Developer</span>
+                <span class="mod-tag">Official</span>
+              </div>
             </div>
           </div>
           <div class="reply-text">We check here frequently to help answer any questions!</div>
@@ -510,7 +518,7 @@
   </div>
 
   <!-- Smiling Bot Floating Action Button -->
-  <button class="ai-fab-btn" id="aiChatToggle" title="Chat with Anima Clip Assistant" aria-label="Open AI Assistant">
+  <button class="ai-fab-btn" id="aiChatToggle" title="Chat with Anima Clip Bot" aria-label="Open AI Assistant">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
       <path d="M12 2v3" stroke-width="2"/>
       <circle cx="12" cy="2" r="1" fill="currentColor"/>
@@ -533,13 +541,13 @@
           <circle cx="15.5" cy="10" r="1.3" fill="#fff" stroke="none"/>
           <path d="M9.5 13.8c.8.9 1.7 1.2 2.5 1.2s1.7-.3 2.5-1.2"/>
         </svg>
-        <span>Anima Clip Assistant</span>
+        <span>Anima Clip Bot</span>
       </div>
       <button class="ai-chat-close" id="aiChatClose">&times;</button>
     </div>
     <div class="ai-chat-messages" id="aiChatMessages">
       <div class="chat-bubble bot">
-        Hi! I'm your Anima Clip Assistant. How can I help you with your animation project, tools, or layers today?
+        Hi! I'm your Anima Clip Bot. How can I help you with your animation project, tools, or layers today?
       </div>
     </div>
     <div class="ai-chat-footer">
@@ -692,7 +700,7 @@
             await updateDoc(doc(db, "questions", newDocRef.id), {
               replies: arrayUnion({
                 id: 'ai_' + Date.now(),
-                author: "Anima Clip\nAssistant",
+                author: "Anima Clip Bot",
                 text: cleanFormatting(data.reply),
                 isAi: true,
                 date: new Date().toLocaleDateString()
@@ -835,27 +843,23 @@
               <div class="replies-list">
                 ${replies.map(r => {
                   const canDeleteReply = currentDevUser || (r.userId && r.userId === myDeviceId);
-                  const isAiBot = r.isAi || (r.author && r.author.toLowerCase().includes('assistant'));
+                  const isAiBot = r.isAi || (r.author && (r.author.toLowerCase().includes('assistant') || r.author.toLowerCase().includes('bot')));
                   
-                  // Wrap "Assistant" to the next line so the date fits cleanly on the right
-                  let authorMarkup = escapeHTML(r.author);
-                  if (isAiBot) {
-                    authorMarkup = 'Anima Clip<br>Assistant';
-                  }
+                  const displayName = isAiBot ? 'Anima Clip Bot' : escapeHTML(r.author);
 
                   return `
                     <div class="reply-item ${r.isDev ? 'developer-reply' : ''} ${r.isAi ? 'ai-reply' : ''}">
                       <div class="reply-header">
                         <div class="reply-name-row">
-                          <span class="reply-author">${authorMarkup}</span>
-                          <div class="reply-meta-right">
-                            <span class="date-tag">${escapeHTML(r.date)}</span>
-                            ${canDeleteReply ? `<button class="btn-danger-sm" onclick="deleteReply('${q.id}', '${r.id}', '${escapeHTML(r.userId || '')}')">Delete</button>` : ''}
-                          </div>
+                          <span class="reply-author">${displayName}</span>
+                          ${canDeleteReply ? `<button class="btn-danger-sm" onclick="deleteReply('${q.id}', '${r.id}', '${escapeHTML(r.userId || '')}')">Delete</button>` : ''}
                         </div>
                         <div class="reply-sub-row">
-                          ${r.isDev ? '<span class="developer-tag">Developer</span><span class="mod-tag">Official</span>' : ''}
-                          ${r.isAi ? '<span class="ai-tag">AI Assistant</span>' : ''}
+                          <div class="reply-badges-left">
+                            ${r.isDev ? '<span class="developer-tag">Developer</span><span class="mod-tag">Official</span>' : ''}
+                            ${r.isAi ? '<span class="ai-tag">AI Assistant</span>' : ''}
+                          </div>
+                          <span class="date-tag">${escapeHTML(r.date)}</span>
                         </div>
                       </div>
                       <div class="reply-text">${escapeHTML(cleanFormatting(r.text))}</div>
@@ -899,7 +903,7 @@
 
       const loadingBubble = document.createElement('div');
       loadingBubble.className = 'chat-bubble loading';
-      loadingBubble.textContent = 'Assistant is typing...';
+      loadingBubble.textContent = 'Bot is typing...';
       aiChatMessages.appendChild(loadingBubble);
       aiChatMessages.scrollTop = aiChatMessages.scrollHeight;
 
