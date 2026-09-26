@@ -193,7 +193,7 @@
       font-size: 0.875rem;
       color: var(--text-muted);
     }
-    .copyright { color: var(--text-muted); font-weight: 400; }
+    .copyright { color: var(--text-muted); }
     .footer-links a {
       color: var(--text-muted);
       text-decoration: none;
@@ -242,7 +242,7 @@
       </section>
     </main>
 
-    <!-- Footer: Retains copyright and only 3 clean links -->
+    <!-- Footer: Retains copyright and only Support, Privacy Policy, app-ads.txt -->
     <footer>
       <p class="copyright">&copy; 2026 Anima Clip. All rights reserved.</p>
       <div class="footer-links">
@@ -254,8 +254,9 @@
   </div>
 
   <script>
-    const GITHUB_USER = "hossainsarowar001-cmd";
-    const GITHUB_REPO = "hossainsarowar001-cmd.github.io";
+    // Updated to your new GitHub Organization and Repository name
+    const GITHUB_USER = "incriblestudio";
+    const GITHUB_REPO = "incriblestudio.github.io";
     const API_URL = `https://api.github.com/repos/${GITHUB_USER}/${GITHUB_REPO}/contents/brushes`;
 
     async function loadBrushesAuto() {
