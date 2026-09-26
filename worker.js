@@ -1,20 +1,36 @@
-const CORS_HEADERS = {
-  "Access-Control-Allow-Origin": "https://hossainsarowar001-cmd.github.io",
-  "Access-Control-Allow-Methods": "POST, OPTIONS",
-  "Access-Control-Allow-Headers": "Content-Type",
-};
+// Dynamic origin checking to support your updated domain (incriblestudio.github.io)
+function getCorsHeaders(request) {
+  const origin = request.headers.get("Origin") || "";
+  const allowedOrigins = [
+    "https://incriblestudio.github.io",
+    "https://hossainsarowar001-cmd.github.io",
+    "https://01-cmd.github.io"
+  ];
+
+  const allowOrigin = allowedOrigins.includes(origin) || origin.endsWith(".github.io") 
+    ? origin 
+    : "https://incriblestudio.github.io";
+
+  return {
+    "Access-Control-Allow-Origin": allowOrigin,
+    "Access-Control-Allow-Methods": "POST, OPTIONS",
+    "Access-Control-Allow-Headers": "Content-Type",
+  };
+}
 
 export default {
   async fetch(request, env) {
+    const corsHeaders = getCorsHeaders(request);
+
     // 1. Handle CORS preflight
     if (request.method === "OPTIONS") {
-      return new Response(null, { headers: CORS_HEADERS });
+      return new Response(null, { headers: corsHeaders });
     }
 
     if (request.method !== "POST") {
       return new Response(JSON.stringify({ error: "Method Not Allowed" }), { 
         status: 405, 
-        headers: { ...CORS_HEADERS, "Content-Type": "application/json" } 
+        headers: { ...corsHeaders, "Content-Type": "application/json" } 
       });
     }
 
@@ -25,7 +41,7 @@ export default {
       if (!question) {
         return new Response(JSON.stringify({ error: "No question provided" }), {
           status: 400,
-          headers: { ...CORS_HEADERS, "Content-Type": "application/json" }
+          headers: { ...corsHeaders, "Content-Type": "application/json" }
         });
       }
 
@@ -33,7 +49,7 @@ export default {
       if (!apiKey) {
         return new Response(JSON.stringify({ reply: "Error: GEMINI_API_KEY is missing in Cloudflare settings." }), {
           status: 500,
-          headers: { ...CORS_HEADERS, "Content-Type": "application/json" }
+          headers: { ...corsHeaders, "Content-Type": "application/json" }
         });
       }
 
@@ -43,10 +59,13 @@ export default {
         "gemini-3.7-flash",
         "gemini-3.6-flash",
         "gemini-3.5-flash",
-        "gemini-3.5-flash-lite"
+        "gemini-3.5-flash-lite",
+        "gemini-2.5-flash",
+        "gemini-2.0-flash",
+        "gemini-1.5-flash"
       ];
 
-      const promptText = `You are the official in-app community assistant for 'Anima Clip', a 2D animation mobile app by Incrible Studio.
+      const promptText = `You are the official in-app community assistant named 'Anima Clip Bot' for 'Anima Clip', a 2D animation mobile app by Incrible Studio.
 Answer helpfully, naturally, and concisely like a human animator in the community forum.
 - Do NOT use markdown symbols like asterisks (**bold** or *italic*). Output clean, regular text.
 - If giving steps, use simple numbering (1., 2., 3.).
@@ -116,13 +135,13 @@ Assistant:`;
 
       return new Response(JSON.stringify({ reply: finalReply }), {
         status: 200,
-        headers: { ...CORS_HEADERS, "Content-Type": "application/json" }
+        headers: { ...corsHeaders, "Content-Type": "application/json" }
       });
 
     } catch (err) {
       return new Response(JSON.stringify({ error: "Worker internal failure: " + err.message }), {
         status: 500,
-        headers: { ...CORS_HEADERS, "Content-Type": "application/json" }
+        headers: { ...corsHeaders, "Content-Type": "application/json" }
       });
     }
   }
